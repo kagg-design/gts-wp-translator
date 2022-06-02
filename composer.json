@@ -1,0 +1,17 @@
+{
+    "name": "lovik/gts-translation-service",
+    "type": "n",
+    "license": "n",
+    "autoload": {
+        "psr-4": {
+            "Lovik\\GtsTranslationService\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "AlsconWeb",
+            "email": "alsconweb_alex@outlook.com"
+        }
+    ],
+    "require": {}
+}
