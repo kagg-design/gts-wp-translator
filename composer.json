@@ -7,7 +7,7 @@
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
-            "GTS\\GTSTranslationOrder\\": "src/"
+            "GTS\\GTSTranslationOrder\\": "src/php"
         }
     },
     "authors": [
@@ -22,7 +22,9 @@
             "homepage": "https://kagg.eu/en/"
         }
     ],
-    "require": {},
+    "require": {
+        "twbs/bootstrap-icons": "^1.8"
+    },
     "require-dev": {
         "roave/security-advisories": "dev-latest",
         "squizlabs/php_codesniffer": "^3.6",
