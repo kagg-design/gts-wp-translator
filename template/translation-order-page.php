@@ -5,6 +5,9 @@
  * @package GTS\GTSTranslationOrder
  */
 
+use GTS\GTSTranslationOrder\Filter\PostFilter;
+
+$filter = new PostFilter();
 ?>
 <div class="container" id="gts-translation-order">
 	<div class="row">
@@ -17,20 +20,15 @@
 	<form action="" id="filter-form" method="post">
 		<div class="row">
 			<div class="col-auto">
-				<select class="form-select" aria-label="Post Type" name="gts_to_post_type_select">
-					<option selected>Select post type</option>
-					<option value="1">One</option>
-					<option value="2">Two</option>
-					<option value="3">Three</option>
-				</select>
+				<?php echo $filter->show_post_types_select(); ?>
 			</div>
 			<div class="col-auto">
-				<input type="text" class="form-control" id="gts_to_search" name="gts_to_searh"
-					   placeholder="Search to title">
+				<?php echo $filter->show_serch_field(); ?>
 			</div>
 			<div class="col-auto">
-				<input type="submit" class="btn-sm btn btn-primary" value="Submit">
+				<input type="submit" name="gts_filter_submit" class="btn-sm btn btn-primary" value="Submit">
 			</div>
+			<?php wp_nonce_field( 'gts_post_type_filter', 'gts_post_type_filter_nonce', false ); ?>
 		</div>
 	</form>
 	<div class="row">
@@ -50,33 +48,7 @@
 				</tr>
 				</thead>
 				<tbody class="table-group-divider">
-				<tr>
-					<th scope="row"><input type="checkbox" name="gts_to_all_page" id="gts_to_all_page"></th>
-					<td>Test post</td>
-					<td>Post</td>
-					<td><span class="badge bg-secondary">Not translated</span></td>
-					<td>
-						<a href="#" class="plus"><i class="bi bi-plus-square"></i></a>
-					</td>
-				</tr>
-				<tr>
-					<th scope="row"><input type="checkbox" name="gts_to_all_page" id="gts_to_all_page"></th>
-					<td>Jacob test page</td>
-					<td>Page</td>
-					<td><span class="badge bg-primary">Pending translation</span></td>
-					<td>
-						<a href="#" class="plus"><i class="bi bi-plus-square"></i></a>
-					</td>
-				</tr>
-				<tr>
-					<th scope="row"><input type="checkbox" name="gts_to_all_page" id="gts_to_all_page"></th>
-					<td>Larry the Bird custom post</td>
-					<td>Post type name</td>
-					<td><span class="badge bg-success">Translated</span></td>
-					<td>
-						<a href="#" class="plus"><i class="bi bi-plus-square"></i></a>
-					</td>
-				</tr>
+				<?php echo $filter->show_table(); ?>
 				</tbody>
 				<caption>
 					<div class="tablenav bottom">

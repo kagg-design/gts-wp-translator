@@ -7,6 +7,8 @@
 
 namespace GTS\GTSTranslationOrder;
 
+use GTS\GTSTranslationOrder\Filter\PostFilter;
+
 /**
  * PluginInit class file.
  */
@@ -17,6 +19,8 @@ class PluginInit {
 	 */
 	public function __construct() {
 		$this->init();
+
+		new PostFilter();
 	}
 
 	/**
@@ -65,7 +69,8 @@ class PluginInit {
 		if ( 'toplevel_page_gts_translation_order' === $hook_suffix ) {
 			wp_enqueue_script( 'bootstrap', '//cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js', [ 'jquery' ], '5.2.0', true );
 			wp_enqueue_style( 'bootstrap', '//cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css', '', '5.2.0' );
-			wp_enqueue_style( 'bootstrap-icon', TRANSLATION_ORDER_URL.'/vendor/twbs/bootstrap-icons/font/bootstrap-icons.css', '', '1.8.0' );
+			wp_enqueue_style( 'bootstrap-icon', TRANSLATION_ORDER_URL . '/vendor/twbs/bootstrap-icons/font/bootstrap-icons.css', '', '1.8.0' );
+			wp_enqueue_script( 'main', TRANSLATION_ORDER_URL . '/assets/js/admin/main.js', [ 'jquery' ], TRANSLATION_ORDER_VERSION, true );
 		}
 
 		wp_enqueue_style( 'admin-style', TRANSLATION_ORDER_URL . '/assets/css/admin/style.css', '', TRANSLATION_ORDER_VERSION );

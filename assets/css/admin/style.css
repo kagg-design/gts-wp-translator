@@ -1,14 +1,21 @@
-.wp-menu-image img{
+.wp-menu-image img {
 	width: 20px;
 }
-#gts-translation-order a i{
+
+#gts-translation-order a i {
 	color: #00a32a;
 }
-#gts-translation-order a:hover > i{
+
+#gts-translation-order a:hover > i {
 	color: #05135c;
 }
-#filter-form{
+
+#filter-form {
 	padding: 10px;
 	background: #bbbbbb;
 	margin-top: 20px;
+}
+
+#gts_to_post_type_select {
+	text-transform: capitalize;
 }
