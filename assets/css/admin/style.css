@@ -19,3 +19,11 @@
 #gts_to_post_type_select {
 	text-transform: capitalize;
 }
+
+.total-table {
+	margin-top: 40px;
+}
+
+.modal {
+	z-index: 9999;
+}

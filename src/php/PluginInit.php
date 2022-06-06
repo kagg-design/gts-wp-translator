@@ -14,9 +14,20 @@ use GTS\GTSTranslationOrder\Filter\PostFilter;
  */
 class PluginInit {
 
+	/**
+	 * Top menu slug.
+	 */
 	public const GTS_MENU_SLUG = 'gts_translation_order';
 
+	/**
+	 * Sub menu slug.
+	 */
 	public const GTS_SUB_MENU_CART_SLUG = 'gts_translation_cart';
+
+	private const GTS_PAGES_MENU_SLUGS = [
+		'toplevel_page_' . self::GTS_MENU_SLUG,
+		'translation-order_page_' . self::GTS_SUB_MENU_CART_SLUG,
+	];
 
 	/**
 	 * PluginInit construct.
@@ -25,6 +36,7 @@ class PluginInit {
 		$this->init();
 
 		new PostFilter();
+		
 	}
 
 	/**
@@ -69,8 +81,7 @@ class PluginInit {
 	 * @return void
 	 */
 	public function add_admin_scripts( string $hook_suffix ): void {
-
-		if ( 'toplevel_page_gts_translation_order' === $hook_suffix ) {
+		if ( in_array( $hook_suffix, self::GTS_PAGES_MENU_SLUGS, true ) ) {
 			wp_enqueue_script( 'bootstrap', '//cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js', [ 'jquery' ], '5.2.0', true );
 			wp_enqueue_style( 'bootstrap', '//cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css', '', '5.2.0' );
 			wp_enqueue_style( 'bootstrap-icon', TRANSLATION_ORDER_URL . '/vendor/twbs/bootstrap-icons/font/bootstrap-icons.css', '', '1.8.0' );
@@ -116,6 +127,11 @@ class PluginInit {
 		include TRANSLATION_ORDER_PATH . '/template/translation-order-page.php';
 	}
 
+	/**
+	 * Output template translation cart.
+	 *
+	 * @return void
+	 */
 	public function output_translation_cart(): void {
 		include TRANSLATION_ORDER_PATH . '/template/translation-cart-page.php';
 	}
