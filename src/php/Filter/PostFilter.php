@@ -35,6 +35,11 @@ class PostFilter {
 	 */
 	private string $post_type_select;
 
+	/**
+	 * Search string.
+	 *
+	 * @var string|mixed
+	 */
 	private string $search;
 
 	/**
@@ -42,9 +47,9 @@ class PostFilter {
 	 */
 	public function __construct() {
 		$this->init();
-		$parms                  = get_transient( self::TRANSIENT_NAME ) ?? '';
-		$this->post_type_select = $parms['post_type'];
-		$this->search           = $parms['search'];
+		$params                 = get_transient( self::TRANSIENT_NAME ) ?? '';
+		$this->post_type_select = $params['post_type'] ?? '';
+		$this->search           = $params['search'] ?? '';
 	}
 
 	/**

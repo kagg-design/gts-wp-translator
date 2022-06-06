@@ -14,6 +14,10 @@ use GTS\GTSTranslationOrder\Filter\PostFilter;
  */
 class PluginInit {
 
+	public const GTS_MENU_SLUG = 'gts_translation_order';
+
+	public const GTS_SUB_MENU_CART_SLUG = 'gts_translation_cart';
+
 	/**
 	 * PluginInit construct.
 	 */
@@ -86,11 +90,21 @@ class PluginInit {
 			__( 'Translation Order', 'gts_translation_order' ),
 			__( 'Translation Order', 'gts_translation_order' ),
 			'edit_others_posts',
-			'gts_translation_order',
+			self::GTS_MENU_SLUG,
 			[ $this, 'output_translation_page' ],
 			TRANSLATION_ORDER_URL . '/assets/icons/language-solid.svg',
 			30
 		);
+
+		add_submenu_page(
+			self::GTS_MENU_SLUG,
+			__( 'Translation Cart', 'gts_translation_order' ),
+			__( 'Translation Cart', 'gts_translation_order' ),
+			'edit_others_posts',
+			self::GTS_SUB_MENU_CART_SLUG,
+			[ $this, 'output_translation_cart' ]
+		);
+
 	}
 
 	/**
@@ -100,5 +114,9 @@ class PluginInit {
 	 */
 	public function output_translation_page(): void {
 		include TRANSLATION_ORDER_PATH . '/template/translation-order-page.php';
+	}
+
+	public function output_translation_cart(): void {
+		include TRANSLATION_ORDER_PATH . '/template/translation-cart-page.php';
 	}
 }
