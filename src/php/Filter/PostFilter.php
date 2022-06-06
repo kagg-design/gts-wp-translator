@@ -48,7 +48,7 @@ class PostFilter {
 	public function __construct() {
 		$this->init();
 		$params                 = get_transient( self::TRANSIENT_NAME ) ?? '';
-		$this->post_type_select = $params['post_type'] ?? '';
+		$this->post_type_select = $params['post_type'] ?? 'null';
 		$this->search           = $params['search'] ?? '';
 	}
 
@@ -81,7 +81,7 @@ class PostFilter {
 		<select class="form-select" id="gts_to_post_type_select" aria-label="Post Type" name="gts_to_post_type_select">
 			<option value="null" selected>Select post type</option>
 			<?php foreach ( $this->get_post_types_array() as $type ) : ?>
-				<option value="<?php echo esc_attr( $type ); ?>" <?php selected( $post_type_select['post_type'], $type ); ?>>
+				<option value="<?php echo esc_attr( $type ); ?>" <?php isset( $post_type_select['post_type'] ) ? selected( $post_type_select['post_type'], $type ) : ''; ?>>
 					<?php echo esc_attr( $type ); ?>
 				</option>
 			<?php endforeach; ?>
@@ -146,10 +146,9 @@ class PostFilter {
 	/**
 	 * Show table post to translate.
 	 *
-	 * @return string
+	 * @return void
 	 */
-	public function show_table(): string {
-		ob_start();
+	public function show_table(): void {
 		$rows = $this->get_pots_by_post_type( $this->post_type_select, $this->search, 24, 0 )['posts'];
 
 		foreach ( $rows as $row ) :
@@ -169,8 +168,6 @@ class PostFilter {
 			</tr>
 		<?php
 		endforeach;
-
-		return ob_get_clean();
 	}
 
 	/**

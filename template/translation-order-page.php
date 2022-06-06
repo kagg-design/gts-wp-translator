@@ -48,7 +48,7 @@ $filter = new PostFilter();
 				</tr>
 				</thead>
 				<tbody class="table-group-divider">
-				<?php echo $filter->show_table(); ?>
+				<?php $filter->show_table(); ?>
 				</tbody>
 				<caption>
 					<div class="tablenav bottom">
