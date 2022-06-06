@@ -68,10 +68,9 @@ class PostFilter {
 	/**
 	 * Show Post Types select.
 	 *
-	 * @return string
+	 * @return void
 	 */
-	public function show_post_types_select(): string {
-		ob_start();
+	public function show_post_types_select(): void {
 		$post_type_select = get_transient( self::TRANSIENT_NAME );
 		?>
 		<select class="form-select" id="gts_to_post_type_select" aria-label="Post Type" name="gts_to_post_type_select">
@@ -83,11 +82,14 @@ class PostFilter {
 			<?php endforeach; ?>
 		</select>
 		<?php
-		return ob_get_clean();
 	}
 
-	public function show_serch_field(): string {
-		ob_start();
+	/**
+	 * Show Search field.
+	 *
+	 * @return void
+	 */
+	public function show_search_field(): void {
 		?>
 		<input
 				type="text"
@@ -97,7 +99,6 @@ class PostFilter {
 				value="<?php echo esc_html( $this->search ); ?>"
 				placeholder="Search to title">
 		<?php
-		return ob_get_clean();
 	}
 
 	/**
@@ -171,7 +172,7 @@ class PostFilter {
 	 * Get posts by post type.
 	 *
 	 * @param string|null $post_type    Post type.
-	 * @param string      $search       Search string.
+	 * @param string|null $search       Search string.
 	 * @param int         $count_output Count output post.
 	 * @param int         $offset       Offset.
 	 *

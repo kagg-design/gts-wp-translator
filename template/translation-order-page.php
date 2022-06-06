@@ -20,10 +20,10 @@ $filter = new PostFilter();
 	<form action="" id="filter-form" method="post">
 		<div class="row">
 			<div class="col-auto">
-				<?php echo $filter->show_post_types_select(); ?>
+				<?php $filter->show_post_types_select(); ?>
 			</div>
 			<div class="col-auto">
-				<?php echo $filter->show_serch_field(); ?>
+				<?php $filter->show_search_field(); ?>
 			</div>
 			<div class="col-auto">
 				<input type="submit" name="gts_filter_submit" class="btn-sm btn btn-primary" value="Submit">
