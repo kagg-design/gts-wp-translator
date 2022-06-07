@@ -2,11 +2,10 @@
 /**
  * Template translation cart page in admin.
  *
- * @package GTS\GTSTranslationOrder
+ * @package gts/translation-order
  */
 
-
-use GTS\GTSTranslationOrder\Cart\TranslationCart;
+use GTS\TranslationOrder\Cart\TranslationCart;
 
 $cart = new TranslationCart();
 ?>
@@ -15,7 +14,7 @@ $cart = new TranslationCart();
 	<div class="row">
 		<div class="col-auto">
 			<div class="wrap">
-				<h1 class="wp-heading-inline"><?php esc_attr_e( 'Translation Cart', 'gts_translation_order' ); ?></h1>
+				<h1 class="wp-heading-inline"><?php esc_attr_e( 'Translation Cart', 'gts-translation-order' ); ?></h1>
 			</div>
 		</div>
 	</div>
@@ -25,14 +24,15 @@ $cart = new TranslationCart();
 				<thead>
 				<tr>
 					<th scope="col">
+						<label for="gts_to_all_page"></label>
 						<input type="checkbox" name="gts_to_all_page" id="gts_to_all_page">
 					</th>
 					<th scope="col">
-						<?php esc_attr_e( 'Title', 'gts_translation_order' ); ?>
+						<?php esc_attr_e( 'Title', 'gts-translation-order' ); ?>
 					</th>
-					<th scope="col"><?php esc_attr_e( 'Type', 'gts_translation_order' ); ?></th>
-					<th scope="col"><?php esc_attr_e( 'Cost', 'gts_translation_order' ); ?></th>
-					<th scope="col"><?php esc_attr_e( 'Action', 'gts_translation_order' ); ?></th>
+					<th scope="col"><?php esc_attr_e( 'Type', 'gts-translation-order' ); ?></th>
+					<th scope="col"><?php esc_attr_e( 'Cost', 'gts-translation-order' ); ?></th>
+					<th scope="col"><?php esc_attr_e( 'Action', 'gts-translation-order' ); ?></th>
 				</tr>
 				</thead>
 				<tbody class="table-group-divider">
@@ -99,5 +99,5 @@ $cart = new TranslationCart();
 		</div>
 	</div>
 </div>
-<?php $cart->show_pop_up_language(); ?>
-
+<?php
+$cart->show_pop_up_language();

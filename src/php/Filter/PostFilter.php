@@ -2,10 +2,13 @@
 /**
  * PostFilter class form filter in admin panel.
  *
- * @package GTS\GTSTranslationOrder\Filter
+ * @package gts/translation-order
  */
 
-namespace GTS\GTSTranslationOrder\Filter;
+namespace GTS\TranslationOrder\Filter;
+
+use GTS\TranslationOrder\Admin\AdminNotice;
+use wpdb;
 
 /**
  * PostFilter class file.
@@ -46,10 +49,12 @@ class PostFilter {
 	 * PostFilter construct.
 	 */
 	public function __construct() {
-		$this->init();
+		// @todo Replace transient by cookie.
 		$params                 = get_transient( self::TRANSIENT_NAME ) ?? '';
 		$this->post_type_select = $params['post_type'] ?? 'null';
 		$this->search           = $params['search'] ?? '';
+
+		$this->init();
 	}
 
 	/**
@@ -58,7 +63,7 @@ class PostFilter {
 	 * @return void
 	 */
 	private function init(): void {
-		add_action( 'init', [ $this, 'filter_callback' ] );
+		add_action( 'init', [ $this, 'filter' ] );
 	}
 
 	/**
@@ -79,9 +84,9 @@ class PostFilter {
 		$post_type_select = get_transient( self::TRANSIENT_NAME );
 		?>
 		<select class="form-select" id="gts_to_post_type_select" aria-label="Post Type" name="gts_to_post_type_select">
-			<option value="null" selected>Select post type</option>
+			<option value="null" selected><?php esc_html_e( 'Select post type', 'gts-translation-order' ); ?></option>
 			<?php foreach ( $this->get_post_types_array() as $type ) : ?>
-				<option value="<?php echo esc_attr( $type ); ?>" <?php isset( $post_type_select['post_type'] ) ? selected( $post_type_select['post_type'], $type ) : ''; ?>>
+				<option value="<?php echo esc_attr( $type ); ?>" <?php echo isset( $post_type_select['post_type'] ) ? selected( $post_type_select['post_type'], $type, false ) : ''; ?>>
 					<?php echo esc_attr( $type ); ?>
 				</option>
 			<?php endforeach; ?>
@@ -96,6 +101,7 @@ class PostFilter {
 	 */
 	public function show_search_field(): void {
 		?>
+		<label for="gts_to_search"></label>
 		<input
 				type="text"
 				class="form-control"
@@ -107,11 +113,11 @@ class PostFilter {
 	}
 
 	/**
-	 * Filter form callback.
+	 * Filter form.
 	 *
 	 * @return void
 	 */
-	public function filter_callback(): void {
+	public function filter(): void {
 
 		if ( ! isset( $_POST['gts_filter_submit'] ) ) {
 			return;
@@ -120,7 +126,7 @@ class PostFilter {
 		$nonce = isset( $_POST['gts_post_type_filter_nonce'] ) ? filter_var( wp_unslash( $_POST['gts_post_type_filter_nonce'] ), FILTER_SANITIZE_STRING ) : null;
 
 		if ( ! wp_verify_nonce( $nonce, 'gts_post_type_filter' ) ) {
-			add_action( 'admin_notices', 'GTS\GTSTranslationOrder\Admin\AdminNotice::bad_nonce_code' );
+			add_action( 'admin_notices', [ AdminNotice::class, 'bad_nonce' ] );
 
 			return;
 		}
@@ -139,7 +145,6 @@ class PostFilter {
 		];
 
 		set_transient( self::TRANSIENT_NAME, $param, HOUR_IN_SECONDS );
-
 	}
 
 
@@ -149,48 +154,50 @@ class PostFilter {
 	 * @return void
 	 */
 	public function show_table(): void {
-		$rows = $this->get_pots_by_post_type( $this->post_type_select, $this->search, 24, 0 )['posts'];
+		$posts = $this->get_pots_by_post_type( $this->post_type_select, $this->search, 24, 0 )['posts'];
 
-		foreach ( $rows as $row ) :
+		foreach ( $posts as $post ) {
+			$title = $post->post_title;
+			$title = $title ?: '(no title)';
+			$id    = "gts_to_translate-$post->id";
+			$name  = "gts_to_translate[$post->id]";
+
 			?>
-			<tr>
+			<tr class="foo">
 				<th scope="row">
 					<input
-							type="checkbox" name="gts_to_translate[<?php echo esc_attr( $row->id ); ?>]"
-							id="gts_to_translate-<?php echo esc_attr( $row->id ); ?>">
+							type="checkbox"
+							id="<?php echo esc_attr( $id ); ?>"
+							name="<?php echo esc_attr( $name ); ?>">
 				</th>
-				<td><?php echo esc_html( $row->post_title ); ?></td>
-				<td><?php echo esc_html( $row->post_type ); ?></td>
+				<td><?php echo esc_html( $title ); ?></td>
+				<td><?php echo esc_html( $post->post_type ); ?></td>
 				<td><span class="badge bg-secondary">Not translated</span></td>
 				<td>
 					<a href="#" class="plus"><i class="bi bi-plus-square"></i></a>
 				</td>
 			</tr>
-		<?php
-		endforeach;
+			<?php
+		}
 	}
 
 	/**
 	 * Get posts by post type.
 	 *
-	 * @param string|null $post_type    Post type.
-	 * @param string|null $search       Search string.
-	 * @param int         $count_output Count output post.
-	 * @param int         $offset       Offset.
+	 * @param string|null $post_type Post type.
+	 * @param string|null $search    Search string.
+	 * @param int         $number    Number of post to output.
+	 * @param int         $offset    Offset.
 	 *
 	 * @return array
 	 */
-	private function get_pots_by_post_type( string $post_type = null, string $search = null, int $count_output = 25, int $offset = 0 ): array {
+	private function get_pots_by_post_type( string $post_type = null, string $search = null, int $number = 25, int $offset = 0 ): array {
 		global $wpdb;
 
-		$post_types = [];
+		$post_types = [ $post_type ];
 
-		if ( null !== $post_type && 'null' !== $post_type ) {
-			$post_types[] = $post_type;
-		} else {
-			foreach ( $this->get_post_types_array() as $type ) {
-				$post_types[] = $type;
-			}
+		if ( null === $post_type || 'null' === $post_type ) {
+			$post_types[] = $this->get_post_types_array();
 		}
 
 		$slq_post_type = $this->prepare_in( $post_types );
@@ -203,37 +210,34 @@ class PostFilter {
 
 		$sql .= 'LIMIT %d OFFSET %d';
 
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.NoCaching
-		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		$result = $wpdb->get_results(
 			$wpdb->prepare(
 				$sql,
-				esc_sql( $count_output ),
+				esc_sql( $number ),
 				esc_sql( $offset )
 			)
 		);
 
-		$row_found = $wpdb->get_results( 'SELECT FOUND_ROWS();', ARRAY_N );
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.NoCaching
-		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
+		// @todo Remove or use it.
+		$rows_found = $wpdb->get_results( 'SELECT FOUND_ROWS();', ARRAY_N );
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( ! $result ) {
 			return [
-				'posts'     => null,
-				'row_found' => 0,
+				'posts'      => null,
+				'rows_found' => 0,
 			];
 		}
 
 		return [
-			'posts'     => $result,
-			'row_found' => $row_found[0][0],
+			'posts'      => $result,
+			'rows_found' => $rows_found[0][0],
 		];
 	}
 
 	/**
-	 * Changes array of items into string of items, separated by comma and sql-escaped
+	 * Changes array of items into string of items, separated by comma and sql-escaped.
 	 *
 	 * @see https://coderwall.com/p/zepnaw
 	 * @global wpdb       $wpdb
@@ -248,6 +252,7 @@ class PostFilter {
 
 		$items    = (array) $items;
 		$how_many = count( $items );
+
 		if ( $how_many > 0 ) {
 			$placeholders    = array_fill( 0, $how_many, $format );
 			$prepared_format = implode( ',', $placeholders );
@@ -260,4 +265,3 @@ class PostFilter {
 		return $prepared_in;
 	}
 }
-

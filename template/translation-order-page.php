@@ -2,10 +2,10 @@
 /**
  * Template translation order page in admin.
  *
- * @package GTS\GTSTranslationOrder
+ * @package gts/translation-order
  */
 
-use GTS\GTSTranslationOrder\Filter\PostFilter;
+use GTS\TranslationOrder\Filter\PostFilter;
 
 $filter = new PostFilter();
 ?>
@@ -13,7 +13,7 @@ $filter = new PostFilter();
 	<div class="row">
 		<div class="col">
 			<div class="wrap">
-				<h1 class="wp-heading-inline"><?php esc_attr_e( 'Pages for translation', 'gts_translation_order' ); ?></h1>
+				<h1 class="wp-heading-inline"><?php esc_attr_e( 'Pages for translation', 'gts-translation-order' ); ?></h1>
 			</div>
 		</div>
 	</div>
@@ -37,14 +37,15 @@ $filter = new PostFilter();
 				<thead>
 				<tr>
 					<th scope="col">
+						<label for="gts_to_all_page"></label>
 						<input type="checkbox" name="gts_to_all_page" id="gts_to_all_page">
 					</th>
 					<th scope="col">
-						<?php esc_attr_e( 'Title', 'gts_translation_order' ); ?>
+						<?php esc_attr_e( 'Title', 'gts-translation-order' ); ?>
 					</th>
-					<th scope="col"><?php esc_attr_e( 'Type', 'gts_translation_order' ); ?></th>
-					<th scope="col"><?php esc_attr_e( 'Status', 'gts_translation_order' ); ?></th>
-					<th scope="col"><?php esc_attr_e( 'Action', 'gts_translation_order' ); ?></th>
+					<th scope="col"><?php esc_attr_e( 'Type', 'gts-translation-order' ); ?></th>
+					<th scope="col"><?php esc_attr_e( 'Status', 'gts-translation-order' ); ?></th>
+					<th scope="col"><?php esc_attr_e( 'Action', 'gts-translation-order' ); ?></th>
 				</tr>
 				</thead>
 				<tbody class="table-group-divider">
@@ -54,16 +55,17 @@ $filter = new PostFilter();
 					<div class="tablenav bottom">
 						<div class="alignleft actions bulkactions">
 							<button type="button" class="btn btn-primary btn-sm">
-								<?php esc_attr_e( 'Add to Cart', 'gts_translation_order' ); ?>
+								<?php esc_attr_e( 'Add to Cart', 'gts-translation-order' ); ?>
 							</button>
 						</div>
 					</div>
 				</caption>
 			</table>
-			<nav aria-label="<?php esc_attr_e( 'Pagination', 'gts_translation_order' ); ?>">
+			<?php // @todo Make pagination working. ?>
+			<nav aria-label="<?php esc_attr_e( 'Pagination', 'gts-translation-order' ); ?>">
 				<ul class="pagination">
 					<li class="page-item disabled">
-						<a class="page-link">Previous</a>
+						<a class="page-link"><?php esc_html_e( 'Previous', 'gts-translation-order' ); ?></a>
 					</li>
 					<li class="page-item"><a class="page-link" href="#">1</a></li>
 					<li class="page-item active" aria-current="page">
@@ -71,7 +73,7 @@ $filter = new PostFilter();
 					</li>
 					<li class="page-item"><a class="page-link" href="#">3</a></li>
 					<li class="page-item">
-						<a class="page-link" href="#">Next</a>
+						<a class="page-link" href="#"><?php esc_html_e( 'Next', 'gts-translation-order' ); ?></a>
 					</li>
 				</ul>
 			</nav>

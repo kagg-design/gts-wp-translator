@@ -1,36 +1,45 @@
 {
-    "name": "iwp/gts-translation-order",
-    "type": "wordpress-plugin",
-    "description": "GTS Translation Order",
-    "license": "GPL-2.0-only",
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "autoload": {
-        "psr-4": {
-            "GTS\\GTSTranslationOrder\\": "src/php"
-        }
+  "name": "gts/gts-translation-order",
+  "description": "GTS Translation Order",
+  "license": "GPL-2.0-only",
+  "keywords": [
+    "translation",
+    "order",
+    "GTS"
+  ],
+  "homepage": "https://www.gts-translation.com/",
+  "type": "wordpress-plugin",
+  "authors": [
+    {
+      "name": "AlexL",
+      "email": "iwpdev@outlook.com",
+      "homepage": "https://i-wp-dev.com/"
     },
-    "authors": [
-        {
-            "name": "AlexL",
-            "email": "iwpdev@outlook.com",
-            "homepage": "https://i-wp-dev.com/"
-        },
-        {
-            "name": "KAGG Design",
-            "email": "info@kagg.eu",
-            "homepage": "https://kagg.eu/en/"
-        }
-    ],
-    "require": {
-        "twbs/bootstrap-icons": "^1.8"
-    },
-    "require-dev": {
-        "roave/security-advisories": "dev-latest",
-        "squizlabs/php_codesniffer": "^3.6",
-        "phpcompatibility/php-compatibility": "^9.3",
-        "phpcompatibility/phpcompatibility-wp": "^2.1",
-        "wp-coding-standards/wpcs": "^2.3",
-        "php-coveralls/php-coveralls": "^2.4"
+    {
+      "name": "KAGG Design",
+      "email": "info@kagg.eu",
+      "homepage": "https://kagg.eu/en/"
     }
+  ],
+  "support": {
+    "issues": "https://www.gts-translation.com/"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "twbs/bootstrap-icons": "^1.8"
+  },
+  "require-dev": {
+    "roave/security-advisories": "dev-latest",
+    "squizlabs/php_codesniffer": "^3.6",
+    "phpcompatibility/php-compatibility": "^9.3",
+    "phpcompatibility/phpcompatibility-wp": "^2.1",
+    "wp-coding-standards/wpcs": "^2.3",
+    "php-coveralls/php-coveralls": "^2.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "GTS\\TranslationOrder\\": "src/php"
+    }
+  }
 }

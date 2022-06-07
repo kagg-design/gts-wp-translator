@@ -2,10 +2,10 @@
 /**
  * Translation Cart.
  *
- * @package GTS\GTSTranslationOrder\Cart
+ * @package gts/translation-order
  */
 
-namespace GTS\GTSTranslationOrder\Cart;
+namespace GTS\TranslationOrder\Cart;
 
 /**
  * TranslationCart class file
@@ -41,16 +41,18 @@ class TranslationCart {
 	 * TranslationCart construct.
 	 */
 	public function __construct() {
+		// @todo Get it from GTS site and store in transient.
 		$this->get_language_list();
 	}
 
 	/**
 	 * Init language list.
 	 *
-	 * @return false|void
+	 * @return void
 	 */
 	private function get_language_list(): void {
-		$request = file_get_contents( TRANSLATION_ORDER_PATH . '/languages/languages.json' );
+		// @todo Get it from GTS site and store in transient.
+		$request = file_get_contents( GTS_TRANSLATION_ORDER_PATH . '/languages/languages.json' );
 
 		$data = json_decode( $request );
 
@@ -173,7 +175,7 @@ class TranslationCart {
 								type="button"
 								class="btn btn-primary"
 								id="save-target-language">
-							<?php esc_attr_e( 'Save', 'gts_translation_order' ); ?>
+							<?php esc_attr_e( 'Save', 'gts-translation-order' ); ?>
 						</button>
 					</div>
 				</div>
