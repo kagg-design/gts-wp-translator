@@ -57,7 +57,7 @@ class Main {
 		add_action( 'plugins_loaded', [ $this, 'init_text_domain' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_scripts' ] );
 		add_action( 'admin_menu', [ $this, 'menu_page' ] );
-		add_action( 'init', [ $this, 'create_table_order_table' ] );
+		add_action( 'init', [ $this, 'create_order_table' ] );
 	}
 
 	/**
@@ -137,7 +137,7 @@ class Main {
 	 *
 	 * @return void
 	 */
-	public function create_table_order_table(): void {
+	public function create_order_table(): void {
 		global $wpdb;
 
 		$table = get_option( 'gts_order_table_create' );
