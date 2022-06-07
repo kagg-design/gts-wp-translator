@@ -7,7 +7,14 @@
 
 use GTS\TranslationOrder\Filter\PostFilter;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	// @codeCoverageIgnoreStart
+	exit;
+	// @codeCoverageIgnoreEnd
+}
+
 $filter = new PostFilter();
+
 ?>
 <div class="container" id="gts-translation-order">
 	<div class="row">

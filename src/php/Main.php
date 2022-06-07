@@ -128,7 +128,7 @@ class Main {
 	 *
 	 * @return void
 	 */
-	public function output_translation_cart(): void {
+	public function show_translation_cart(): void {
 		include GTS_TRANSLATION_ORDER_PATH . '/template/translation-cart-page.php';
 	}
 

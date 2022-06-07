@@ -158,12 +158,12 @@ class PostFilter {
 
 		foreach ( $posts as $post ) {
 			$title = $post->post_title;
-			$title = $title ?: '(no title)';
+			$title = $title ?: __( '(no title)', 'gts-translation-order' );
 			$id    = "gts_to_translate-$post->id";
 			$name  = "gts_to_translate[$post->id]";
 
 			?>
-			<tr class="foo">
+			<tr>
 				<th scope="row">
 					<input
 							type="checkbox"
@@ -197,7 +197,7 @@ class PostFilter {
 		$post_types = [ $post_type ];
 
 		if ( null === $post_type || 'null' === $post_type ) {
-			$post_types[] = $this->get_post_types_array();
+			$post_types = $this->get_post_types_array();
 		}
 
 		$slq_post_type = $this->prepare_in( $post_types );

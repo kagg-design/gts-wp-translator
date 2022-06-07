@@ -7,9 +7,15 @@
 
 use GTS\TranslationOrder\Cart\TranslationCart;
 
-$cart = new TranslationCart();
-?>
+if ( ! defined( 'ABSPATH' ) ) {
+	// @codeCoverageIgnoreStart
+	exit;
+	// @codeCoverageIgnoreEnd
+}
 
+$cart = new TranslationCart();
+
+?>
 <div class="container">
 	<div class="row">
 		<div class="col-auto">
@@ -81,4 +87,5 @@ $cart = new TranslationCart();
 	</div>
 </div>
 <?php
+
 $cart->show_pop_up_language();
