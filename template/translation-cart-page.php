@@ -25,9 +25,6 @@ $cart = new TranslationCart();
 				<thead>
 				<tr>
 					<th scope="col">
-						<input type="checkbox" name="gts_to_all_page" id="gts_to_all_page">
-					</th>
-					<th scope="col">
 						<?php esc_attr_e( 'Title', 'gts_translation_order' ); ?>
 					</th>
 					<th scope="col"><?php esc_attr_e( 'Type', 'gts_translation_order' ); ?></th>
@@ -37,11 +34,6 @@ $cart = new TranslationCart();
 				</thead>
 				<tbody class="table-group-divider">
 				<tr>
-					<th scope="row">
-						<input
-								type="checkbox" name="gts_to_translate[]"
-								id="gts_to_translate-">
-					</th>
 					<td>English Translation Services</td>
 					<td>Page</td>
 					<td>$300</td>
@@ -50,11 +42,6 @@ $cart = new TranslationCart();
 					</td>
 				</tr>
 				<tr>
-					<th scope="row">
-						<input
-								type="checkbox" name="gts_to_translate[]"
-								id="gts_to_translate-">
-					</th>
 					<td>English Translation Services</td>
 					<td>Page</td>
 					<td>$300</td>
@@ -63,11 +50,6 @@ $cart = new TranslationCart();
 					</td>
 				</tr>
 				<tr>
-					<th scope="row">
-						<input
-								type="checkbox" name="gts_to_translate[]"
-								id="gts_to_translate-">
-					</th>
 					<td>English Translation Services</td>
 					<td>Page</td>
 					<td>$300</td>
