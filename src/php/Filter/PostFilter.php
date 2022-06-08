@@ -163,8 +163,8 @@ class PostFilter {
 		$filter_params = $this->get_cookie();
 		if ( ! isset( $filter_params->post_type ) ) {
 			$filter_params = (object) [
-				'post_type'      => 'null',
-				'search' => '',
+				'post_type' => 'null',
+				'search'    => '',
 			];
 		}
 		$limit = self::LIMIT_OUTPUT;
