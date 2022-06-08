@@ -8,7 +8,8 @@
 namespace GTS\TranslationOrder;
 
 use GTS\TranslationOrder\Filter\PostFilter;
-use GTS\TranslationOrder\Pages\TranslationOrder;
+use GTS\TranslationOrder\Pages\Cart;
+use GTS\TranslationOrder\Pages\Order;
 
 /**
  * PluginInit class file.
@@ -33,7 +34,14 @@ class Main {
 		'translation-order_page_' . self::GTS_SUB_MENU_CART_SLUG,
 	];
 
-	public $translation_order;
+	/**
+	 * Translation Order page.
+	 *
+	 * @var Order Translation Order.
+	 */
+	public Order $translation_order;
+
+	public $translation_cart;
 
 	/**
 	 * Filter class.
@@ -77,7 +85,8 @@ class Main {
 		add_action( 'admin_menu', [ $this, 'menu_page' ] );
 		add_action( 'init', [ $this, 'create_order_table' ] );
 
-		$this->translation_order = new TranslationOrder( $this->filter );
+		$this->translation_order = new Order( $this->filter );
+		$this->translation_cart = new Cart();
 	}
 
 	/**
@@ -131,7 +140,7 @@ class Main {
 			__( 'Translation Cart', 'gts-translation-order' ),
 			'edit_others_posts',
 			self::GTS_SUB_MENU_CART_SLUG,
-			[ $this, 'show_translation_cart' ]
+			[ $this->translation_cart, 'show_translation_cart' ]
 		);
 
 	}

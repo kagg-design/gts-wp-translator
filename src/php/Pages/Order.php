@@ -12,7 +12,7 @@ use GTS\TranslationOrder\Filter\PostFilter;
 /**
  * TranslationOrder class file.
  */
-class TranslationOrder {
+class Order {
 
 	/**
 	 * Post filter class.
@@ -29,6 +29,7 @@ class TranslationOrder {
 	 */
 	public function __construct( PostFilter $filter ) {
 		$this->filter = $filter;
+		$this->get_language_list();
 
 		$this->init();
 	}
@@ -40,6 +41,20 @@ class TranslationOrder {
 	 */
 	public function init(): void {
 
+	}
+
+	/**
+	 * Init language list.
+	 *
+	 * @return void
+	 */
+	private function get_language_list(): void {
+		// @todo Get it from GTS site and store in transient.
+		$request = file_get_contents( GTS_TRANSLATION_ORDER_PATH . '/languages/languages.json' );
+
+		$data = json_decode( $request );
+
+		$this->language_list = $data;
 	}
 
 	/**

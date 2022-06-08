@@ -81,15 +81,15 @@ class PostFilter {
 	 * @return void
 	 */
 	public function show_search_field(): void {
-		$searach = $this->get_cookie()->search ?? '';
+		$search = $this->get_cookie()->search ?? '';
 		?>
-		<label for="gts_to_search"></label>
+		<label for="gts_to_search" class="hidden"></label>
 		<input
 				type="text"
 				class="form-control"
 				id="gts_to_search"
 				name="gts_to_search"
-				value="<?php echo esc_html( $searach ); ?>"
+				value="<?php echo esc_html( $search ); ?>"
 				placeholder="Search to title">
 		<?php
 	}
