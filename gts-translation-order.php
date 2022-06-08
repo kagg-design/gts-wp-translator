@@ -11,7 +11,7 @@
  * Plugin URI: https://www.gts-translation.com/
  * Description: Make a Translation Order to the GTS site.
  * Version: 0.0.1
- * Author: ALex Lavigin, KAGG Design
+ * Author: ALex Lavyhin, KAGG Design
  * Author URI: https://kagg.eu/
  * License: GPL2
  *

@@ -29,31 +29,12 @@ class PostFilter {
 	/**
 	 * Transient name.
 	 */
-	private const TRANSIENT_NAME = 'gts_post_filter';
-
-	/**
-	 * Selected post type.
-	 *
-	 * @var string|mixed
-	 */
-	private string $post_type_select;
-
-	/**
-	 * Search string.
-	 *
-	 * @var string|mixed
-	 */
-	private string $search;
+	private const COOKIE_NAME = 'gts_post_filter';
 
 	/**
 	 * PostFilter construct.
 	 */
 	public function __construct() {
-		// @todo Replace transient by cookie.
-		$params                 = get_transient( self::TRANSIENT_NAME ) ?? '';
-		$this->post_type_select = $params['post_type'] ?? 'null';
-		$this->search           = $params['search'] ?? '';
-
 		$this->init();
 	}
 
@@ -81,12 +62,12 @@ class PostFilter {
 	 * @return void
 	 */
 	public function show_post_types_select(): void {
-		$post_type_select = get_transient( self::TRANSIENT_NAME );
+		$post_type_select = $this->get_cookie();
 		?>
 		<select class="form-select" id="gts_to_post_type_select" aria-label="Post Type" name="gts_to_post_type_select">
 			<option value="null" selected><?php esc_html_e( 'Select post type', 'gts-translation-order' ); ?></option>
 			<?php foreach ( $this->get_post_types_array() as $type ) : ?>
-				<option value="<?php echo esc_attr( $type ); ?>" <?php echo isset( $post_type_select['post_type'] ) ? selected( $post_type_select['post_type'], $type, false ) : ''; ?>>
+				<option value="<?php echo esc_attr( $type ); ?>" <?php echo isset( $post_type_select->post_type ) ? selected( $post_type_select->post_type, $type, false ) : ''; ?>>
 					<?php echo esc_attr( $type ); ?>
 				</option>
 			<?php endforeach; ?>
@@ -100,6 +81,7 @@ class PostFilter {
 	 * @return void
 	 */
 	public function show_search_field(): void {
+		$searach = $this->get_cookie()->search ?? '';
 		?>
 		<label for="gts_to_search"></label>
 		<input
@@ -107,7 +89,7 @@ class PostFilter {
 				class="form-control"
 				id="gts_to_search"
 				name="gts_to_search"
-				value="<?php echo esc_html( $this->search ); ?>"
+				value="<?php echo esc_html( $searach ); ?>"
 				placeholder="Search to title">
 		<?php
 	}
@@ -134,17 +116,12 @@ class PostFilter {
 		$post_type = ! empty( $_POST['gts_to_post_type_select'] ) ? filter_var( wp_unslash( $_POST['gts_to_post_type_select'] ), FILTER_SANITIZE_STRING ) : '';
 		$search    = ! empty( $_POST['gts_to_search'] ) ? filter_var( wp_unslash( $_POST['gts_to_search'] ), FILTER_SANITIZE_STRING ) : '';
 
-		$old_transient = get_transient( self::TRANSIENT_NAME );
-		if ( $old_transient ) {
-			delete_transient( self::TRANSIENT_NAME );
-		}
-
 		$param = [
 			'post_type' => $post_type,
 			'search'    => $search,
 		];
 
-		set_transient( self::TRANSIENT_NAME, $param, HOUR_IN_SECONDS );
+		$this->set_cookie( $param );
 	}
 
 
@@ -154,7 +131,9 @@ class PostFilter {
 	 * @return void
 	 */
 	public function show_table(): void {
-		$posts = $this->get_pots_by_post_type( $this->post_type_select, $this->search, 24, 0 )['posts'];
+
+		$filter_params = $this->get_cookie();
+		$posts         = $this->get_pots_by_post_type( $filter_params->post_type, $filter_params->search, 24, 0 )['posts'];
 
 		foreach ( $posts as $post ) {
 			$title = $post->post_title;
@@ -219,7 +198,6 @@ class PostFilter {
 			)
 		);
 
-		// @todo Remove or use it.
 		$rows_found = $wpdb->get_results( 'SELECT FOUND_ROWS();', ARRAY_N );
 		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
@@ -263,5 +241,36 @@ class PostFilter {
 		}
 
 		return $prepared_in;
+	}
+
+	/**
+	 * Set cookie.
+	 *
+	 * @param array|string|int $values Value.
+	 *
+	 * @return void
+	 */
+	private function set_cookie( $values ): void {
+
+		if ( is_array( $values ) ) {
+			$values = wp_json_encode( $values, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
+		}
+
+		setcookie( self::COOKIE_NAME, $values, strtotime( '+30 days' ), COOKIEPATH, COOKIE_DOMAIN );
+
+		$_COOKIE[ self::COOKIE_NAME ] = $values;
+	}
+
+	/**
+	 * Get cookie filter params.
+	 *
+	 * @return object
+	 */
+	private function get_cookie(): object {
+		if ( isset( $_COOKIE[ self::COOKIE_NAME ] ) ) {
+			return (object) json_decode( filter_var( wp_unslash( $_COOKIE[ self::COOKIE_NAME ] ) ) );
+		}
+
+		return (object) null;
 	}
 }

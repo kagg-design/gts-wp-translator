@@ -7,6 +7,9 @@
 
 namespace GTS\TranslationOrder;
 
+use GTS\TranslationOrder\Filter\PostFilter;
+use GTS\TranslationOrder\Pages\TranslationOrder;
+
 /**
  * PluginInit class file.
  */
@@ -22,16 +25,31 @@ class Main {
 	 */
 	public const GTS_SUB_MENU_CART_SLUG = 'gts_translation_cart';
 
+	/**
+	 * Page Menu slugs.
+	 */
 	private const GTS_PAGES_MENU_SLUGS = [
 		'toplevel_page_' . self::GTS_MENU_SLUG,
 		'translation-order_page_' . self::GTS_SUB_MENU_CART_SLUG,
 	];
 
+	public $translation_order;
+
+	/**
+	 * Filter class.
+	 *
+	 * @var PostFilter
+	 */
+	private PostFilter $filter;
+
 	/**
 	 * PluginInit construct.
 	 */
 	public function __construct() {
+		$this->filter = new PostFilter();
+
 		$this->init();
+
 	}
 
 	/**
@@ -58,6 +76,8 @@ class Main {
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_scripts' ] );
 		add_action( 'admin_menu', [ $this, 'menu_page' ] );
 		add_action( 'init', [ $this, 'create_order_table' ] );
+
+		$this->translation_order = new TranslationOrder( $this->filter );
 	}
 
 	/**
@@ -81,8 +101,9 @@ class Main {
 			wp_enqueue_script( 'bootstrap', '//cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js', [ 'jquery' ], '5.2.0', true );
 			wp_enqueue_style( 'bootstrap', '//cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css', '', '5.2.0' );
 			wp_enqueue_style( 'bootstrap-icon', GTS_TRANSLATION_ORDER_URL . '/vendor/twbs/bootstrap-icons/font/bootstrap-icons.css', '', '1.8.0' );
-			wp_enqueue_style( 'admin-style', GTS_TRANSLATION_ORDER_URL . '/assets/css/admin/style.css', '', GTS_TRANSLATION_ORDER_VERSION );
 		}
+
+		wp_enqueue_style( 'admin-style', GTS_TRANSLATION_ORDER_URL . '/assets/css/admin/style.css', '', GTS_TRANSLATION_ORDER_VERSION );
 
 		wp_enqueue_script( 'main', GTS_TRANSLATION_ORDER_URL . '/assets/js/admin/main.js', [ 'jquery' ], GTS_TRANSLATION_ORDER_VERSION, true );
 	}
@@ -93,12 +114,13 @@ class Main {
 	 * @return void
 	 */
 	public function menu_page(): void {
+
 		add_menu_page(
 			__( 'Translation Order', 'gts-translation-order' ),
 			__( 'Translation Order', 'gts-translation-order' ),
 			'edit_others_posts',
 			self::GTS_MENU_SLUG,
-			[ $this, 'show_translation_page' ],
+			[ $this->translation_order, 'show_translation_page' ],
 			GTS_TRANSLATION_ORDER_URL . '/assets/icons/language-solid.svg',
 			27
 		);
@@ -112,15 +134,6 @@ class Main {
 			[ $this, 'show_translation_cart' ]
 		);
 
-	}
-
-	/**
-	 * Show template translation order.
-	 *
-	 * @return void
-	 */
-	public function show_translation_page(): void {
-		include GTS_TRANSLATION_ORDER_PATH . '/template/translation-order-page.php';
 	}
 
 	/**
