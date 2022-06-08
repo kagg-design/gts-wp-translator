@@ -8,6 +8,7 @@
 namespace GTS\TranslationOrder\Filter;
 
 use GTS\TranslationOrder\Admin\AdminNotice;
+use GTS\TranslationOrder\Pagination;
 use wpdb;
 
 /**
@@ -32,6 +33,20 @@ class PostFilter {
 	private const COOKIE_NAME = 'gts_post_filter';
 
 	/**
+	 * Limit output posts.
+	 */
+	private const LIMIT_OUTPUT = 50;
+
+	/**
+	 * Page number.
+	 *
+	 * @var int $page Page number.
+	 */
+	private int $page;
+
+	public $pagintion;
+
+	/**
 	 * PostFilter construct.
 	 */
 	public function __construct() {
@@ -45,6 +60,14 @@ class PostFilter {
 	 */
 	private function init(): void {
 		add_action( 'init', [ $this, 'filter' ] );
+
+		$this->page = 1;
+
+		$paging = filter_input( INPUT_GET, 'paging', FILTER_VALIDATE_INT );
+
+		if ( $paging >= 1 ) {
+			$this->page = $paging;
+		}
 	}
 
 	/**
@@ -133,9 +156,35 @@ class PostFilter {
 	public function show_table(): void {
 
 		$filter_params = $this->get_cookie();
-		$posts         = $this->get_pots_by_post_type( $filter_params->post_type, $filter_params->search, 24, 0 )['posts'];
+		$limit         = self::LIMIT_OUTPUT;
+		$posts         = $this->get_pots_by_post_type( $filter_params->post_type, $filter_params->search, ( $this->page - 1 ) * $limit, $limit );
 
-		foreach ( $posts as $post ) {
+		$curr_page_url = "admin.php?" . $_SERVER['QUERY_STRING'];
+
+		$count = $posts['rows_found'];
+
+		if ( $count > 0 ) {
+			$p = new Pagination();
+			$p->items( $count );
+			$p->limit( $limit ); // Limit entries per page.
+			$p->target( $curr_page_url );
+			$p->currentPage( $this->page ); // Gets and validates the current page.
+			$p->parameterName( 'paging' );
+			$p->adjacents( 1 ); //No. of page away from the current page.
+			$p->calculate(); // Calculates what to show.
+
+			$this->pagintion = $p;
+		} else {
+			?>
+			<tr>
+				<td colspan="4">
+					<?php esc_html_e( 'Post not found', 'gts-translation-order' ); ?>
+				</td>
+			</tr>
+			<?php
+		}
+
+		foreach ( $posts['posts'] as $post ) {
 			$title = $post->post_title;
 			$title = $title ?: __( '(no title)', 'gts-translation-order' );
 			$id    = "gts_to_translate-$post->id";
@@ -187,7 +236,7 @@ class PostFilter {
 			$sql .= "AND `post_title` LIKE '$search'";
 		}
 
-		$sql .= 'LIMIT %d OFFSET %d';
+		$sql .= 'LIMIT %d, %d';
 
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		$result = $wpdb->get_results(

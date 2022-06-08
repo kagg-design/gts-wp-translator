@@ -116,37 +116,10 @@ class Order {
 							</div>
 						</caption>
 					</table>
-					<?php $this->show_pagination(); ?>
+					<?php $this->filter->pagintion->show(); ?>
 				</div>
 			</div>
 		</div>
-		<?php
-	}
-
-	/**
-	 * Show Pagination.
-	 *
-	 * @return void
-	 */
-	private function show_pagination():void {
-		// @todo Make pagination working.
-		?>
-		<nav aria-label="<?php esc_attr_e( 'Pagination', 'gts-translation-order' ); ?>">
-			<ul class="pagination">
-				<li class="page-item disabled">
-					<a class="page-link"><?php esc_html_e( 'Previous', 'gts-translation-order' ); ?></a>
-				</li>
-				<li class="page-item"><a class="page-link" href="#">1</a></li>
-				<li class="page-item active" aria-current="page">
-					<a class="page-link" href="#">2</a>
-				</li>
-				<li class="page-item"><a class="page-link" href="#">3</a></li>
-				<li class="page-item">
-					<a class="page-link"
-					   href="#"><?php esc_html_e( 'Next', 'gts-translation-order' ); ?></a>
-				</li>
-			</ul>
-		</nav>
 		<?php
 	}
 }
