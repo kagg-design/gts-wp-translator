@@ -44,6 +44,11 @@ class PostFilter {
 	 */
 	private int $page;
 
+	/**
+	 * Pagination Class.
+	 *
+	 * @var Pagination $pagintion pagination.
+	 */
 	public $pagintion;
 
 	/**
@@ -156,10 +161,16 @@ class PostFilter {
 	public function show_table(): void {
 
 		$filter_params = $this->get_cookie();
-		$limit         = self::LIMIT_OUTPUT;
-		$posts         = $this->get_pots_by_post_type( $filter_params->post_type, $filter_params->search, ( $this->page - 1 ) * $limit, $limit );
+		if ( ! isset( $filter_params->post_type ) ) {
+			$filter_params = (object) [
+				'post_type'      => 'null',
+				'search' => '',
+			];
+		}
+		$limit = self::LIMIT_OUTPUT;
+		$posts = $this->get_pots_by_post_type( $filter_params->post_type, $filter_params->search, ( $this->page - 1 ) * $limit, $limit );
 
-		$curr_page_url = "admin.php?" . $_SERVER['QUERY_STRING'];
+		$curr_page_url = isset( $_SERVER['QUERY_STRING'] ) ? 'admin.php?' . filter_var( wp_unslash( $_SERVER['QUERY_STRING'] ), FILTER_SANITIZE_STRING ) : '';
 
 		$count = $posts['rows_found'];
 
@@ -170,7 +181,7 @@ class PostFilter {
 			$p->target( $curr_page_url );
 			$p->currentPage( $this->page ); // Gets and validates the current page.
 			$p->parameterName( 'paging' );
-			$p->adjacents( 1 ); //No. of page away from the current page.
+			$p->adjacents( 1 ); // No. of page away from the current page.
 			$p->calculate(); // Calculates what to show.
 
 			$this->pagintion = $p;
