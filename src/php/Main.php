@@ -10,6 +10,7 @@ namespace GTS\TranslationOrder;
 use GTS\TranslationOrder\Filter\PostFilter;
 use GTS\TranslationOrder\Pages\Cart;
 use GTS\TranslationOrder\Pages\Order;
+use GTS\TranslationOrder\Pages\Token;
 
 /**
  * PluginInit class file.
@@ -22,9 +23,14 @@ class Main {
 	public const GTS_MENU_SLUG = 'gts_translation_order';
 
 	/**
-	 * Sub menu slug.
+	 * Sub menu cart slug.
 	 */
 	public const GTS_SUB_MENU_CART_SLUG = 'gts_translation_cart';
+
+	/**
+	 * Sub menu token slug
+	 */
+	public const GTS_SUB_MENU_TOKEN_SLUG = 'gts_translation_token';
 
 	/**
 	 * Page Menu slugs.
@@ -32,6 +38,7 @@ class Main {
 	private const GTS_PAGES_MENU_SLUGS = [
 		'toplevel_page_' . self::GTS_MENU_SLUG,
 		'translation-order_page_' . self::GTS_SUB_MENU_CART_SLUG,
+		'translation-order_page_' . self::GTS_SUB_MENU_TOKEN_SLUG,
 	];
 
 	/**
@@ -41,7 +48,12 @@ class Main {
 	 */
 	public Order $translation_order;
 
-	public $translation_cart;
+	/**
+	 * Cart class.
+	 *
+	 * @var Cart $translation_cart Cart class.
+	 */
+	public Cart $translation_cart;
 
 	/**
 	 * Filter class.
@@ -49,6 +61,13 @@ class Main {
 	 * @var PostFilter
 	 */
 	private PostFilter $filter;
+
+	/**
+	 * Token class.
+	 *
+	 * @var Token $translation_token Token class
+	 */
+	public Token $translation_token;
 
 	/**
 	 * PluginInit construct.
@@ -86,7 +105,8 @@ class Main {
 		add_action( 'init', [ $this, 'create_order_table' ] );
 
 		$this->translation_order = new Order( $this->filter );
-		$this->translation_cart = new Cart();
+		$this->translation_cart  = new Cart();
+		$this->translation_token = new Token();
 	}
 
 	/**
@@ -141,6 +161,15 @@ class Main {
 			'edit_others_posts',
 			self::GTS_SUB_MENU_CART_SLUG,
 			[ $this->translation_cart, 'show_translation_cart' ]
+		);
+
+		add_submenu_page(
+			self::GTS_MENU_SLUG,
+			__( 'Token', 'gts-translation-order' ),
+			__( 'Token', 'gts-translation-order' ),
+			'edit_others_posts',
+			self::GTS_SUB_MENU_TOKEN_SLUG,
+			[ $this->translation_token, 'show_token_page' ]
 		);
 
 	}

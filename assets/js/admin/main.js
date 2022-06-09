@@ -1,9 +1,11 @@
 jQuery( document ).ready( function( $ ) {
-	const languageModal = new bootstrap.Modal( '#language-modal' );
+	if ( $( '#language-modal' ).length ) {
+		const languageModal = new bootstrap.Modal( '#language-modal' );
 
-	$( '#target-language' ).click( function() {
-		languageModal.show();
-	} );
+		$( '#target-language' ).click( function() {
+			languageModal.show();
+		} );
+	}
 
 	$( '#save-target-language' ).click( function( e ) {
 		e.preventDefault();
@@ -23,18 +25,20 @@ jQuery( document ).ready( function( $ ) {
 		languageModal.hide();
 	} );
 
-	/**
-	 * Get cookie by name.
-	 *
-	 * @param name
-	 * @returns {string|null}
-	 */
-	function getCookie( name ) {
-		function escape( s ) {
-			return s.replace( /([.*+?\^$(){}|\[\]\/\\])/g, '\\$1' );
+
+	let flag_view = false;
+
+	$( '#eye_btn' ).click( function( e ) {
+		if ( ! flag_view ) {
+			$( '#gts_token' ).attr( 'type', 'text' )
+			$( this ).find( 'i' ).removeClass( 'bi-eye-fill' )
+			$( this ).find( 'i' ).addClass( 'bi-eye-slash-fill' )
+		} else {
+			$( '#gts_token' ).attr( 'type', 'password' )
+			$( this ).find( 'i' ).removeClass( 'bi-eye-slash-fill' )
+			$( this ).find( 'i' ).addClass( 'bi-eye-fill' )
 		}
 
-		let match = document.cookie.match( RegExp( '(?:^|;\\s*)' + escape( name ) + '=([^;]*)' ) );
-		return match ? match[ 1 ] : null;
-	}
+		flag_view = ! flag_view;
+	} );
 } );

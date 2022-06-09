@@ -27,3 +27,7 @@
 .modal {
 	z-index: 9999;
 }
+
+#gts_token{
+	width: 450px;
+}

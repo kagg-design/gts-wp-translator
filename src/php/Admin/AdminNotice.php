@@ -48,6 +48,18 @@ class AdminNotice {
 	}
 
 	/**
+	 * Bad nonce error.
+	 *
+	 * @return void
+	 */
+	public static function empty_token(): void {
+		printf(
+			'<div id="pcs-php-nope" class="notice notice-error is-dismissible"><p>%s</p></div>',
+			esc_html__( 'Empty Token!', 'gts-translation-order' )
+		);
+	}
+
+	/**
 	 * Unknown error.
 	 */
 	public static function error(): void {
