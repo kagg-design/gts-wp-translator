@@ -7,14 +7,24 @@
 
 namespace GTS\TranslationOrder\Pages;
 
+use Exception;
 use GTS\TranslationOrder\Admin\AdminNotice;
+use GuzzleHttp\Client;
 
 /**
  * Token class file.
  */
 class Token {
 
+	/**
+	 * Token name.
+	 */
 	private const GTS_TOKEN_NAME = 'gts_translation_token';
+
+	/**
+	 * Debug mode.
+	 */
+	private const GTS_REST_DEBUG = true;
 
 	/**
 	 * Token Access.
@@ -24,11 +34,33 @@ class Token {
 	public string $token;
 
 	/**
+	 * Server URL.
+	 *
+	 * @var string
+	 */
+	private string $url_server;
+
+	/**
+	 * Http Client GuzzleHttp.
+	 *
+	 * @var Client
+	 */
+	private Client $client;
+
+	/**
 	 * Token construct.
 	 */
 	public function __construct() {
 		$this->token = get_option( self::GTS_TOKEN_NAME ) ?? '';
 		$this->init();
+
+		if ( self::GTS_REST_DEBUG ) {
+			$this->url_server = 'http://gts.docker.localhost:8080/wp-json/gts-translation-order/v1/';
+		} else {
+			$this->url_server = 'https://www.gts-translation.com/wp-json/gts-translation-order/v1/';
+		}
+
+		$this->client = new Client();
 	}
 
 	/**
@@ -91,9 +123,9 @@ class Token {
 	/**
 	 * Save Token.
 	 *
-	 * @return void
+	 * @return false
 	 */
-	public function save_token(): void {
+	public function save_token() {
 
 		if ( ! isset( $_POST['generate_token'] ) ) {
 			return;
@@ -117,6 +149,25 @@ class Token {
 
 			return;
 		}
+
+		try {
+			$response = $this->client->request(
+				'POST',
+				$this->url_server . 'add-token/',
+				[
+					'json' => [
+						'token'         => $token,
+						'reference_url' => get_bloginfo( 'url' ),
+						'ip_server'     => isset( $_SERVER['SERVER_ADDR'] ) ? filter_var( wp_unslash( $_SERVER['SERVER_ADDR'] ), FILTER_VALIDATE_IP ) : null,
+					],
+					[ 'debug' => true ],
+				]
+			);
+		} catch ( Exception $e ) {
+			return;
+		}
+
+		var_dump( $response->getBody() );
 
 		update_option( self::GTS_TOKEN_NAME, $token, 'no' );
 
