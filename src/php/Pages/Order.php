@@ -77,6 +77,13 @@ class Order {
 						<?php $this->filter->show_search_field(); ?>
 					</div>
 					<div class="col-auto">
+						<?php
+						$this->filter->show_select_language();
+						$this->show_pop_up_language();
+						?>
+
+					</div>
+					<div class="col-auto">
 						<input type="submit" name="gts_filter_submit" class="btn-sm btn btn-primary" value="Submit">
 					</div>
 					<?php wp_nonce_field( 'gts_post_type_filter', 'gts_post_type_filter_nonce', false ); ?>
@@ -96,6 +103,7 @@ class Order {
 							</th>
 							<th scope="col"><?php esc_attr_e( 'Type', 'gts-translation-order' ); ?></th>
 							<th scope="col"><?php esc_attr_e( 'Status', 'gts-translation-order' ); ?></th>
+							<th scope="col"><?php esc_attr_e( 'Cost', 'gts-translation-order' ); ?></th>
 							<th scope="col"><?php esc_attr_e( 'Action', 'gts-translation-order' ); ?></th>
 						</tr>
 						</thead>
@@ -117,6 +125,64 @@ class Order {
 						$this->filter->pagination->show();
 					}
 					?>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
+	/**
+	 * Show pop-up target language
+	 *
+	 * @return void
+	 */
+	private function show_pop_up_language(): void {
+		?>
+		<div class="modal modal-lg" tabindex="-1" id="language-modal">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="btn-close" data-bs-dismiss="modal"
+								aria-label="<?php esc_html_e( 'Close', 'gts-translation-order' ); ?>"></button>
+					</div>
+					<div class="modal-body">
+						<table class="table">
+							<tbody>
+							<?php
+							$i = 0;
+							echo '<tr>';
+							foreach ( $this->language_list as $lang ) {
+								$i ++;
+								?>
+								<td class="cell">
+									<input
+											type="checkbox" name="regi_target_language[]"
+											value="<?php echo esc_html( $lang->language_name ); ?>"
+											id="<?php echo esc_html( $lang->language_name ); ?>"
+											class="lang-checkbox"
+									/>
+									<label for="<?php echo esc_html( $lang->language_name ); ?>">
+										<?php echo esc_html( $lang->language_name ); ?>
+									</label>
+								</td>
+								<?php
+								if ( 3 === $i ) {
+									echo '</tr><tr>';
+									$i = 0;
+								}
+							}
+							echo '</tr>';
+							?>
+							</tbody>
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button
+								type="button"
+								class="btn btn-primary"
+								id="save-target-language">
+							<?php esc_attr_e( 'Save', 'gts-translation-order' ); ?>
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>

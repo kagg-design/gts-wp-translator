@@ -1,6 +1,7 @@
 jQuery( document ).ready( function( $ ) {
 	if ( $( '#language-modal' ).length ) {
-		const languageModal = new bootstrap.Modal( '#language-modal' );
+		console.log($( '#language-modal' ).length)
+		var languageModal = new bootstrap.Modal( '#language-modal' );
 
 		$( '#target-language' ).click( function() {
 			languageModal.show();

@@ -125,6 +125,23 @@ class PostFilter {
 	}
 
 	/**
+	 * Show Select current target language.
+	 *
+	 * @return void
+	 */
+	public function show_select_language(): void {
+		?>
+		<label for="target-language" class="hidden"></label>
+		<input
+				type="text"
+				class="form-control"
+				id="target-language"
+				placeholder="<?php esc_html_e( 'Select a target languages', 'gts-translation-order' ); ?>"
+				readonly>
+		<?php
+	}
+
+	/**
 	 * Filter form.
 	 *
 	 * @return void
@@ -191,7 +208,7 @@ class PostFilter {
 		} else {
 			?>
 			<tr>
-				<td colspan="5">
+				<td colspan="6">
 					<?php esc_html_e( 'Post not found', 'gts-translation-order' ); ?>
 				</td>
 			</tr>
@@ -216,6 +233,7 @@ class PostFilter {
 					<td><?php echo esc_html( $title ); ?></td>
 					<td><?php echo esc_html( $post->post_type ); ?></td>
 					<td><span class="badge bg-secondary">Not translated</span></td>
+					<td>$33</td>
 					<td>
 						<a href="#" class="plus"><i class="bi bi-plus-square"></i></a>
 					</td>

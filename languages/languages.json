@@ -1,294 +1,266 @@
 [
   {
-    "name": "afrikaans",
-    "display_name": "Afrikaans"
+    "language_name": "Afrikaans",
+    "active": "0"
   },
   {
-    "name": "albanian",
-    "display_name": "Albanian"
+    "language_name": "Arabic",
+    "active": "1"
   },
   {
-    "name": "arabic",
-    "display_name": "Arabic"
+    "language_name": "Bulgarian",
+    "active": "0"
   },
   {
-    "name": "armenian",
-    "display_name": "Armenian"
+    "language_name": "Chinese Simplified",
+    "active": "1"
   },
   {
-    "name": "azerbaijani",
-    "display_name": "Azerbaijani"
+    "language_name": "Chinese Traditional",
+    "active": "1"
   },
   {
-    "name": "belarussian",
-    "display_name": "Belarussian"
+    "language_name": "Croatian",
+    "active": "0"
   },
   {
-    "name": "bengali",
-    "display_name": "Bengali"
+    "language_name": "Czech",
+    "active": "1"
   },
   {
-    "name": "bosnian",
-    "display_name": "Bosnian"
+    "language_name": "Danish",
+    "active": "1"
   },
   {
-    "name": "bulgarian",
-    "display_name": "Bulgarian"
+    "language_name": "English",
+    "active": "1"
   },
   {
-    "name": "catalan",
-    "display_name": "Catalan"
+    "language_name": "Finnish",
+    "active": "1"
   },
   {
-    "name": "chinese-cantonese",
-    "display_name": "Chinese (Cantonese)"
+    "language_name": "Flemish",
+    "active": "0"
   },
   {
-    "name": "chinese-mandarin-simplified",
-    "display_name": "Chinese Mandarin Simplified"
+    "language_name": "French",
+    "active": "1"
   },
   {
-    "name": "chinese-mandarin-traditional",
-    "display_name": "Chinese Mandarin Traditional"
+    "language_name": "German",
+    "active": "1"
   },
   {
-    "name": "croatian",
-    "display_name": "Croatian"
+    "language_name": "Greek",
+    "active": "1"
   },
   {
-    "name": "czech",
-    "display_name": "Czech"
+    "language_name": "Hebrew",
+    "active": "1"
   },
   {
-    "name": "danish",
-    "display_name": "Danish"
+    "language_name": "Hindi",
+    "active": "0"
   },
   {
-    "name": "dutch",
-    "display_name": "Dutch"
+    "language_name": "Hungarian",
+    "active": "1"
   },
   {
-    "name": "english",
-    "display_name": "English"
+    "language_name": "Icelandic",
+    "active": "0"
   },
   {
-    "name": "estonian",
-    "display_name": "Estonian"
+    "language_name": "Indonesian",
+    "active": "1"
   },
   {
-    "name": "finnish",
-    "display_name": "Finnish"
+    "language_name": "Italian",
+    "active": "1"
   },
   {
-    "name": "flemish-belgian",
-    "display_name": "Flemish (Belgian)"
+    "language_name": "Japanese",
+    "active": "1"
   },
   {
-    "name": "french",
-    "display_name": "French"
+    "language_name": "Korean",
+    "active": "0"
   },
   {
-    "name": "french-canadian",
-    "display_name": "French (Canadian)"
+    "language_name": "Latvian",
+    "active": "0"
   },
   {
-    "name": "georgian",
-    "display_name": "Georgian"
+    "language_name": "Lithuanian",
+    "active": "0"
   },
   {
-    "name": "german",
-    "display_name": "German"
+    "language_name": "Malay",
+    "active": "1"
   },
   {
-    "name": "greek",
-    "display_name": "Greek"
+    "language_name": "Norwegian",
+    "active": "1"
   },
   {
-    "name": "gujarati",
-    "display_name": "Gujarati"
+    "language_name": "Polish",
+    "active": "1"
   },
   {
-    "name": "haitian-creole",
-    "display_name": "Haitian Creole"
+    "language_name": "Portuguese (Brazil)",
+    "active": "1"
   },
   {
-    "name": "hebrew",
-    "display_name": "Hebrew"
+    "language_name": "Portuguese (Portugal)",
+    "active": "1"
   },
   {
-    "name": "hindi",
-    "display_name": "Hindi"
+    "language_name": "Romanian",
+    "active": "1"
   },
   {
-    "name": "hungarian",
-    "display_name": "Hungarian"
+    "language_name": "Russian",
+    "active": "1"
   },
   {
-    "name": "icelandic",
-    "display_name": "Icelandic"
+    "language_name": "Serbian",
+    "active": "0"
   },
   {
-    "name": "indonesian",
-    "display_name": "Indonesian"
+    "language_name": "Slovak",
+    "active": "0"
   },
   {
-    "name": "irish-gaelic",
-    "display_name": "Irish Gaelic"
+    "language_name": "Slovenian (Slovene)",
+    "active": "0"
   },
   {
-    "name": "italian",
-    "display_name": "Italian"
+    "language_name": "Spanish (European)",
+    "active": "1"
   },
   {
-    "name": "japanese",
-    "display_name": "Japanese"
+    "language_name": "Spanish (Latin America)",
+    "active": "1"
   },
   {
-    "name": "kazakh",
-    "display_name": "Kazakh"
+    "language_name": "Swedish",
+    "active": "1"
   },
   {
-    "name": "khmer",
-    "display_name": "Khmer"
+    "language_name": "Tagalog",
+    "active": "0"
   },
   {
-    "name": "korean",
-    "display_name": "Korean"
+    "language_name": "Thai",
+    "active": "0"
   },
   {
-    "name": "kurdish",
-    "display_name": "Kurdish"
+    "language_name": "Turkish",
+    "active": "1"
   },
   {
-    "name": "latvian",
-    "display_name": "Latvian"
+    "language_name": "Ukrainian",
+    "active": "0"
   },
   {
-    "name": "lithuanian",
-    "display_name": "Lithuanian"
+    "language_name": "Vietnamese",
+    "active": "1"
   },
   {
-    "name": "macedonian",
-    "display_name": "Macedonian"
+    "language_name": "Catalan",
+    "active": "0"
   },
   {
-    "name": "malay",
-    "display_name": "Malay"
+    "language_name": "Dutch",
+    "active": "1"
   },
   {
-    "name": "marathi",
-    "display_name": "Marathi"
+    "language_name": "Estonian",
+    "active": "0"
   },
   {
-    "name": "mongolian",
-    "display_name": "Mongolian"
+    "language_name": "Hmong",
+    "active": "0"
   },
   {
-    "name": "nepali",
-    "display_name": "Nepali"
+    "language_name": "German (Swiss)",
+    "active": "0"
   },
   {
-    "name": "norwegian",
-    "display_name": "Norwegian"
+    "language_name": "Burmese",
+    "active": "0"
   },
   {
-    "name": "panjabi",
-    "display_name": "Panjabi"
+    "language_name": "Farsi",
+    "active": "0"
   },
   {
-    "name": "pashto",
-    "display_name": "Pashto"
+    "language_name": "Tigrinya",
+    "active": "0"
   },
   {
-    "name": "persian",
-    "display_name": "Persian"
+    "language_name": "Pashto",
+    "active": "0"
   },
   {
-    "name": "polish",
-    "display_name": "Polish"
+    "language_name": "Somali",
+    "active": "0"
   },
   {
-    "name": "portuguese-brazil",
-    "display_name": "Portuguese (Brazil)"
+    "language_name": "Cantonese Chinese",
+    "active": "0"
   },
   {
-    "name": "portuguese-portugal",
-    "display_name": "Portuguese (Portugal)"
+    "language_name": "Mandarin Chinese",
+    "active": "0"
   },
   {
-    "name": "romanian",
-    "display_name": "Romanian"
+    "language_name": "Georgian",
+    "active": "0"
   },
   {
-    "name": "russian",
-    "display_name": "Russian"
+    "language_name": "Urdu",
+    "active": "0"
   },
   {
-    "name": "scottish-gaelic",
-    "display_name": "Scottish Gaelic"
+    "language_name": "German (Austria)",
+    "active": "0"
   },
   {
-    "name": "serbian",
-    "display_name": "Serbian"
+    "language_name": "French Canadian",
+    "active": "0"
   },
   {
-    "name": "slovak",
-    "display_name": "Slovak"
+    "language_name": "Georgian",
+    "active": "0"
   },
   {
-    "name": "slovenian-slovene",
-    "display_name": "Slovenian (Slovene)"
+    "language_name": "Moldovan",
+    "active": "0"
   },
   {
-    "name": "spanish",
-    "display_name": "Spanish"
+    "language_name": "Macedonian",
+    "active": "0"
   },
   {
-    "name": "spanish-latin-america",
-    "display_name": "Spanish (Latin-America)"
+    "language_name": "Punjabi",
+    "active": "0"
   },
   {
-    "name": "swedish",
-    "display_name": "Swedish"
+    "language_name": "Bosnian",
+    "active": "0"
   },
   {
-    "name": "tagalog",
-    "display_name": "Tagalog"
+    "language_name": "Armenian",
+    "active": "1"
   },
   {
-    "name": "taiwanese",
-    "display_name": "Taiwanese"
+    "language_name": "Tamil",
+    "active": "0"
   },
   {
-    "name": "tamil",
-    "display_name": "Tamil"
-  },
-  {
-    "name": "thai",
-    "display_name": "Thai"
-  },
-  {
-    "name": "turkish",
-    "display_name": "Turkish"
-  },
-  {
-    "name": "ukrainian",
-    "display_name": "Ukrainian"
-  },
-  {
-    "name": "urdu",
-    "display_name": "Urdu"
-  },
-  {
-    "name": "uzbek",
-    "display_name": "Uzbek"
-  },
-  {
-    "name": "vietnamese",
-    "display_name": "Vietnamese"
-  },
-  {
-    "name": "yiddish",
-    "display_name": "Yiddish"
+    "language_name": "English (UK)",
+    "active": "0"
   }
 ]

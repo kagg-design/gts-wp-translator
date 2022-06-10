@@ -55,7 +55,7 @@ class Token {
 		$this->init();
 
 		if ( self::GTS_REST_DEBUG ) {
-			$this->url_server = 'http://gts.docker.localhost:8080/wp-json/gts-translation-order/v1/';
+			$this->url_server = 'https://stages.i-wp-dev.com/wp-json/gts-translation-order/v1/';
 		} else {
 			$this->url_server = 'https://www.gts-translation.com/wp-json/gts-translation-order/v1/';
 		}
@@ -123,9 +123,9 @@ class Token {
 	/**
 	 * Save Token.
 	 *
-	 * @return false
+	 * @return void
 	 */
-	public function save_token() {
+	public function save_token(): void {
 
 		if ( ! isset( $_POST['generate_token'] ) ) {
 			return;
@@ -150,26 +150,30 @@ class Token {
 			return;
 		}
 
-		try {
-			$response = $this->client->request(
-				'POST',
-				$this->url_server . 'add-token/',
-				[
-					'json' => [
-						'token'         => $token,
-						'reference_url' => get_bloginfo( 'url' ),
-						'ip_server'     => isset( $_SERVER['SERVER_ADDR'] ) ? filter_var( wp_unslash( $_SERVER['SERVER_ADDR'] ), FILTER_VALIDATE_IP ) : null,
-					],
-					[ 'debug' => true ],
-				]
-			);
-		} catch ( Exception $e ) {
+		$response = wp_remote_post(
+			$this->url_server . 'add-token',
+			[
+				'body' => [
+					'token'         => $token,
+					'reference_url' => get_bloginfo( 'url' ),
+					'ip_server'     => isset( $_SERVER['SERVER_ADDR'] ) ? filter_var( wp_unslash( $_SERVER['SERVER_ADDR'] ), FILTER_VALIDATE_IP ) : null,
+				],
+			]
+		);
+
+		$response = json_decode( $response['body'] );
+
+		if ( isset( $response->code ) ) {
+			$error               = new AdminNotice();
+			$error->eror_massage = $response->message;
+			add_action( 'admin_notices', [ $error, 'api_error' ] );
+
 			return;
 		}
 
-		var_dump( $response->getBody() );
-
 		update_option( self::GTS_TOKEN_NAME, $token, 'no' );
+
+		add_action( 'admin_notices', [ AdminNotice::class, 'token_success' ] );
 
 		$this->token = $token;
 

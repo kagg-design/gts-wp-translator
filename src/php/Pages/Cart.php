@@ -18,6 +18,9 @@ class Cart {
 	 */
 	public array $language_list;
 
+	/**
+	 * Industry.
+	 */
 	public const GTS_INDUSTRY_LIST = [
 		'Academic',
 		'Chemical (MSDS)',
@@ -163,6 +166,7 @@ class Cart {
 				<label for="gts_client_email" class="form-label">
 					<?php esc_html_e( 'Email address', 'gts-translation-order' ); ?>
 				</label>
+				<?php /** @todo Заменить на емеил карент юзера */ ?>
 				<input
 						type="email"
 						name="gts_client_email"
@@ -181,8 +185,8 @@ class Cart {
 					<option value="0"
 							selected><?php esc_html_e( 'Select Languages', 'gts-translation-order' ); ?></option>
 					<?php foreach ( $this->language_list as $item ) : ?>
-						<option value="<?php echo esc_attr( $item->name ); ?>">
-							<?php echo esc_html( $item->display_name ); ?>
+						<option value="<?php echo esc_attr( $item->language_name ); ?>">
+							<?php echo esc_html( $item->language_name ); ?>
 						</option>
 					<?php endforeach; ?>
 				</select>
@@ -245,12 +249,12 @@ class Cart {
 								<td class="cell">
 									<input
 											type="checkbox" name="regi_target_language[]"
-											value="<?php echo esc_html( $lang->name ); ?>"
-											id="<?php echo esc_html( $lang->name ); ?>"
+											value="<?php echo esc_html( $lang->language_name ); ?>"
+											id="<?php echo esc_html( $lang->language_name ); ?>"
 											class="lang-checkbox"
 									/>
-									<label for="<?php echo esc_html( $lang->name ); ?>">
-										<?php echo esc_html( $lang->display_name ); ?>
+									<label for="<?php echo esc_html( $lang->language_name ); ?>">
+										<?php echo esc_html( $lang->language_name ); ?>
 									</label>
 								</td>
 								<?php
