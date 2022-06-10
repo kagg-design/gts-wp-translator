@@ -3,7 +3,7 @@
  * GTS Translation Order
  *
  * @package           gts/translation-order
- * @author            ALex Lavigin, KAGG Design
+ * @author            ALex Lavyhin, KAGG Design
  * @license           GPL-2.0-or-later
  * @wordpress-plugin
  *
