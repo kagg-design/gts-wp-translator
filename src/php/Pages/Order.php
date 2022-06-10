@@ -10,7 +10,7 @@ namespace GTS\TranslationOrder\Pages;
 use GTS\TranslationOrder\Filter\PostFilter;
 
 /**
- * TranslationOrder class file.
+ * Order class file.
  */
 class Order {
 
@@ -19,7 +19,14 @@ class Order {
 	 *
 	 * @var PostFilter
 	 */
-	public PostFilter $filter;
+	private PostFilter $filter;
+
+	/**
+	 * Language list.
+	 *
+	 * @var array
+	 */
+	private $language_list;
 
 
 	/**
@@ -30,17 +37,6 @@ class Order {
 	public function __construct( PostFilter $filter ) {
 		$this->filter = $filter;
 		$this->get_language_list();
-
-		$this->init();
-	}
-
-	/**
-	 * Init hooks.
-	 *
-	 * @return void
-	 */
-	public function init(): void {
-
 	}
 
 	/**
@@ -116,7 +112,7 @@ class Order {
 							</div>
 						</caption>
 					</table>
-					<?php $this->filter->pagintion->show(); ?>
+					<?php $this->filter->pagination->show(); ?>
 				</div>
 			</div>
 		</div>

@@ -76,7 +76,6 @@ class Main {
 		$this->filter = new PostFilter();
 
 		$this->init();
-
 	}
 
 	/**
@@ -133,7 +132,6 @@ class Main {
 		}
 
 		wp_enqueue_style( 'admin-style', GTS_TRANSLATION_ORDER_URL . '/assets/css/admin/style.css', '', GTS_TRANSLATION_ORDER_VERSION );
-
 		wp_enqueue_script( 'main', GTS_TRANSLATION_ORDER_URL . '/assets/js/admin/main.js', [ 'jquery' ], GTS_TRANSLATION_ORDER_VERSION, true );
 	}
 
@@ -143,7 +141,6 @@ class Main {
 	 * @return void
 	 */
 	public function menu_page(): void {
-
 		add_menu_page(
 			__( 'Translation Order', 'gts-translation-order' ),
 			__( 'Translation Order', 'gts-translation-order' ),
