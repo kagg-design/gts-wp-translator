@@ -168,7 +168,7 @@ class PostFilter {
 			];
 		}
 		$limit = self::LIMIT_OUTPUT;
-		$posts = $this->get_pots_by_post_type( $filter_params->post_type, $filter_params->search, ( $this->page - 1 ) * $limit, $limit );
+		$posts = $this->get_posts_by_post_type( $filter_params->post_type, $filter_params->search, ( $this->page - 1 ) * $limit, $limit );
 
 		$curr_page_url = isset( $_SERVER['QUERY_STRING'] ) ? 'admin.php?' . filter_var( wp_unslash( $_SERVER['QUERY_STRING'] ), FILTER_SANITIZE_STRING ) : '';
 
@@ -230,7 +230,7 @@ class PostFilter {
 	 *
 	 * @return array
 	 */
-	private function get_pots_by_post_type( string $post_type = null, string $search = null, int $number = 25, int $offset = 0 ): array {
+	private function get_posts_by_post_type( string $post_type = null, string $search = null, int $number = 25, int $offset = 0 ): array {
 		global $wpdb;
 
 		$post_types = [ $post_type ];
@@ -244,7 +244,7 @@ class PostFilter {
 		$sql = "SELECT SQL_CALC_FOUND_ROWS id, post_title, post_type FROM `{$wpdb->prefix}posts` WHERE `post_type` IN ($slq_post_type)";
 
 		if ( $search ) {
-			$sql .= "AND `post_title` LIKE '$search'";
+			$sql .= "AND `post_title` LIKE '%" . $wpdb->esc_like( $search ) . "%'";
 		}
 
 		$sql .= 'LIMIT %d, %d';
