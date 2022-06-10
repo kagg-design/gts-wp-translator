@@ -35,7 +35,7 @@ class PostFilter {
 	/**
 	 * Limit output posts.
 	 */
-	private const LIMIT_OUTPUT = 50;
+	public const LIMIT_OUTPUT = 50;
 
 	/**
 	 * Page number.
@@ -50,6 +50,8 @@ class PostFilter {
 	 * @var Pagination $pagintion pagination.
 	 */
 	public Pagination $pagination;
+
+	public $count_posts;
 
 	/**
 	 * PostFilter construct.
@@ -184,39 +186,42 @@ class PostFilter {
 			$p->adjacents( 1 ); // No. of page away from the current page.
 			$p->calculate(); // Calculates what to show.
 
-			$this->pagination = $p;
+			$this->pagination  = $p;
+			$this->count_posts = $count;
 		} else {
 			?>
 			<tr>
-				<td colspan="4">
+				<td colspan="5">
 					<?php esc_html_e( 'Post not found', 'gts-translation-order' ); ?>
 				</td>
 			</tr>
 			<?php
 		}
 
-		foreach ( $posts['posts'] as $post ) {
-			$title = $post->post_title;
-			$title = $title ?: __( '(no title)', 'gts-translation-order' );
-			$id    = "gts_to_translate-$post->id";
-			$name  = "gts_to_translate[$post->id]";
+		if ( $posts['posts'] ) {
+			foreach ( $posts['posts'] as $post ) {
+				$title = $post->post_title;
+				$title = $title ?: __( '(no title)', 'gts-translation-order' );
+				$id    = "gts_to_translate-$post->id";
+				$name  = "gts_to_translate[$post->id]";
 
-			?>
-			<tr>
-				<th scope="row">
-					<input
-							type="checkbox"
-							id="<?php echo esc_attr( $id ); ?>"
-							name="<?php echo esc_attr( $name ); ?>">
-				</th>
-				<td><?php echo esc_html( $title ); ?></td>
-				<td><?php echo esc_html( $post->post_type ); ?></td>
-				<td><span class="badge bg-secondary">Not translated</span></td>
-				<td>
-					<a href="#" class="plus"><i class="bi bi-plus-square"></i></a>
-				</td>
-			</tr>
-			<?php
+				?>
+				<tr>
+					<th scope="row">
+						<input
+								type="checkbox"
+								id="<?php echo esc_attr( $id ); ?>"
+								name="<?php echo esc_attr( $name ); ?>">
+					</th>
+					<td><?php echo esc_html( $title ); ?></td>
+					<td><?php echo esc_html( $post->post_type ); ?></td>
+					<td><span class="badge bg-secondary">Not translated</span></td>
+					<td>
+						<a href="#" class="plus"><i class="bi bi-plus-square"></i></a>
+					</td>
+				</tr>
+				<?php
+			}
 		}
 	}
 
