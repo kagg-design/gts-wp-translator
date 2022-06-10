@@ -49,7 +49,7 @@ class PostFilter {
 	 *
 	 * @var Pagination $pagintion pagination.
 	 */
-	public $pagintion;
+	public Pagination $pagination;
 
 	/**
 	 * PostFilter construct.
@@ -184,7 +184,7 @@ class PostFilter {
 			$p->adjacents( 1 ); // No. of page away from the current page.
 			$p->calculate(); // Calculates what to show.
 
-			$this->pagintion = $p;
+			$this->pagination = $p;
 		} else {
 			?>
 			<tr>
