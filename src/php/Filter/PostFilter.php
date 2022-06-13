@@ -74,10 +74,6 @@ class PostFilter {
 	 */
 	private Cost $cost;
 
-	private $target;
-
-	private $source;
-
 	/**
 	 * PostFilter construct.
 	 */
@@ -344,38 +340,34 @@ class PostFilter {
 			<?php
 		}
 
-		if ( $posts['posts'] ) {
+		foreach ( $posts['posts'] as $post ) {
+			$title = $post->post_title;
+			$title = $title ?: __( '(no title)', 'gts-translation-order' );
+			$id    = "gts_to_translate-$post->id";
+			$name  = "gts_to_translate[$post->id]";
+			$price = 0;
 
-			foreach ( $posts['posts'] as $post ) {
-				$title = $post->post_title;
-				$title = $title ?: __( '(no title)', 'gts-translation-order' );
-				$id    = "gts_to_translate-$post->id";
-				$name  = "gts_to_translate[$post->id]";
-
-				$price = 0;
-
-				if ( ! empty( $filter_params->source ) && ! empty( $filter_params->target ) ) {
-					$price = $this->cost->price_by_post( $filter_params->source, $filter_params->target, $post->id );
-				}
-				?>
-				<tr>
-					<th scope="row">
-						<label for="<?php echo esc_attr( $id ); ?>" class="hidden"></label>
-						<input
-								type="checkbox"
-								id="<?php echo esc_attr( $id ); ?>"
-								name="<?php echo esc_attr( $name ); ?>">
-					</th>
-					<td><?php echo esc_html( $title ); ?></td>
-					<td><?php echo esc_html( $post->post_type ); ?></td>
-					<td><span class="badge bg-secondary">Not translated</span></td>
-					<td>$<?php echo esc_html( $price ); ?></td>
-					<td>
-						<a href="#" class="plus"><i class="bi bi-plus-square"></i></a>
-					</td>
-				</tr>
-				<?php
+			if ( ! empty( $filter_params->source ) && ! empty( $filter_params->target ) ) {
+				$price = $this->cost->price_by_post( $filter_params->source, $filter_params->target, $post->id );
 			}
+			?>
+			<tr>
+				<th scope="row">
+					<label for="<?php echo esc_attr( $id ); ?>" class="hidden"></label>
+					<input
+							type="checkbox"
+							id="<?php echo esc_attr( $id ); ?>"
+							name="<?php echo esc_attr( $name ); ?>">
+				</th>
+				<td><?php echo esc_html( $title ); ?></td>
+				<td><?php echo esc_html( $post->post_type ); ?></td>
+				<td><span class="badge bg-secondary">Not translated</span></td>
+				<td>$<?php echo esc_html( $price ); ?></td>
+				<td>
+					<a href="#" class="plus"><i class="bi bi-plus-square"></i></a>
+				</td>
+			</tr>
+			<?php
 		}
 	}
 
@@ -422,7 +414,7 @@ class PostFilter {
 
 		if ( ! $result ) {
 			return [
-				'posts'      => null,
+				'posts'      => [],
 				'rows_found' => 0,
 			];
 		}

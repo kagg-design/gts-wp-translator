@@ -9,7 +9,6 @@ namespace GTS\TranslationOrder\Pages;
 
 use Exception;
 use GTS\TranslationOrder\Admin\AdminNotice;
-use GuzzleHttp\Client;
 
 /**
  * Token class file.
@@ -20,7 +19,6 @@ class Token {
 	 * Token name.
 	 */
 	private const GTS_TOKEN_NAME = 'gts_translation_token';
-
 
 	/**
 	 * Token Access.
@@ -40,15 +38,14 @@ class Token {
 	 * Token construct.
 	 */
 	public function __construct() {
-		$this->token = get_option( self::GTS_TOKEN_NAME ) ?? '';
+		$this->token = get_option( self::GTS_TOKEN_NAME, '' );
 		$this->init();
 
 		if ( GTS_REST_DEBUG ) {
-			$this->url_server = GTS_DEBUG_REST_URL;
+			$this->url_server = GTS_REST_DEBUG_URL;
 		} else {
 			$this->url_server = GTS_REST_URL;
 		}
-
 	}
 
 	/**
@@ -112,9 +109,10 @@ class Token {
 	 * Save Token.
 	 *
 	 * @return void
+	 *
+	 * @throws Exception Exception.
 	 */
 	public function save_token(): void {
-
 		if ( ! isset( $_POST['generate_token'] ) ) {
 			return;
 		}
@@ -164,6 +162,5 @@ class Token {
 		add_action( 'admin_notices', [ AdminNotice::class, 'token_success' ] );
 
 		$this->token = $token;
-
 	}
 }

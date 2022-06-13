@@ -41,7 +41,7 @@ class GTS_API {
 		$this->token = get_option( self::GTS_TOKEN_NAME ) ?? '';
 
 		if ( GTS_REST_DEBUG ) {
-			$this->url_server = GTS_DEBUG_REST_URL;
+			$this->url_server = GTS_REST_DEBUG_URL;
 		} else {
 			$this->url_server = GTS_REST_URL;
 		}
