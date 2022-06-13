@@ -21,10 +21,6 @@ class Token {
 	 */
 	private const GTS_TOKEN_NAME = 'gts_translation_token';
 
-	/**
-	 * Debug mode.
-	 */
-	private const GTS_REST_DEBUG = true;
 
 	/**
 	 * Token Access.
@@ -41,26 +37,18 @@ class Token {
 	private string $url_server;
 
 	/**
-	 * Http Client GuzzleHttp.
-	 *
-	 * @var Client
-	 */
-	private Client $client;
-
-	/**
 	 * Token construct.
 	 */
 	public function __construct() {
 		$this->token = get_option( self::GTS_TOKEN_NAME ) ?? '';
 		$this->init();
 
-		if ( self::GTS_REST_DEBUG ) {
-			$this->url_server = 'https://stages.i-wp-dev.com/wp-json/gts-translation-order/v1/';
+		if ( GTS_REST_DEBUG ) {
+			$this->url_server = GTS_DEBUG_REST_URL;
 		} else {
-			$this->url_server = 'https://www.gts-translation.com/wp-json/gts-translation-order/v1/';
+			$this->url_server = GTS_REST_URL;
 		}
 
-		$this->client = new Client();
 	}
 
 	/**

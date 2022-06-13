@@ -39,6 +39,14 @@ define( 'GTS_TRANSLATION_ORDER_URL', untrailingslashit( plugin_dir_url( __FILE__
 const GTS_TRANSLATION_ORDER_FILE       = __FILE__; // Plugin main file.
 const GTS_MINIMUM_PHP_REQUIRED_VERSION = '7.4'; // Minimum required PHP version.
 
+/**
+ * Debug mode.
+ */
+const GTS_REST_DEBUG = true;
+
+const GTS_DEBUG_REST_URL = 'https://stages.i-wp-dev.com/wp-json/gts-translation-order/v1/';
+const GTS_REST_URL       = 'https://www.gts-translation.com/wp-json/gts-translation-order/v1/';
+
 require_once GTS_TRANSLATION_ORDER_PATH . '/vendor/autoload.php';
 
 if ( ! Main::is_php_version_required() ) {

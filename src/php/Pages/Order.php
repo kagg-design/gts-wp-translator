@@ -7,7 +7,9 @@
 
 namespace GTS\TranslationOrder\Pages;
 
+use GTS\TranslationOrder\Cost;
 use GTS\TranslationOrder\Filter\PostFilter;
+use GTS\TranslationOrder\GTS_API;
 
 /**
  * Order class file.
@@ -21,13 +23,6 @@ class Order {
 	 */
 	private PostFilter $filter;
 
-	/**
-	 * Language list.
-	 *
-	 * @var array
-	 */
-	private $language_list;
-
 
 	/**
 	 * TranslationOrder class file.
@@ -36,21 +31,6 @@ class Order {
 	 */
 	public function __construct( PostFilter $filter ) {
 		$this->filter = $filter;
-		$this->get_language_list();
-	}
-
-	/**
-	 * Init language list.
-	 *
-	 * @return void
-	 */
-	private function get_language_list(): void {
-		// @todo Get it from GTS site and store in transient.
-		$request = file_get_contents( GTS_TRANSLATION_ORDER_PATH . '/languages/languages.json' );
-
-		$data = json_decode( $request );
-
-		$this->language_list = $data;
 	}
 
 	/**
@@ -77,11 +57,13 @@ class Order {
 						<?php $this->filter->show_search_field(); ?>
 					</div>
 					<div class="col-auto">
+						<?php $this->filter->show_source_language(); ?>
+					</div>
+					<div class="col-auto">
 						<?php
-						$this->filter->show_select_language();
-						$this->show_pop_up_language();
+						$this->filter->show_target_select_language();
+						$this->filter->show_pop_up_language();
 						?>
-
 					</div>
 					<div class="col-auto">
 						<input type="submit" name="gts_filter_submit" class="btn-sm btn btn-primary" value="Submit">
@@ -130,62 +112,5 @@ class Order {
 		</div>
 		<?php
 	}
-	/**
-	 * Show pop-up target language
-	 *
-	 * @return void
-	 */
-	private function show_pop_up_language(): void {
-		?>
-		<div class="modal modal-lg" tabindex="-1" id="language-modal">
-			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="btn-close" data-bs-dismiss="modal"
-								aria-label="<?php esc_html_e( 'Close', 'gts-translation-order' ); ?>"></button>
-					</div>
-					<div class="modal-body">
-						<table class="table">
-							<tbody>
-							<?php
-							$i = 0;
-							echo '<tr>';
-							foreach ( $this->language_list as $lang ) {
-								$i ++;
-								?>
-								<td class="cell">
-									<input
-											type="checkbox" name="regi_target_language[]"
-											value="<?php echo esc_html( $lang->language_name ); ?>"
-											id="<?php echo esc_html( $lang->language_name ); ?>"
-											class="lang-checkbox"
-									/>
-									<label for="<?php echo esc_html( $lang->language_name ); ?>">
-										<?php echo esc_html( $lang->language_name ); ?>
-									</label>
-								</td>
-								<?php
-								if ( 3 === $i ) {
-									echo '</tr><tr>';
-									$i = 0;
-								}
-							}
-							echo '</tr>';
-							?>
-							</tbody>
-						</table>
-					</div>
-					<div class="modal-footer">
-						<button
-								type="button"
-								class="btn btn-primary"
-								id="save-target-language">
-							<?php esc_attr_e( 'Save', 'gts-translation-order' ); ?>
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
-		<?php
-	}
+
 }

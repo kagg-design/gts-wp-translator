@@ -8,6 +8,8 @@
 namespace GTS\TranslationOrder\Filter;
 
 use GTS\TranslationOrder\Admin\AdminNotice;
+use GTS\TranslationOrder\Cost;
+use GTS\TranslationOrder\GTS_API;
 use GTS\TranslationOrder\Pagination;
 use wpdb;
 
@@ -51,13 +53,41 @@ class PostFilter {
 	 */
 	public Pagination $pagination;
 
-	public $count_posts;
+	/**
+	 * Count posts.
+	 *
+	 * @var int $count_posts count post
+	 */
+	public int $count_posts;
+
+	/**
+	 * Language list.
+	 *
+	 * @var array
+	 */
+	private $language_list;
+
+	/**
+	 * Cost calculation.
+	 *
+	 * @var Cost $cost Cost class.
+	 */
+	private Cost $cost;
+
+	private $target;
+
+	private $source;
 
 	/**
 	 * PostFilter construct.
 	 */
 	public function __construct() {
 		$this->init();
+
+		$api                 = new GTS_API();
+		$this->language_list = $api->get_languages_list();
+
+		$this->cost = new Cost();
 	}
 
 	/**
@@ -106,7 +136,7 @@ class PostFilter {
 	}
 
 	/**
-	 * Show Search field.
+	 * Show search field.
 	 *
 	 * @return void
 	 */
@@ -125,19 +155,110 @@ class PostFilter {
 	}
 
 	/**
-	 * Show Select current target language.
+	 * Show select current target language.
 	 *
 	 * @return void
 	 */
-	public function show_select_language(): void {
+	public function show_target_select_language(): void {
+		$target_select = $this->get_cookie();
 		?>
 		<label for="target-language" class="hidden"></label>
 		<input
 				type="text"
 				class="form-control"
 				id="target-language"
+				name="target_language"
+				value="<?php echo esc_attr( implode( ', ', $target_select->target ) ); ?>"
 				placeholder="<?php esc_html_e( 'Select a target languages', 'gts-translation-order' ); ?>"
 				readonly>
+		<?php
+	}
+
+	/**
+	 * Show pop-up target language
+	 *
+	 * @return void
+	 */
+	public function show_pop_up_language(): void {
+		?>
+		<div class="modal modal-lg" tabindex="-1" id="language-modal">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="btn-close" data-bs-dismiss="modal"
+								aria-label="<?php esc_html_e( 'Close', 'gts-translation-order' ); ?>"></button>
+					</div>
+					<div class="modal-body">
+						<table class="table">
+							<tbody>
+							<?php
+							$i = 0;
+							echo '<tr>';
+							foreach ( $this->language_list as $lang ) {
+								$i ++;
+								?>
+								<td class="cell">
+									<input
+											type="checkbox" name="regi_target_language[]"
+											value="<?php echo esc_html( $lang->language_name ); ?>"
+											id="<?php echo esc_html( $lang->language_name ); ?>"
+											class="lang-checkbox"
+									/>
+									<label for="<?php echo esc_html( $lang->language_name ); ?>">
+										<?php echo esc_html( $lang->language_name ); ?>
+									</label>
+								</td>
+								<?php
+								if ( 3 === $i ) {
+									echo '</tr><tr>';
+									$i = 0;
+								}
+							}
+							echo '</tr>';
+							?>
+							</tbody>
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button
+								type="button"
+								class="btn btn-primary"
+								id="save-target-language">
+							<?php esc_attr_e( 'Save', 'gts-translation-order' ); ?>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Show source languages select.
+	 *
+	 * @return void
+	 */
+	public function show_source_language(): void {
+		$source_select = $this->get_cookie();
+		?>
+		<select
+				class="form-select"
+				name="gts_source_language"
+				aria-label="<?php esc_html_e( 'Source language', 'gts-translation-order' ); ?>">
+			<option value="0"
+					selected><?php esc_html_e( 'Select a source language', 'gts-translation-order' ); ?></option>
+			<?php
+			foreach ( $this->language_list as $language ) {
+				if ( $language->active ) {
+					?>
+					<option value="<?php echo esc_html( $language->language_name ); ?>" <?php selected( $language->language_name, $source_select->source ); ?>>
+						<?php echo esc_html( $language->language_name ); ?>
+					</option>
+					<?php
+				}
+			}
+			?>
+		</select>
 		<?php
 	}
 
@@ -162,10 +283,14 @@ class PostFilter {
 
 		$post_type = ! empty( $_POST['gts_to_post_type_select'] ) ? filter_var( wp_unslash( $_POST['gts_to_post_type_select'] ), FILTER_SANITIZE_STRING ) : '';
 		$search    = ! empty( $_POST['gts_to_search'] ) ? filter_var( wp_unslash( $_POST['gts_to_search'] ), FILTER_SANITIZE_STRING ) : '';
+		$source    = ! empty( $_POST['gts_source_language'] ) ? filter_var( wp_unslash( $_POST['gts_source_language'] ), FILTER_SANITIZE_STRING ) : '';
+		$target    = ! empty( $_POST['target_language'] ) ? filter_var( wp_unslash( $_POST['target_language'] ), FILTER_SANITIZE_STRING ) : '';
 
 		$param = [
 			'post_type' => $post_type,
 			'search'    => $search,
+			'source'    => $source,
+			'target'    => explode( ', ', $target ) ?? $target,
 		];
 
 		$this->set_cookie( $param );
@@ -184,6 +309,9 @@ class PostFilter {
 			$filter_params = (object) [
 				'post_type' => 'null',
 				'search'    => '',
+				'source'    => '',
+				'target'    => [],
+
 			];
 		}
 		$limit = self::LIMIT_OUTPUT;
@@ -191,7 +319,8 @@ class PostFilter {
 
 		$curr_page_url = isset( $_SERVER['QUERY_STRING'] ) ? 'admin.php?' . filter_var( wp_unslash( $_SERVER['QUERY_STRING'] ), FILTER_SANITIZE_STRING ) : '';
 
-		$count = $posts['rows_found'];
+		$this->count_posts = 0;
+		$count             = $posts['rows_found'];
 
 		if ( $count > 0 ) {
 			$p = new Pagination();
@@ -216,15 +345,22 @@ class PostFilter {
 		}
 
 		if ( $posts['posts'] ) {
+
 			foreach ( $posts['posts'] as $post ) {
 				$title = $post->post_title;
 				$title = $title ?: __( '(no title)', 'gts-translation-order' );
 				$id    = "gts_to_translate-$post->id";
 				$name  = "gts_to_translate[$post->id]";
 
+				$price = 0;
+
+				if ( ! empty( $filter_params->source ) && ! empty( $filter_params->target ) ) {
+					$price = $this->cost->price_by_post( $filter_params->source, $filter_params->target, $post->id );
+				}
 				?>
 				<tr>
 					<th scope="row">
+						<label for="<?php echo esc_attr( $id ); ?>" class="hidden"></label>
 						<input
 								type="checkbox"
 								id="<?php echo esc_attr( $id ); ?>"
@@ -233,7 +369,7 @@ class PostFilter {
 					<td><?php echo esc_html( $title ); ?></td>
 					<td><?php echo esc_html( $post->post_type ); ?></td>
 					<td><span class="badge bg-secondary">Not translated</span></td>
-					<td>$33</td>
+					<td>$<?php echo esc_html( $price ); ?></td>
 					<td>
 						<a href="#" class="plus"><i class="bi bi-plus-square"></i></a>
 					</td>

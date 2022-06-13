@@ -7,6 +7,9 @@
 
 namespace GTS\TranslationOrder\Pages;
 
+use GTS\TranslationOrder\GTS_API;
+use stdClass;
+
 /**
  * TranslationCart class file.
  */
@@ -14,9 +17,9 @@ class Cart {
 	/**
 	 * Languages list.
 	 *
-	 * @var array
+	 * @var object|stdClass|null
 	 */
-	public array $language_list;
+	public $language_list;
 
 	/**
 	 * Industry.
@@ -43,8 +46,10 @@ class Cart {
 	 * TranslationOrder class file.
 	 */
 	public function __construct() {
-		$this->get_language_list();
 		$this->init();
+
+		$api                 = new GTS_API();
+		$this->language_list = $api->get_languages_list();
 	}
 
 	/**
@@ -54,20 +59,6 @@ class Cart {
 	 */
 	public function init(): void {
 
-	}
-
-	/**
-	 * Init language list.
-	 *
-	 * @return void
-	 */
-	private function get_language_list(): void {
-		// @todo Get it from GTS site and store in transient.
-		$request = file_get_contents( GTS_TRANSLATION_ORDER_PATH . '/languages/languages.json' );
-
-		$data = json_decode( $request );
-
-		$this->language_list = $data;
 	}
 
 	/**
@@ -166,13 +157,12 @@ class Cart {
 				<label for="gts_client_email" class="form-label">
 					<?php esc_html_e( 'Email address', 'gts-translation-order' ); ?>
 				</label>
-				<?php /** @todo Заменить на емеил карент юзера */ ?>
 				<input
 						type="email"
 						name="gts_client_email"
 						class="form-control"
 						id="gts_client_email"
-						value="<?php echo esc_html( get_option( 'admin_email' ) ) ?? ''; ?>"
+						value="<?php echo esc_html( wp_get_current_user()->user_email ) ?? ''; ?>"
 						placeholder="name@example.com">
 			</div>
 			<div class="mb-3">
@@ -180,15 +170,21 @@ class Cart {
 				<select
 						class="form-select"
 						id="language"
-						name="gts_language_doc"
+						name="gts_source_language"
 						aria-label="<?php esc_html_e( 'Select Languages', 'gts-translation-order' ); ?>">
 					<option value="0"
 							selected><?php esc_html_e( 'Select Languages', 'gts-translation-order' ); ?></option>
-					<?php foreach ( $this->language_list as $item ) : ?>
-						<option value="<?php echo esc_attr( $item->language_name ); ?>">
-							<?php echo esc_html( $item->language_name ); ?>
-						</option>
-					<?php endforeach; ?>
+					<?php
+					foreach ( $this->language_list as $item ) {
+						if ( $item->active ) {
+							?>
+							<option value="<?php echo esc_attr( $item->language_name ); ?>">
+								<?php echo esc_html( $item->language_name ); ?>
+							</option>
+							<?php
+						}
+					}
+					?>
 				</select>
 			</div>
 			<div class="mb-3">
