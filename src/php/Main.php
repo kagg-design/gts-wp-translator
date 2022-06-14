@@ -133,6 +133,15 @@ class Main {
 
 		wp_enqueue_style( 'admin-style', GTS_TRANSLATION_ORDER_URL . '/assets/css/admin/style.css', '', GTS_TRANSLATION_ORDER_VERSION );
 		wp_enqueue_script( 'main', GTS_TRANSLATION_ORDER_URL . '/assets/js/admin/main.js', [ 'jquery' ], GTS_TRANSLATION_ORDER_VERSION, true );
+
+		wp_localize_script(
+			'main',
+			'gts_main',
+			[
+				'url'   => admin_url( 'admin-ajax.php' ),
+				'nonce' => wp_create_nonce( 'gts_add_to_cart_nonce' ),
+			]
+		);
 	}
 
 	/**

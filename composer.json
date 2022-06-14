@@ -27,8 +27,7 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "twbs/bootstrap-icons": "^1.8",
-    "guzzlehttp/guzzle": "^7.0"
+    "twbs/bootstrap-icons": "^1.8"
   },
   "require-dev": {
     "roave/security-advisories": "dev-latest",

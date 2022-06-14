@@ -6,8 +6,13 @@
 	color: #00a32a;
 }
 
-#gts-translation-order a:hover > i {
+#gts-translation-order a:hover > i,
+#gts-translation-order a:hover > i.bi-dash-square {
 	color: #05135c;
+}
+
+#gts-translation-order a i.bi-dash-square {
+	color: #bb0000;
 }
 
 #filter-form {
@@ -28,6 +33,6 @@
 	z-index: 9999;
 }
 
-#gts_token{
+#gts_token {
 	width: 450px;
 }

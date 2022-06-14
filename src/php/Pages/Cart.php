@@ -58,7 +58,8 @@ class Cart {
 	 * @return void
 	 */
 	public function init(): void {
-
+		add_action( 'wp_ajax_add_to_cart', [ $this, 'add_to_cart' ] );
+		add_action( 'wp_ajax_nopriv_add_to_cart', [ $this, 'add_to_cart' ] );
 	}
 
 	/**
@@ -267,7 +268,7 @@ class Cart {
 					<div class="modal-footer">
 						<button
 								type="button"
-								class="btn btn-primary"
+								class="btn btn-primary add-to-cart-bulk"
 								id="save-target-language">
 							<?php esc_attr_e( 'Save', 'gts-translation-order' ); ?>
 						</button>
@@ -276,5 +277,65 @@ class Cart {
 			</div>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Ajax handler add to cart.
+	 *
+	 * @return void
+	 */
+	public function add_to_cart(): void {
+
+		$nonce = ! empty( $_POST['nonce'] ) ? filter_var( wp_unslash( $_POST['nonce'] ), FILTER_SANITIZE_STRING ) : '';
+
+		if ( ! wp_verify_nonce( $nonce, 'gts_add_to_cart_nonce' ) ) {
+			wp_send_json_error( __( 'Bad Nonce', 'gts-translation-order' ) );
+		}
+
+		$bulk = ! empty( $_POST['bulk'] ) && filter_var( wp_unslash( $_POST['bulk'] ), FILTER_VALIDATE_BOOL );
+
+		if ( $bulk ) {
+			// bulk add.
+			wp_send_json_success( [ 'message' => 'bulk' ] );
+		} else {
+			// single add.
+			$post_id  = ! empty( $_POST['post_id'] ) ? filter_var( wp_unslash( $_POST['post_id'] ), FILTER_SANITIZE_NUMBER_INT ) : null;
+			$posts_id = $this->save_post_to_cart(
+				[
+					'type'    => 'single',
+					'post_id' => $post_id,
+				]
+			);
+
+			wp_send_json_success( [ 'posts_id' => $posts_id ] );
+		}
+	}
+
+	/**
+	 * Save post id to cart
+	 *
+	 * @param array $args Arguments.
+	 *
+	 */
+	private function save_post_to_cart( array $args ) {
+
+		$cart_post_ids = ! empty( $_COOKIE['gts_cart_data'] ) ? (array) json_decode( filter_var( wp_unslash( $_COOKIE['gts_cart_data'] ) ) ) : (array) null;
+
+		if ( 'single' === $args['type'] ) {
+
+			$cart_post_ids[] = $args['post_id'];
+
+			setcookie(
+				'gts_cart_data',
+				wp_json_encode( $cart_post_ids, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ),
+				strtotime( '+30 days' ),
+				COOKIEPATH,
+				COOKIE_DOMAIN
+			);
+
+			$_COOKIE['gts_cart_data'] = $cart_post_ids;
+
+			return $cart_post_ids;
+		}
 	}
 }

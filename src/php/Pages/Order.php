@@ -95,7 +95,7 @@ class Order {
 						<caption>
 							<div class="tablenav bottom">
 								<div class="alignleft actions bulkactions">
-									<button type="button" class="btn btn-primary btn-sm">
+									<button type="button" class="btn btn-primary add-bulk-to-cart btn-sm">
 										<?php esc_attr_e( 'Add to Cart', 'gts-translation-order' ); ?>
 									</button>
 								</div>

@@ -30,9 +30,14 @@ class PostFilter {
 	];
 
 	/**
-	 * Transient name.
+	 * Cookie filter name.
 	 */
-	private const COOKIE_NAME = 'gts_post_filter';
+	private const COOKIE_FILTER_NAME = 'gts_post_filter';
+
+	/**
+	 * Cookie cart name.
+	 */
+	private const COOKIE_CART_NAME = 'gts_cart_data';
 
 	/**
 	 * Limit output posts.
@@ -118,7 +123,7 @@ class PostFilter {
 	 * @return void
 	 */
 	public function show_post_types_select(): void {
-		$post_type_select = $this->get_cookie();
+		$post_type_select = $this->get_cookie( self::COOKIE_FILTER_NAME );
 		?>
 		<select class="form-select" id="gts_to_post_type_select" aria-label="Post Type" name="gts_to_post_type_select">
 			<option value="null" selected><?php esc_html_e( 'Select post type', 'gts-translation-order' ); ?></option>
@@ -137,7 +142,7 @@ class PostFilter {
 	 * @return void
 	 */
 	public function show_search_field(): void {
-		$search = $this->get_cookie()->search ?? '';
+		$search = $this->get_cookie( self::COOKIE_FILTER_NAME )->search ?? '';
 		?>
 		<label for="gts_to_search" class="hidden"></label>
 		<input
@@ -156,7 +161,7 @@ class PostFilter {
 	 * @return void
 	 */
 	public function show_target_select_language(): void {
-		$target_select = $this->get_cookie();
+		$target_select = $this->get_cookie( self::COOKIE_FILTER_NAME );
 		?>
 		<label for="target-language" class="hidden"></label>
 		<input
@@ -235,7 +240,7 @@ class PostFilter {
 	 * @return void
 	 */
 	public function show_source_language(): void {
-		$source_select = $this->get_cookie();
+		$source_select = $this->get_cookie( self::COOKIE_FILTER_NAME );
 		?>
 		<select
 				class="form-select"
@@ -289,7 +294,7 @@ class PostFilter {
 			'target'    => explode( ', ', $target ) ?? $target,
 		];
 
-		$this->set_cookie( $param );
+		$this->set_cookie( self::COOKIE_FILTER_NAME, $param );
 	}
 
 
@@ -300,7 +305,8 @@ class PostFilter {
 	 */
 	public function show_table(): void {
 
-		$filter_params = $this->get_cookie();
+		$filter_params = $this->get_cookie( self::COOKIE_FILTER_NAME );
+		$cart_post_id  = (array) $this->get_cookie( self::COOKIE_CART_NAME );
 		if ( ! isset( $filter_params->post_type ) ) {
 			$filter_params = (object) [
 				'post_type' => 'null',
@@ -341,11 +347,12 @@ class PostFilter {
 		}
 
 		foreach ( $posts['posts'] as $post ) {
-			$title = $post->post_title;
-			$title = $title ?: __( '(no title)', 'gts-translation-order' );
-			$id    = "gts_to_translate-$post->id";
-			$name  = "gts_to_translate[$post->id]";
-			$price = 0;
+			$title      = $post->post_title;
+			$title      = $title ?: __( '(no title)', 'gts-translation-order' );
+			$id         = "gts_to_translate-$post->id";
+			$name       = "gts_to_translate[$post->id]";
+			$icon_class = in_array( $post->id, $cart_post_id, true ) ? 'bi-dash-square' : 'bi-plus-square';
+			$price      = 0;
 
 			if ( ! empty( $filter_params->source ) && ! empty( $filter_params->target ) ) {
 				$price = $this->cost->price_by_post( $filter_params->source, $filter_params->target, $post->id );
@@ -356,6 +363,7 @@ class PostFilter {
 					<label for="<?php echo esc_attr( $id ); ?>" class="hidden"></label>
 					<input
 							type="checkbox"
+							data-id="<?php echo esc_attr( $post->id ); ?>"
 							id="<?php echo esc_attr( $id ); ?>"
 							name="<?php echo esc_attr( $name ); ?>">
 				</th>
@@ -364,11 +372,32 @@ class PostFilter {
 				<td><span class="badge bg-secondary">Not translated</span></td>
 				<td>$<?php echo esc_html( $price ); ?></td>
 				<td>
-					<a href="#" class="plus"><i class="bi bi-plus-square"></i></a>
+					<a href="#" data-post_id="<?php echo esc_attr( $post->id ); ?>" class="plus add-to-cart">
+						<i class="bi <?php echo esc_attr( $icon_class ); ?>"></i>
+					</a>
 				</td>
 			</tr>
 			<?php
 		}
+	}
+
+	/**
+	 * Set cookie.
+	 *
+	 * @param string           $name   Name cookie.
+	 * @param array|string|int $values Value.
+	 *
+	 * @return void
+	 */
+	private function set_cookie( string $name, $values ): void {
+
+		if ( is_array( $values ) ) {
+			$values = wp_json_encode( $values, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
+		}
+
+		setcookie( $name, $values, strtotime( '+30 days' ), COOKIEPATH, COOKIE_DOMAIN );
+
+		$_COOKIE[ $name ] = $values;
 	}
 
 	/**
@@ -455,31 +484,15 @@ class PostFilter {
 	}
 
 	/**
-	 * Set cookie.
-	 *
-	 * @param array|string|int $values Value.
-	 *
-	 * @return void
-	 */
-	private function set_cookie( $values ): void {
-
-		if ( is_array( $values ) ) {
-			$values = wp_json_encode( $values, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
-		}
-
-		setcookie( self::COOKIE_NAME, $values, strtotime( '+30 days' ), COOKIEPATH, COOKIE_DOMAIN );
-
-		$_COOKIE[ self::COOKIE_NAME ] = $values;
-	}
-
-	/**
 	 * Get cookie filter params.
+	 *
+	 * @param string $name Name cookie.
 	 *
 	 * @return object
 	 */
-	private function get_cookie(): object {
-		if ( isset( $_COOKIE[ self::COOKIE_NAME ] ) ) {
-			return (object) json_decode( filter_var( wp_unslash( $_COOKIE[ self::COOKIE_NAME ] ) ) );
+	private function get_cookie( string $name ): object {
+		if ( isset( $_COOKIE[ $name ] ) ) {
+			return (object) json_decode( filter_var( wp_unslash( $_COOKIE[ $name ] ) ) );
 		}
 
 		return (object) null;
