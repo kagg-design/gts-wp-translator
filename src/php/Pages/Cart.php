@@ -7,6 +7,7 @@
 
 namespace GTS\TranslationOrder\Pages;
 
+use GTS\TranslationOrder\Cost;
 use GTS\TranslationOrder\GTS_API;
 use stdClass;
 
@@ -43,6 +44,20 @@ class Cart {
 	];
 
 	/**
+	 * Cost calculation.
+	 *
+	 * @var Cost $cost Cost class.
+	 */
+	private Cost $cost;
+
+	/**
+	 * Total Price.
+	 *
+	 * @var float $total total.
+	 */
+	private float $total;
+
+	/**
 	 * TranslationOrder class file.
 	 */
 	public function __construct() {
@@ -50,6 +65,8 @@ class Cart {
 
 		$api                 = new GTS_API();
 		$this->language_list = $api->get_languages_list();
+		$this->cost          = new Cost();
+		$this->total         = 0;
 	}
 
 	/**
@@ -82,7 +99,7 @@ class Cart {
 			</div>
 			<div class="row">
 				<div class="col-auto">
-					<table class="table table-striped table-hover">
+					<table class="table table-striped table-hover cart">
 						<thead>
 						<tr>
 							<th scope="col">
@@ -94,30 +111,7 @@ class Cart {
 						</tr>
 						</thead>
 						<tbody class="table-group-divider">
-						<tr>
-							<td>English Translation Services</td>
-							<td>Page</td>
-							<td>$300</td>
-							<td>
-								<a href="#" class="plus"><i class="bi bi-dash-square"></i></a>
-							</td>
-						</tr>
-						<tr>
-							<td>English Translation Services</td>
-							<td>Page</td>
-							<td>$300</td>
-							<td>
-								<a href="#" class="plus"><i class="bi bi-dash-square"></i></a>
-							</td>
-						</tr>
-						<tr>
-							<td>English Translation Services</td>
-							<td>Page</td>
-							<td>$300</td>
-							<td>
-								<a href="#" class="plus"><i class="bi bi-dash-square"></i></a>
-							</td>
-						</tr>
+						<?php $this->show_table(); ?>
 						</tbody>
 					</table>
 				</div>
@@ -125,7 +119,7 @@ class Cart {
 					<table class="table table-dark table-striped total-table">
 						<tr>
 							<td>Total Cost:</td>
-							<td>$900</td>
+							<td>$<?php echo esc_attr( $this->total ); ?></td>
 						</tr>
 						<tr>
 							<td colspan="2">
@@ -155,6 +149,7 @@ class Cart {
 	 * @return void
 	 */
 	private function show_total_form(): void {
+		$filter = $this->get_cookie( 'gts_post_filter' );
 		?>
 		<form action="" method="post">
 			<div class="mb-3">
@@ -182,7 +177,7 @@ class Cart {
 					foreach ( $this->language_list as $item ) {
 						if ( $item->active ) {
 							?>
-							<option value="<?php echo esc_attr( $item->language_name ); ?>">
+							<option value="<?php echo esc_attr( $item->language_name ); ?>" <?php selected( $item->language_name, $filter->source ); ?>>
 								<?php echo esc_html( $item->language_name ); ?>
 							</option>
 							<?php
@@ -197,6 +192,8 @@ class Cart {
 						type="text"
 						class="form-control"
 						id="target-language"
+						name="gts_target_language"
+						value="<?php echo esc_attr( implode( ', ', $filter->target ) ); ?>"
 						placeholder="<?php esc_html_e( 'Select a target languages', 'gts-translation-order' ); ?>"
 						readonly>
 			</div>
@@ -356,6 +353,8 @@ class Cart {
 
 		$cart_post_ids = ! empty( $_COOKIE['gts_cart_data'] ) ? (array) json_decode( filter_var( wp_unslash( $_COOKIE['gts_cart_data'] ) ) ) : (array) null;
 
+		$result = [];
+
 		if ( 'add' === $args['type'] ) {
 			$result = array_merge( $cart_post_ids, $args['post_id'] );
 		}
@@ -376,5 +375,64 @@ class Cart {
 
 		return $result;
 
+	}
+
+	/**
+	 * Get cookie filter params.
+	 *
+	 * @param string $name Name cookie.
+	 *
+	 * @return object
+	 */
+	private function get_cookie( string $name ): object {
+		if ( isset( $_COOKIE[ $name ] ) ) {
+			return (object) json_decode( filter_var( wp_unslash( $_COOKIE[ $name ] ) ) );
+		}
+
+		return (object) null;
+	}
+
+	/**
+	 * Show table.
+	 *
+	 * @return void
+	 */
+	private function show_table(): void {
+		$cart_item = $this->get_cookie( 'gts_cart_data' );
+		$filter    = $this->get_cookie( 'gts_post_filter' );
+		if ( 0 !== count( (array) $cart_item ) ) {
+			foreach ( $cart_item as $item ) {
+				$post  = get_post( $item );
+				$title = $post->post_title;
+				$title = $title ?: __( '(no title)', 'gts-translation-order' );
+				$price = 0;
+
+				if ( ! empty( $filter->source ) && $filter->target ) {
+					$price = $this->cost->price_by_post( $filter->source, $filter->target, $post->ID );
+
+					$this->total += $price;
+				}
+				?>
+				<tr>
+					<td><?php echo esc_html( $title ); ?></td>
+					<td><?php echo esc_html( $post->post_type ); ?></td>
+					<td>$<?php echo esc_html( $price ); ?></td>
+					<td>
+						<a
+								href="#" data-post_id="<?php echo esc_attr( $post->ID ); ?>"
+								class="plus remove-to-cart">
+							<i class="bi bi-dash-square"></i>
+						</a>
+					</td>
+				</tr>
+				<?php
+			}
+		} else {
+			?>
+			<tr>
+				<td colspan="6"><?php esc_html_e( 'Cart is Empty', 'gts-translation-order' ); ?></td>
+			</tr>
+			<?php
+		}
 	}
 }

@@ -139,10 +139,11 @@ class Main {
 			'main',
 			'gts_main',
 			[
-				'url'          => admin_url( 'admin-ajax.php' ),
-				'nonce'        => wp_create_nonce( 'gts_add_to_cart_nonce' ),
-				'nonce_remove' => wp_create_nonce( 'gts_remove_from_cart_nonce' ),
-				'text_to_cart' => __( 'Add to Cart', 'gts-translation-order' ),
+				'url'              => admin_url( 'admin-ajax.php' ),
+				'nonce'            => wp_create_nonce( 'gts_add_to_cart_nonce' ),
+				'nonce_remove'     => wp_create_nonce( 'gts_remove_from_cart_nonce' ),
+				'text_to_cart'     => __( 'Add to Cart', 'gts-translation-order' ),
+				'text_remove_cart' => __( 'Remove Cart item', 'gts-translation-order' ),
 			]
 		);
 	}

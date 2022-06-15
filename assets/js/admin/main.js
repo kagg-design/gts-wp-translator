@@ -211,7 +211,7 @@ jQuery( document ).ready( function( $ ) {
 				data: data,
 				beforeSend: function() {
 					Swal.fire( {
-						title: gts_main.text_to_cart,
+						title: gts_main.text_remove_cart,
 						didOpen: () => {
 							Swal.showLoading();
 						},
@@ -219,6 +219,10 @@ jQuery( document ).ready( function( $ ) {
 				},
 				success: function( res ) {
 					if ( res.success ) {
+						if ( $( '.cart' ).length ) {
+							$(event).parents('tr').remove();
+							location.reload();
+						}
 						event.off( 'click' );
 						change_icon( data.post_id, 'remove' );
 						Swal.close();

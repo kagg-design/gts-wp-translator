@@ -371,7 +371,7 @@ class PostFilter {
 				<td><?php echo esc_html( $title ); ?></td>
 				<td><?php echo esc_html( $post->post_type ); ?></td>
 				<td><span class="badge bg-secondary">Not translated</span></td>
-				<td>$<?php echo esc_html( $price ); ?></td>
+				<td>$<?php echo esc_html( $price ); ?> </td>
 				<td>
 					<a
 							href="#" data-post_id="<?php echo esc_attr( $post->id ); ?>"
