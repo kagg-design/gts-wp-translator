@@ -127,6 +127,7 @@ class Main {
 	public function admin_scripts( string $hook_suffix ): void {
 		if ( in_array( $hook_suffix, self::GTS_PAGES_MENU_SLUGS, true ) ) {
 			wp_enqueue_script( 'bootstrap', '//cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js', [ 'jquery' ], '5.2.0', true );
+			wp_enqueue_script( 'sweetalert2', '//cdn.jsdelivr.net/npm/sweetalert2@11', [ 'jquery' ], '2.11.0', true );
 			wp_enqueue_style( 'bootstrap', '//cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css', '', '5.2.0' );
 			wp_enqueue_style( 'bootstrap-icon', GTS_TRANSLATION_ORDER_URL . '/vendor/twbs/bootstrap-icons/font/bootstrap-icons.css', '', '1.8.0' );
 		}
@@ -138,8 +139,10 @@ class Main {
 			'main',
 			'gts_main',
 			[
-				'url'   => admin_url( 'admin-ajax.php' ),
-				'nonce' => wp_create_nonce( 'gts_add_to_cart_nonce' ),
+				'url'          => admin_url( 'admin-ajax.php' ),
+				'nonce'        => wp_create_nonce( 'gts_add_to_cart_nonce' ),
+				'nonce_remove' => wp_create_nonce( 'gts_remove_from_cart_nonce' ),
+				'text_to_cart' => __( 'Add to Cart', 'gts-translation-order' ),
 			]
 		);
 	}

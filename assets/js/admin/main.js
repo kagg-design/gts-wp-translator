@@ -1,12 +1,13 @@
-/* global gts_main */
+/* global gts_main, Swal */
 jQuery( document ).ready( function( $ ) {
+
+	removeFromCart();
+	addToCart();
 
 	/**
 	 * Init modal target language.
 	 */
-
 	if ( $( '#language-modal' ).length ) {
-		console.log( $( '#language-modal' ).length )
 		var languageModal = new bootstrap.Modal( '#language-modal' );
 
 		$( '#target-language' ).click( function() {
@@ -39,7 +40,6 @@ jQuery( document ).ready( function( $ ) {
 	/**
 	 * Change icon and text.
 	 */
-
 	let flag_view = false;
 	$( '#eye_btn' ).click( function( e ) {
 		if ( ! flag_view ) {
@@ -59,29 +59,44 @@ jQuery( document ).ready( function( $ ) {
 	/**
 	 * Single add to cart ajax.
 	 */
-	$( '.add-to-cart' ).click( function( e ) {
-		e.preventDefault();
+	function addToCart() {
+		$( '.add-to-cart' ).click( function( e ) {
+			e.preventDefault();
 
-		let data = {
-			action: 'add_to_cart',
-			nonce: gts_main.nonce,
-			post_id: $( this ).data( 'post_id' )
-		};
+			let event = $( this );
 
-		$.ajax( {
-			type: 'POST',
-			url: gts_main.url,
-			data: data,
-			success: function( res ) {
-				// do something with ajax data
-				console.log( res );
-			},
-			error: function( xhr ) {
-				console.log( 'error...', xhr );
-				//error logging
-			}
+			let data = {
+				action: 'add_to_cart',
+				nonce: gts_main.nonce,
+				post_id: $( this ).data( 'post_id' )
+			};
+
+			$.ajax( {
+				type: 'POST',
+				url: gts_main.url,
+				data: data,
+				beforeSend: function() {
+					Swal.fire( {
+						title: gts_main.text_to_cart,
+						didOpen: () => {
+							Swal.showLoading();
+						},
+					} );
+				},
+				success: function( res ) {
+					if ( res.success ) {
+						event.off( 'click' );
+						change_icon( data.post_id, 'add' );
+						Swal.close();
+					}
+				},
+				error: function( xhr ) {
+					console.log( 'error...', xhr );
+					//error logging
+				}
+			} );
 		} );
-	} );
+	}
 
 	/**
 	 * Bulk add to cart ajax.
@@ -91,7 +106,7 @@ jQuery( document ).ready( function( $ ) {
 
 		let postsID = [];
 
-		let elements = jQuery( '[name^=\'gts_to_translate\']:checked' );
+		let elements = $( '[name^=\'gts_to_translate\']:checked' );
 
 		console.log( elements );
 
@@ -107,5 +122,113 @@ jQuery( document ).ready( function( $ ) {
 			bulk: true,
 			post_id: postsID
 		};
+
+		$.ajax( {
+			type: 'POST',
+			url: gts_main.url,
+			data: data,
+			beforeSend: function() {
+				Swal.fire( {
+					title: gts_main.text_to_cart,
+					didOpen: () => {
+						Swal.showLoading();
+					},
+				} );
+			},
+			success: function( res ) {
+				if ( res.success ) {
+					Swal.close();
+					location.reload();
+				}
+			},
+			error: function( xhr ) {
+				console.log( 'error...', xhr );
+				//error logging
+			}
+		} );
 	} );
+
+	/**
+	 * Change Icon.
+	 *
+	 * @param postID
+	 */
+	function change_icon( postID, type ) {
+		let icon = $( `[data-post_id=${postID}] > i` );
+		let button = $( icon ).parent();
+
+		if ( 'add' === type ) {
+			icon.removeClass( 'bi-plus-square' ).addClass( 'bi-dash-square' );
+			button.removeClass( 'add-to-cart' ).addClass( 'remove-to-cart' );
+
+			removeFromCart();
+		}
+
+		if ( 'remove' === type ) {
+			icon.removeClass( 'bi-dash-square' ).addClass( 'bi-plus-square' );
+			button.removeClass( 'remove-to-cart' ).addClass( 'add-to-cart' );
+
+			addToCart();
+		}
+	}
+
+	/**
+	 * Select all post.
+	 */
+	let checked = false;
+	$( '#gts_to_all_page' ).change( function( e ) {
+
+		if ( $( this ).prop( 'checked' ) ) {
+			checked = ! checked;
+		} else {
+			checked = ! checked;
+		}
+
+		let item = $( '[name^=\'gts_to_translate\']' );
+		$.each( item, function( i, val ) {
+			$( val ).prop( 'checked', checked );
+		} );
+	} );
+
+	/**
+	 * Remove post from cart.
+	 */
+	function removeFromCart() {
+		$( '.remove-to-cart' ).click( function( e ) {
+			e.preventDefault();
+
+			let data = {
+				action: 'delete_from_cart',
+				nonce: gts_main.nonce_remove,
+				post_id: $( this ).data( 'post_id' )
+			};
+
+			let event = $( this );
+
+			$.ajax( {
+				type: 'POST',
+				url: gts_main.url,
+				data: data,
+				beforeSend: function() {
+					Swal.fire( {
+						title: gts_main.text_to_cart,
+						didOpen: () => {
+							Swal.showLoading();
+						},
+					} );
+				},
+				success: function( res ) {
+					if ( res.success ) {
+						event.off( 'click' );
+						change_icon( data.post_id, 'remove' );
+						Swal.close();
+					}
+				},
+				error: function( xhr ) {
+					console.log( 'error...', xhr );
+					//error logging
+				}
+			} );
+		} );
+	}
 } );

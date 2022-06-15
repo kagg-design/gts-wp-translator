@@ -347,12 +347,13 @@ class PostFilter {
 		}
 
 		foreach ( $posts['posts'] as $post ) {
-			$title      = $post->post_title;
-			$title      = $title ?: __( '(no title)', 'gts-translation-order' );
-			$id         = "gts_to_translate-$post->id";
-			$name       = "gts_to_translate[$post->id]";
-			$icon_class = in_array( $post->id, $cart_post_id, true ) ? 'bi-dash-square' : 'bi-plus-square';
-			$price      = 0;
+			$title       = $post->post_title;
+			$title       = $title ?: __( '(no title)', 'gts-translation-order' );
+			$id          = "gts_to_translate-$post->id";
+			$name        = "gts_to_translate[$post->id]";
+			$icon_class  = in_array( $post->id, $cart_post_id, true ) ? 'bi-dash-square' : 'bi-plus-square';
+			$button_cass = in_array( $post->id, $cart_post_id, true ) ? 'remove-to-cart' : 'add-to-cart';
+			$price       = 0;
 
 			if ( ! empty( $filter_params->source ) && ! empty( $filter_params->target ) ) {
 				$price = $this->cost->price_by_post( $filter_params->source, $filter_params->target, $post->id );
@@ -372,7 +373,9 @@ class PostFilter {
 				<td><span class="badge bg-secondary">Not translated</span></td>
 				<td>$<?php echo esc_html( $price ); ?></td>
 				<td>
-					<a href="#" data-post_id="<?php echo esc_attr( $post->id ); ?>" class="plus add-to-cart">
+					<a
+							href="#" data-post_id="<?php echo esc_attr( $post->id ); ?>"
+							class="plus <?php echo esc_attr( $button_cass ); ?>">
 						<i class="bi <?php echo esc_attr( $icon_class ); ?>"></i>
 					</a>
 				</td>
