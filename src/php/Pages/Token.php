@@ -18,7 +18,7 @@ class Token {
 	/**
 	 * Token name.
 	 */
-	const GTS_TOKEN_NAME = 'gts_translation_token';
+	const GTS_TOKEN_NAME = 'gts-translation-order-token';
 
 	/**
 	 * Token Access.
