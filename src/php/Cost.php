@@ -25,7 +25,7 @@ class Cost {
 	 * Cost construct.
 	 */
 	public function __construct() {
-		$api = new GTS_API();
+		$api = new API();
 
 		$this->translate_price = $api->get_price_languages_list();
 	}

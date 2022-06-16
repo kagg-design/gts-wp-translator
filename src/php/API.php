@@ -12,12 +12,17 @@ use stdClass;
 /**
  * Api class file.
  */
-class GTS_API {
+class API {
 
 	/**
 	 * Token name.
 	 */
-	const GTS_TOKEN_NAME = 'gts_translation_token';
+	const GTS_TOKEN_NAME = 'gts-translation-order-token';
+
+	/**
+	 * Language list transient.
+	 */
+	const LANGUAGES_LIST_TRANSIENT = 'gts-translation-order-languages_list';
 
 
 	/**
@@ -51,35 +56,34 @@ class GTS_API {
 	/**
 	 * Created transient languages list.
 	 *
-	 * @return object|stdClass|null
+	 * @return array
 	 */
 	public function get_languages_list() {
 
-		$languages_list = get_transient( 'gts_languages_list' );
+		$languages_list = get_transient( self::LANGUAGES_LIST_TRANSIENT );
 
-		if ( ! $languages_list ) {
-			$response = wp_remote_request(
-				$this->url_server . 'get-language',
-				[
-					'method' => 'GET',
-					'body'   => [
-						'token' => $this->token,
-					],
-				]
-			);
-
-			$response = json_decode( $response['body'] );
-
-			if ( is_wp_error( $response ) ) {
-				return (object) null;
-			}
-
-			set_transient( 'gts_languages_list', $response, DAY_IN_SECONDS );
-
-			return $response;
+		if ( $languages_list ) {
+			return $languages_list;
 		}
 
-		return $languages_list;
+		$response = wp_remote_get(
+			$this->url_server . 'get-language',
+			[
+				'body' => [
+					'token' => $this->token,
+				],
+			]
+		);
+
+		if ( is_wp_error( $response ) || 200 !== $response['response']['code'] ) {
+			return [];
+		}
+
+		$response = json_decode( $response['body'] );
+
+		set_transient( self::LANGUAGES_LIST_TRANSIENT, $response, DAY_IN_SECONDS );
+
+		return $response;
 	}
 
 	/**

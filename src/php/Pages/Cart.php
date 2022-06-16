@@ -8,7 +8,7 @@
 namespace GTS\TranslationOrder\Pages;
 
 use GTS\TranslationOrder\Cost;
-use GTS\TranslationOrder\GTS_API;
+use GTS\TranslationOrder\API;
 use stdClass;
 
 /**
@@ -63,7 +63,7 @@ class Cart {
 	public function __construct() {
 		$this->init();
 
-		$api                 = new GTS_API();
+		$api                 = new API();
 		$this->language_list = $api->get_languages_list();
 		$this->cost          = new Cost();
 		$this->total         = 0;

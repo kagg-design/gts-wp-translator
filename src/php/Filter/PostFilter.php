@@ -9,7 +9,7 @@ namespace GTS\TranslationOrder\Filter;
 
 use GTS\TranslationOrder\Admin\AdminNotice;
 use GTS\TranslationOrder\Cost;
-use GTS\TranslationOrder\GTS_API;
+use GTS\TranslationOrder\API;
 use GTS\TranslationOrder\Pagination;
 use wpdb;
 
@@ -85,7 +85,7 @@ class PostFilter {
 	public function __construct() {
 		$this->init();
 
-		$api                 = new GTS_API();
+		$api                 = new API();
 		$this->language_list = $api->get_languages_list();
 
 		$this->cost = new Cost();
@@ -152,7 +152,7 @@ class PostFilter {
 				id="gts_to_search"
 				name="gts_to_search"
 				value="<?php echo esc_html( $search ); ?>"
-				placeholder="Search to title">
+				placeholder="<?php esc_html_e( 'Search by title', 'gts-translation-order' ); ?>">
 		<?php
 	}
 
