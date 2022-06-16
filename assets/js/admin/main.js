@@ -1,4 +1,14 @@
-/* global gts_main, Swal */
+/* global GTSTranslationOrderObject, Swal */
+
+/**
+ * @param GTSTranslationOrderObject.url
+ * @param GTSTranslationOrderObject.addToCartAction
+ * @param GTSTranslationOrderObject.addToCartNonce
+ * @param GTSTranslationOrderObject.deleteFromCartAction
+ * @param GTSTranslationOrderObject.deleteFromCartNonce
+ * @param GTSTranslationOrderObject.addToCartText
+ * @param GTSTranslationOrderObject.deleteFromCartText
+ */
 jQuery( document ).ready( function( $ ) {
 
 	removeFromCart();
@@ -66,18 +76,18 @@ jQuery( document ).ready( function( $ ) {
 			let event = $( this );
 
 			let data = {
-				action: 'add_to_cart',
-				nonce: gts_main.nonce,
+				action: GTSTranslationOrderObject.addToCartAction,
+				nonce: GTSTranslationOrderObject.addToCartNonce,
 				post_id: $( this ).data( 'post_id' )
 			};
 
 			$.ajax( {
 				type: 'POST',
-				url: gts_main.url,
+				url: GTSTranslationOrderObject.url,
 				data: data,
 				beforeSend: function() {
 					Swal.fire( {
-						title: gts_main.text_to_cart,
+						title: GTSTranslationOrderObject.addToCartText,
 						didOpen: () => {
 							Swal.showLoading();
 						},
@@ -117,19 +127,19 @@ jQuery( document ).ready( function( $ ) {
 		console.log( postsID )
 
 		let data = {
-			action: 'add_to_cart',
-			nonce: gts_main.nonce,
+			action: GTSTranslationOrderObject.addToCartAction,
+			nonce: GTSTranslationOrderObject.addToCartNonce,
 			bulk: true,
 			post_id: postsID
 		};
 
 		$.ajax( {
 			type: 'POST',
-			url: gts_main.url,
+			url: GTSTranslationOrderObject.url,
 			data: data,
 			beforeSend: function() {
 				Swal.fire( {
-					title: gts_main.text_to_cart,
+					title: GTSTranslationOrderObject.addToCartText,
 					didOpen: () => {
 						Swal.showLoading();
 					},
@@ -199,7 +209,7 @@ jQuery( document ).ready( function( $ ) {
 
 			let data = {
 				action: 'delete_from_cart',
-				nonce: gts_main.nonce_remove,
+				nonce: GTSTranslationOrderObject.deleteFromCartNonce,
 				post_id: $( this ).data( 'post_id' )
 			};
 
@@ -207,11 +217,11 @@ jQuery( document ).ready( function( $ ) {
 
 			$.ajax( {
 				type: 'POST',
-				url: gts_main.url,
+				url: GTSTranslationOrderObject.url,
 				data: data,
 				beforeSend: function() {
 					Swal.fire( {
-						title: gts_main.text_remove_cart,
+						title: GTSTranslationOrderObject.deleteFromCartText,
 						didOpen: () => {
 							Swal.showLoading();
 						},

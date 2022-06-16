@@ -18,24 +18,34 @@ use GTS\TranslationOrder\Pages\Token;
 class Main {
 
 	/**
+	 * Add to cart action name.
+	 */
+	const ADD_TO_CART_ACTION = 'gts-to-add-to-cart';
+
+	/**
+	 * Delete from cart action name.
+	 */
+	const DELETE_FROM_CART_ACTION = 'gts-to-delete-from-cart';
+
+	/**
 	 * Top menu slug.
 	 */
-	public const GTS_MENU_SLUG = 'gts_translation_order';
+	const GTS_MENU_SLUG = 'gts_translation_order';
 
 	/**
 	 * Sub menu cart slug.
 	 */
-	public const GTS_SUB_MENU_CART_SLUG = 'gts_translation_cart';
+	const GTS_SUB_MENU_CART_SLUG = 'gts_translation_cart';
 
 	/**
 	 * Sub menu token slug
 	 */
-	public const GTS_SUB_MENU_TOKEN_SLUG = 'gts_translation_token';
+	const GTS_SUB_MENU_TOKEN_SLUG = 'gts_translation_token';
 
 	/**
 	 * Page Menu slugs.
 	 */
-	private const GTS_PAGES_MENU_SLUGS = [
+	const GTS_PAGES_MENU_SLUGS = [
 		'toplevel_page_' . self::GTS_MENU_SLUG,
 		'translation-order_page_' . self::GTS_SUB_MENU_CART_SLUG,
 		'translation-order_page_' . self::GTS_SUB_MENU_TOKEN_SLUG,
@@ -46,28 +56,28 @@ class Main {
 	 *
 	 * @var Order Translation Order.
 	 */
-	public Order $translation_order;
+	public $translation_order;
 
 	/**
 	 * Cart class.
 	 *
 	 * @var Cart $translation_cart Cart class.
 	 */
-	public Cart $translation_cart;
+	public $translation_cart;
 
 	/**
 	 * Filter class.
 	 *
 	 * @var PostFilter
 	 */
-	private PostFilter $filter;
+	private $filter;
 
 	/**
 	 * Token class.
 	 *
 	 * @var Token $translation_token Token class
 	 */
-	public Token $translation_token;
+	public $translation_token;
 
 	/**
 	 * PluginInit construct.
@@ -79,25 +89,11 @@ class Main {
 	}
 
 	/**
-	 * Check php version.
-	 *
-	 * @return bool
-	 * @noinspection ConstantCanBeUsedInspection
-	 */
-	public static function is_php_version_required(): bool {
-		if ( version_compare( phpversion(), GTS_MINIMUM_PHP_REQUIRED_VERSION, '<' ) ) {
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
 	 * Init Hooks.
 	 *
 	 * @return void
 	 */
-	public function init(): void {
+	public function init() {
 		add_action( 'plugins_loaded', [ $this, 'init_text_domain' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_scripts' ] );
 		add_action( 'admin_menu', [ $this, 'menu_page' ] );
@@ -113,7 +109,7 @@ class Main {
 	 *
 	 * @return void
 	 */
-	public function init_text_domain(): void {
+	public function init_text_domain() {
 		load_plugin_textdomain( 'gts-translation-order', false, GTS_TRANSLATION_ORDER_PATH . '/languages/' );
 	}
 
@@ -124,7 +120,7 @@ class Main {
 	 *
 	 * @return void
 	 */
-	public function admin_scripts( string $hook_suffix ): void {
+	public function admin_scripts( $hook_suffix ) {
 		if ( in_array( $hook_suffix, self::GTS_PAGES_MENU_SLUGS, true ) ) {
 			wp_enqueue_script( 'bootstrap', '//cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js', [ 'jquery' ], '5.2.0', true );
 			wp_enqueue_script( 'sweetalert2', '//cdn.jsdelivr.net/npm/sweetalert2@11', [ 'jquery' ], '2.11.0', true );
@@ -132,18 +128,20 @@ class Main {
 			wp_enqueue_style( 'bootstrap-icon', GTS_TRANSLATION_ORDER_URL . '/vendor/twbs/bootstrap-icons/font/bootstrap-icons.css', '', '1.8.0' );
 		}
 
-		wp_enqueue_style( 'admin-style', GTS_TRANSLATION_ORDER_URL . '/assets/css/admin/style.css', '', GTS_TRANSLATION_ORDER_VERSION );
-		wp_enqueue_script( 'main', GTS_TRANSLATION_ORDER_URL . '/assets/js/admin/main.js', [ 'jquery' ], GTS_TRANSLATION_ORDER_VERSION, true );
+		wp_enqueue_style( 'gts-to-admin-style', GTS_TRANSLATION_ORDER_URL . '/assets/css/admin/style.css', '', GTS_TRANSLATION_ORDER_VERSION );
+		wp_enqueue_script( 'gts-to-main', GTS_TRANSLATION_ORDER_URL . '/assets/js/admin/main.js', [ 'jquery' ], GTS_TRANSLATION_ORDER_VERSION, true );
 
 		wp_localize_script(
-			'main',
-			'gts_main',
+			'gts-to-main',
+			'GTSTranslationOrderObject',
 			[
-				'url'              => admin_url( 'admin-ajax.php' ),
-				'nonce'            => wp_create_nonce( 'gts_add_to_cart_nonce' ),
-				'nonce_remove'     => wp_create_nonce( 'gts_remove_from_cart_nonce' ),
-				'text_to_cart'     => __( 'Add to Cart', 'gts-translation-order' ),
-				'text_remove_cart' => __( 'Remove Cart item', 'gts-translation-order' ),
+				'url'                  => admin_url( 'admin-ajax.php' ),
+				'addToCartAction'      => self::ADD_TO_CART_ACTION,
+				'addToCartNonce'       => wp_create_nonce( self::ADD_TO_CART_ACTION ),
+				'deleteFromCartAction' => self::DELETE_FROM_CART_ACTION,
+				'deleteFromCartNonce'  => wp_create_nonce( self::DELETE_FROM_CART_ACTION ),
+				'addToCartText'        => __( 'Add item to cart', 'gts-translation-order' ),
+				'deleteFromCartText'   => __( 'Remove item from cart', 'gts-translation-order' ),
 			]
 		);
 	}
