@@ -17,7 +17,7 @@ class GTS_API {
 	/**
 	 * Token name.
 	 */
-	private const GTS_TOKEN_NAME = 'gts_translation_token';
+	const GTS_TOKEN_NAME = 'gts_translation_token';
 
 
 	/**
@@ -25,20 +25,20 @@ class GTS_API {
 	 *
 	 * @var string $token Token.
 	 */
-	public string $token;
+	public $token;
 
 	/**
 	 * Server URL.
 	 *
 	 * @var string $url_server Server URL.
 	 */
-	private string $url_server;
+	private $url_server;
 
 	/**
 	 * Api construct.
 	 */
 	public function __construct() {
-		$this->token = get_option( self::GTS_TOKEN_NAME ) ?? '';
+		$this->token = get_option( self::GTS_TOKEN_NAME, '' );
 
 		if ( GTS_REST_DEBUG ) {
 			$this->url_server = GTS_REST_DEBUG_URL;

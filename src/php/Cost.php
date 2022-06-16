@@ -50,7 +50,7 @@ class Cost {
 	 *
 	 * @return int
 	 */
-	private function get_count_symbols( $post_id ): int {
+	private function get_count_symbols( $post_id ) {
 		$post_object = get_post( (int) $post_id );
 
 		$count = iconv_strlen( wp_strip_all_tags( strip_shortcodes( $post_object->post_content ), true ) );
@@ -68,9 +68,9 @@ class Cost {
 	 * @param array      $target_language Target language.
 	 * @param int|string $post_id         Post ID.
 	 *
-	 * @return float|int|mixed
+	 * @return float|int
 	 */
-	public function price_by_post( string $source_language, array $target_language, $post_id ) {
+	public function price_by_post( $source_language, array $target_language, $post_id ) {
 
 		$total = 0;
 		foreach ( $target_language as $item ) {
@@ -83,7 +83,7 @@ class Cost {
 			}
 
 			if ( 0 !== $count_word ) {
-				$rate = $prices->rate_per_word ?? 0.19;
+				$rate = isset( $prices->rate_per_word ) ? $prices->rate_per_word : 0.19;
 
 				$total += ( $count_word * $rate );
 			}
@@ -100,7 +100,7 @@ class Cost {
 	 *
 	 * @return mixed|object
 	 */
-	public function get_language_price( string $source_language, string $target_language ) {
+	public function get_language_price( $source_language, $target_language ) {
 
 		foreach ( $this->translate_price as $item ) {
 			if ( $source_language === $item->source_language && $target_language === $item->target_language ) {

@@ -28,98 +28,98 @@ class Pagination {
 	 *
 	 * @var int
 	 */
-	private int $total_items = - 1;
+	private $total_items = - 1;
 
 	/**
 	 * Limit.
 	 *
-	 * @var ?int
+	 * @var int|null
 	 */
-	private ?int $limit;
+	private $limit;
 
 	/**
 	 * Target url.
 	 *
 	 * @var string
 	 */
-	private string $target = '';
+	private $target = '';
 
 	/**
 	 * Current page number.
 	 *
 	 * @var int
 	 */
-	private int $page = 1;
+	private $page = 1;
 
 	/**
 	 * Number of adjacent pages.
 	 *
 	 * @var int
 	 */
-	private int $adjacents = 2;
+	private $adjacents = 2;
 
 	/**
 	 * Show counter.
 	 *
 	 * @var bool
 	 */
-	private bool $showCounter = false;
+	private $showCounter = false;
 
 	/**
 	 * Class name of pagination div.
 	 *
 	 * @var string
 	 */
-	private string $className = 'pagination';
+	private $className = 'pagination';
 
 	/**
 	 * Page link query arg name for page number.
 	 *
 	 * @var string
 	 */
-	private string $parameterName = 'page';
+	private $parameterName = 'page';
 
 	/**
 	 * Friendly url.
 	 *
-	 * @var ?string
+	 * @var string|null
 	 */
-	private ?string $urlF = null;
+	private $urlF = null;
 
 	/**
 	 * Pagination html.
 	 *
 	 * @var string
 	 */
-	private string $pagination = '';
+	private $pagination = '';
 
 	/**
 	 * Prev button text.
 	 *
 	 * @var string
 	 */
-	private string $prevT = 'Previous';
+	private $prevT = 'Previous';
 
 	/**
 	 * Prev button icon.
 	 *
 	 * @var string
 	 */
-	private string $prevI = '&#171;';
+	private $prevI = '&#171;';
 
 	/**
 	 * Next button text.
 	 *
 	 * @var string
 	 */
-	private string $nextT = 'Next';
+	private $nextT = 'Next';
 
 	/**
 	 * Next button icon.
 	 *
 	 * @var string
 	 */
-	private string $nextI = '&#187;';
+	private $nextI = '&#187;';
 
 	/**
 	 * Calculate.
@@ -133,7 +133,7 @@ class Pagination {
 	 *
 	 * @param int $value Total items.
 	 */
-	public function items( int $value ): void {
+	public function items( $value ) {
 		$this->total_items = $value;
 	}
 
@@ -142,7 +142,7 @@ class Pagination {
 	 *
 	 * @param int $value Limit.
 	 */
-	public function limit( int $value ): void {
+	public function limit( $value ) {
 		$this->limit = $value;
 	}
 
@@ -151,7 +151,7 @@ class Pagination {
 	 *
 	 * @param string $value Target url.
 	 */
-	public function target( string $value ): void {
+	public function target( $value ) {
 		$this->target = $value;
 	}
 
@@ -160,7 +160,7 @@ class Pagination {
 	 *
 	 * @param int $value Current page number.
 	 */
-	public function currentPage( int $value ): void {
+	public function currentPage( $value ) {
 		$this->page = $value;
 	}
 
@@ -169,7 +169,7 @@ class Pagination {
 	 *
 	 * @param int $value Adjacent pages.
 	 */
-	public function adjacents( int $value ): void {
+	public function adjacents( $value ) {
 		$this->adjacents = $value;
 	}
 
@@ -178,7 +178,7 @@ class Pagination {
 	 *
 	 * @param bool $value Show counter.
 	 */
-	public function showCounter( bool $value ): void {
+	public function showCounter( $value ) {
 		$this->showCounter = $value;
 	}
 
@@ -187,7 +187,7 @@ class Pagination {
 	 *
 	 * @param string $value Class name of pagination div.
 	 */
-	public function changeClass( string $value = '' ): void {
+	public function changeClass( $value = '' ) {
 		$this->className = $value;
 	}
 
@@ -196,7 +196,7 @@ class Pagination {
 	 *
 	 * @param string $value Prev label.
 	 */
-	public function prevLabel( string $value ): void {
+	public function prevLabel( $value ) {
 		$this->prevT = $value;
 	}
 
@@ -205,7 +205,7 @@ class Pagination {
 	 *
 	 * @param string $value Prev icon.
 	 */
-	public function prevIcon( string $value ): void {
+	public function prevIcon( $value ) {
 		$this->prevI = $value;
 	}
 
@@ -214,7 +214,7 @@ class Pagination {
 	 *
 	 * @param string $value Next label.
 	 */
-	public function nextLabel( string $value ): void {
+	public function nextLabel( $value ) {
 		$this->nextT = $value;
 	}
 
@@ -223,7 +223,7 @@ class Pagination {
 	 *
 	 * @param string $value Next icon.
 	 */
-	public function nextIcon( string $value ): void {
+	public function nextIcon( $value ) {
 		$this->nextI = $value;
 	}
 
@@ -232,7 +232,7 @@ class Pagination {
 	 *
 	 * @param string $value Page link query arg name for page number.
 	 */
-	public function parameterName( string $value = '' ): void {
+	public function parameterName( $value = '' ) {
 		$this->parameterName = $value;
 	}
 
@@ -241,9 +241,9 @@ class Pagination {
 	 *
 	 * @param string $value Friendly url.
 	 *
-	 * @return ?string
+	 * @return string|null
 	 */
-	public function urlFriendly( string $value = '%' ): ?string {
+	public function urlFriendly( $value = '%' ) {
 		$this->urlF = null;
 
 		if ( ! preg_match( '/^ *$/', $value ) ) {
@@ -256,7 +256,7 @@ class Pagination {
 	/**
 	 * Show pagination.
 	 */
-	public function show(): void {
+	public function show() {
 		echo wp_kses_post( $this->getOutput() );
 	}
 
@@ -265,7 +265,7 @@ class Pagination {
 	 *
 	 * @return string
 	 */
-	public function getOutput(): string {
+	public function getOutput() {
 		if ( $this->calculated ) {
 			return "<div class=\"$this->className\">$this->pagination</div>\n";
 		}
@@ -284,7 +284,7 @@ class Pagination {
 	 *
 	 * @return string
 	 */
-	private function get_page_number_link( int $id ): string {
+	private function get_page_number_link( $id ) {
 		if ( false === strpos( $this->target, '?' ) ) {
 			if ( $this->urlF ) {
 				return (string) str_replace( $this->urlF, $id, $this->target );
@@ -301,12 +301,12 @@ class Pagination {
 	 *
 	 * @return bool
 	 */
-	public function calculate(): bool {
+	public function calculate() {
 		$this->pagination = '';
 		$error            = false;
 
 		if ( $this->urlF && '%' !== $this->urlF && false === strpos( $this->target, $this->urlF ) ) {
-			echo 'You specified a wildcard to substitute, but it doesn\'t exist in the target<br />';
+			echo "You specified a wildcard to substitute, but it doesn't exist in the target<br />";
 			$error = true;
 		}
 
@@ -350,7 +350,7 @@ class Pagination {
 
 		$counter = 0;
 		// Wrapper.
-		$this->pagination .='<nav aria-label="'.__('Post pagination', 'gts-translation-order').'"><ul class="pagination">';
+		$this->pagination .= '<nav aria-label="' . __( 'Post pagination', 'gts-translation-order' ) . '"><ul class="pagination">';
 
 		// Previous button.
 		if ( $this->page ) {
@@ -427,7 +427,7 @@ class Pagination {
 			}
 		}
 
-		$this->pagination .='</ul></nav>';
+		$this->pagination .= '</ul></nav>';
 
 		return true;
 	}

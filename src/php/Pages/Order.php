@@ -7,9 +7,7 @@
 
 namespace GTS\TranslationOrder\Pages;
 
-use GTS\TranslationOrder\Cost;
 use GTS\TranslationOrder\Filter\PostFilter;
-use GTS\TranslationOrder\GTS_API;
 
 /**
  * Order class file.
@@ -21,7 +19,7 @@ class Order {
 	 *
 	 * @var PostFilter
 	 */
-	private PostFilter $filter;
+	private $filter;
 
 
 	/**
@@ -38,7 +36,7 @@ class Order {
 	 *
 	 * @return void
 	 */
-	public function show_translation_page(): void {
+	public function show_translation_page() {
 		?>
 		<div class="container" id="gts-translation-order">
 			<div class="row">

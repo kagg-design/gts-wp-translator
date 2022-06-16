@@ -25,7 +25,7 @@ class Cart {
 	/**
 	 * Industry.
 	 */
-	public const GTS_INDUSTRY_LIST = [
+	const GTS_INDUSTRY_LIST = [
 		'Academic',
 		'Chemical (MSDS)',
 		'Financial',
@@ -48,14 +48,14 @@ class Cart {
 	 *
 	 * @var Cost $cost Cost class.
 	 */
-	private Cost $cost;
+	private $cost;
 
 	/**
 	 * Total Price.
 	 *
 	 * @var float $total total.
 	 */
-	private float $total;
+	private $total;
 
 	/**
 	 * TranslationOrder class file.
@@ -74,7 +74,7 @@ class Cart {
 	 *
 	 * @return void
 	 */
-	public function init(): void {
+	public function init() {
 		add_action( 'wp_ajax_add_to_cart', [ $this, 'add_to_cart' ] );
 		add_action( 'wp_ajax_nopriv_add_to_cart', [ $this, 'add_to_cart' ] );
 
@@ -87,7 +87,7 @@ class Cart {
 	 *
 	 * @return void
 	 */
-	public function show_translation_cart(): void {
+	public function show_translation_cart() {
 		?>
 		<div class="container">
 			<div class="row">
@@ -148,8 +148,10 @@ class Cart {
 	 *
 	 * @return void
 	 */
-	private function show_total_form(): void {
-		$filter = $this->get_cookie( 'gts_post_filter' );
+	private function show_total_form() {
+		$filter     = $this->get_cookie( 'gts_post_filter' );
+		$user       = wp_get_current_user();
+		$user_email = ( $user && isset( $user->user_email ) ) ? $user->user_email : '';
 		?>
 		<form action="" method="post">
 			<div class="mb-3">
@@ -161,7 +163,7 @@ class Cart {
 						name="gts_client_email"
 						class="form-control"
 						id="gts_client_email"
-						value="<?php echo esc_html( wp_get_current_user()->user_email ) ?? ''; ?>"
+						value="<?php echo esc_html( $user_email ); ?>"
 						placeholder="name@example.com">
 			</div>
 			<div class="mb-3">
@@ -225,7 +227,7 @@ class Cart {
 	 *
 	 * @return void
 	 */
-	private function show_pop_up_language(): void {
+	private function show_pop_up_language() {
 		?>
 		<div class="modal modal-lg" tabindex="-1" id="language-modal">
 			<div class="modal-dialog modal-dialog-centered">
@@ -284,7 +286,7 @@ class Cart {
 	 *
 	 * @return void
 	 */
-	public function add_to_cart(): void {
+	public function add_to_cart() {
 
 		$nonce = ! empty( $_POST['nonce'] ) ? filter_var( wp_unslash( $_POST['nonce'] ), FILTER_SANITIZE_STRING ) : '';
 
@@ -292,7 +294,7 @@ class Cart {
 			wp_send_json_error( __( 'Bad Nonce', 'gts-translation-order' ) );
 		}
 
-		$bulk = ! empty( $_POST['bulk'] ) && filter_var( wp_unslash( $_POST['bulk'] ), FILTER_VALIDATE_BOOL );
+		$bulk = ! empty( $_POST['bulk'] ) && filter_var( wp_unslash( $_POST['bulk'] ), FILTER_SANITIZE_STRING );
 
 		if ( $bulk ) {
 			// bulk add.
@@ -325,7 +327,7 @@ class Cart {
 	 *
 	 * @return void
 	 */
-	public function delete_from_cart(): void {
+	public function delete_from_cart() {
 		$nonce = ! empty( $_POST['nonce'] ) ? filter_var( wp_unslash( $_POST['nonce'] ), FILTER_SANITIZE_STRING ) : '';
 
 		if ( ! wp_verify_nonce( $nonce, 'gts_remove_from_cart_nonce' ) ) {
@@ -349,7 +351,7 @@ class Cart {
 	 *
 	 * @param array $args Arguments.
 	 */
-	private function save_post_to_cart( array $args ): array {
+	private function save_post_to_cart( array $args ) {
 
 		$cart_post_ids = ! empty( $_COOKIE['gts_cart_data'] ) ? (array) json_decode( filter_var( wp_unslash( $_COOKIE['gts_cart_data'] ) ) ) : (array) null;
 
@@ -384,7 +386,7 @@ class Cart {
 	 *
 	 * @return object
 	 */
-	private function get_cookie( string $name ): object {
+	private function get_cookie( $name ) {
 		if ( isset( $_COOKIE[ $name ] ) ) {
 			return (object) json_decode( filter_var( wp_unslash( $_COOKIE[ $name ] ) ) );
 		}
@@ -397,7 +399,7 @@ class Cart {
 	 *
 	 * @return void
 	 */
-	private function show_table(): void {
+	private function show_table() {
 		$cart_item = $this->get_cookie( 'gts_cart_data' );
 		$filter    = $this->get_cookie( 'gts_post_filter' );
 		if ( 0 !== count( (array) $cart_item ) ) {

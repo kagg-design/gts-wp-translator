@@ -151,7 +151,7 @@ class Main {
 	 *
 	 * @return void
 	 */
-	public function menu_page(): void {
+	public function menu_page() {
 		add_menu_page(
 			__( 'Translation Order', 'gts-translation-order' ),
 			__( 'Translation Order', 'gts-translation-order' ),
@@ -183,20 +183,11 @@ class Main {
 	}
 
 	/**
-	 * Show template translation cart.
-	 *
-	 * @return void
-	 */
-	public function show_translation_cart(): void {
-		include GTS_TRANSLATION_ORDER_PATH . '/template/translation-cart-page.php';
-	}
-
-	/**
 	 * Create translation order table.
 	 *
 	 * @return void
 	 */
-	public function create_order_table(): void {
+	public function create_order_table() {
 		global $wpdb;
 
 		$table = get_option( 'gts_order_table_create' );

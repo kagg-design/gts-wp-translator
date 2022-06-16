@@ -18,21 +18,21 @@ class Token {
 	/**
 	 * Token name.
 	 */
-	private const GTS_TOKEN_NAME = 'gts_translation_token';
+	const GTS_TOKEN_NAME = 'gts_translation_token';
 
 	/**
 	 * Token Access.
 	 *
 	 * @var string
 	 */
-	public string $token;
+	public $token;
 
 	/**
 	 * Server URL.
 	 *
 	 * @var string
 	 */
-	private string $url_server;
+	private $url_server;
 
 	/**
 	 * Token construct.
@@ -53,7 +53,7 @@ class Token {
 	 *
 	 * @return void
 	 */
-	public function init(): void {
+	public function init() {
 		add_action( 'init', [ $this, 'save_token' ] );
 	}
 
@@ -62,7 +62,7 @@ class Token {
 	 *
 	 * @return void
 	 */
-	public function show_token_page(): void {
+	public function show_token_page() {
 		?>
 		<div class="container" id="gts-translation-token">
 			<div class="row">
@@ -112,7 +112,7 @@ class Token {
 	 *
 	 * @throws Exception Exception.
 	 */
-	public function save_token(): void {
+	public function save_token() {
 		if ( ! isset( $_POST['generate_token'] ) ) {
 			return;
 		}
@@ -150,8 +150,8 @@ class Token {
 		$response = json_decode( $response['body'] );
 
 		if ( isset( $response->code ) ) {
-			$error               = new AdminNotice();
-			$error->eror_massage = $response->message;
+			$error                = new AdminNotice();
+			$error->error_message = $response->message;
 			add_action( 'admin_notices', [ $error, 'api_error' ] );
 
 			return;

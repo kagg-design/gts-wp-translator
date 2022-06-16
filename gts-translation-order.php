@@ -19,7 +19,6 @@
  * Domain Path: /languages
  */
 
-use GTS\TranslationOrder\Admin\AdminNotice;
 use GTS\TranslationOrder\Main;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -36,8 +35,6 @@ if ( defined( 'GTS_TRANSLATION_ORDER_VERSION' ) ) {
 const GTS_TRANSLATION_ORDER_VERSION = '0.0.1'; // Plugin version.
 const GTS_TRANSLATION_ORDER_PATH    = __DIR__; // Plugin path.
 define( 'GTS_TRANSLATION_ORDER_URL', untrailingslashit( plugin_dir_url( __FILE__ ) ) ); // Plugin url.
-const GTS_TRANSLATION_ORDER_FILE       = __FILE__; // Plugin main file.
-const GTS_MINIMUM_PHP_REQUIRED_VERSION = '7.4'; // Minimum required PHP version.
 
 /**
  * Debug mode.
@@ -48,22 +45,5 @@ const GTS_REST_DEBUG_URL = 'https://stages.i-wp-dev.com/wp-json/gts-translation-
 const GTS_REST_URL       = 'https://www.gts-translation.com/wp-json/gts-translation-order/v1/';
 
 require_once GTS_TRANSLATION_ORDER_PATH . '/vendor/autoload.php';
-
-if ( ! Main::is_php_version_required() ) {
-	add_action( 'admin_notices', [ AdminNotice::class, 'bad_php_version' ] );
-
-	if ( ! is_plugin_active( plugin_basename( GTS_TRANSLATION_ORDER_FILE ) ) ) {
-		return;
-	}
-
-	deactivate_plugins( plugin_basename( GTS_TRANSLATION_ORDER_FILE ) );
-
-	// phpcs:disable WordPress.Security.NonceVerification.Recommended
-	if ( isset( $_GET['activate'] ) ) {
-		unset( $_GET['activate'] );
-	}
-
-	return;
-}
 
 new Main();

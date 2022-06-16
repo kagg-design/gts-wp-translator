@@ -21,7 +21,7 @@ class PostFilter {
 	/**
 	 * Exclude post types.
 	 */
-	private const EXCLUDE_POST_TYPES = [
+	const EXCLUDE_POST_TYPES = [
 		'attachment',
 		'revision',
 		'nav_menu_item',
@@ -32,38 +32,38 @@ class PostFilter {
 	/**
 	 * Cookie filter name.
 	 */
-	private const COOKIE_FILTER_NAME = 'gts_post_filter';
+	const COOKIE_FILTER_NAME = 'gts_post_filter';
 
 	/**
 	 * Cookie cart name.
 	 */
-	private const COOKIE_CART_NAME = 'gts_cart_data';
+	const COOKIE_CART_NAME = 'gts_cart_data';
 
 	/**
 	 * Limit output posts.
 	 */
-	public const LIMIT_OUTPUT = 50;
+	const LIMIT_OUTPUT = 50;
 
 	/**
 	 * Page number.
 	 *
 	 * @var int $page Page number.
 	 */
-	private int $page;
+	private $page;
 
 	/**
 	 * Pagination Class.
 	 *
 	 * @var Pagination $pagintion pagination.
 	 */
-	public Pagination $pagination;
+	public $pagination;
 
 	/**
 	 * Count posts.
 	 *
 	 * @var int $count_posts count post
 	 */
-	public int $count_posts;
+	public $count_posts;
 
 	/**
 	 * Language list.
@@ -77,7 +77,7 @@ class PostFilter {
 	 *
 	 * @var Cost $cost Cost class.
 	 */
-	private Cost $cost;
+	private $cost;
 
 	/**
 	 * PostFilter construct.
@@ -96,7 +96,7 @@ class PostFilter {
 	 *
 	 * @return void
 	 */
-	private function init(): void {
+	private function init() {
 		add_action( 'init', [ $this, 'filter' ] );
 
 		$this->page = 1;
@@ -113,7 +113,7 @@ class PostFilter {
 	 *
 	 * @return array
 	 */
-	private function get_post_types_array(): array {
+	private function get_post_types_array() {
 		return array_diff( get_post_types( [ 'public' => true ] ), self::EXCLUDE_POST_TYPES );
 	}
 
@@ -122,7 +122,7 @@ class PostFilter {
 	 *
 	 * @return void
 	 */
-	public function show_post_types_select(): void {
+	public function show_post_types_select() {
 		$post_type_select = $this->get_cookie( self::COOKIE_FILTER_NAME );
 		?>
 		<select class="form-select" id="gts_to_post_type_select" aria-label="Post Type" name="gts_to_post_type_select">
@@ -141,8 +141,9 @@ class PostFilter {
 	 *
 	 * @return void
 	 */
-	public function show_search_field(): void {
-		$search = $this->get_cookie( self::COOKIE_FILTER_NAME )->search ?? '';
+	public function show_search_field() {
+		$cookie = $this->get_cookie( self::COOKIE_FILTER_NAME );
+		$search = isset( $cookie->search ) ? $cookie->search : '';
 		?>
 		<label for="gts_to_search" class="hidden"></label>
 		<input
@@ -160,7 +161,7 @@ class PostFilter {
 	 *
 	 * @return void
 	 */
-	public function show_target_select_language(): void {
+	public function show_target_select_language() {
 		$target_select = $this->get_cookie( self::COOKIE_FILTER_NAME );
 		?>
 		<label for="target-language" class="hidden"></label>
@@ -180,7 +181,7 @@ class PostFilter {
 	 *
 	 * @return void
 	 */
-	public function show_pop_up_language(): void {
+	public function show_pop_up_language() {
 		?>
 		<div class="modal modal-lg" tabindex="-1" id="language-modal">
 			<div class="modal-dialog modal-dialog-centered">
@@ -239,7 +240,7 @@ class PostFilter {
 	 *
 	 * @return void
 	 */
-	public function show_source_language(): void {
+	public function show_source_language() {
 		$source_select = $this->get_cookie( self::COOKIE_FILTER_NAME );
 		?>
 		<select
@@ -268,7 +269,7 @@ class PostFilter {
 	 *
 	 * @return void
 	 */
-	public function filter(): void {
+	public function filter() {
 
 		if ( ! isset( $_POST['gts_filter_submit'] ) ) {
 			return;
@@ -291,7 +292,7 @@ class PostFilter {
 			'post_type' => $post_type,
 			'search'    => $search,
 			'source'    => $source,
-			'target'    => explode( ', ', $target ) ?? $target,
+			'target'    => explode( ', ', $target ),
 		];
 
 		$this->set_cookie( self::COOKIE_FILTER_NAME, $param );
@@ -303,7 +304,7 @@ class PostFilter {
 	 *
 	 * @return void
 	 */
-	public function show_table(): void {
+	public function show_table() {
 
 		$filter_params = $this->get_cookie( self::COOKIE_FILTER_NAME );
 		$cart_post_id  = (array) $this->get_cookie( self::COOKIE_CART_NAME );
@@ -392,7 +393,7 @@ class PostFilter {
 	 *
 	 * @return void
 	 */
-	private function set_cookie( string $name, $values ): void {
+	private function set_cookie( $name, $values ) {
 
 		if ( is_array( $values ) ) {
 			$values = wp_json_encode( $values, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
@@ -413,7 +414,7 @@ class PostFilter {
 	 *
 	 * @return array
 	 */
-	private function get_posts_by_post_type( string $post_type = null, string $search = null, int $number = 25, int $offset = 0 ): array {
+	private function get_posts_by_post_type( $post_type = null, $search = null, $number = 25, $offset = 0 ) {
 		global $wpdb;
 
 		$post_types = [ $post_type ];
@@ -468,7 +469,7 @@ class PostFilter {
 	 *
 	 * @return string Items separated by comma and sql-escaped
 	 */
-	private function prepare_in( $items, string $format = '%s' ): string {
+	private function prepare_in( $items, $format = '%s' ) {
 		global $wpdb;
 
 		$items    = (array) $items;
@@ -493,7 +494,7 @@ class PostFilter {
 	 *
 	 * @return object
 	 */
-	private function get_cookie( string $name ): object {
+	private function get_cookie( $name ) {
 		if ( isset( $_COOKIE[ $name ] ) ) {
 			return (object) json_decode( filter_var( wp_unslash( $_COOKIE[ $name ] ) ) );
 		}
