@@ -118,13 +118,9 @@ jQuery( document ).ready( function( $ ) {
 
 		let elements = $( '[name^=\'gts_to_translate\']:checked' );
 
-		console.log( elements );
-
 		$.each( elements, function( i, val ) {
 			postsID.push( $( val ).data( 'id' ) );
 		} );
-
-		console.log( postsID )
 
 		let data = {
 			action: GTSTranslationOrderObject.addToCartAction,
