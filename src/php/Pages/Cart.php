@@ -76,10 +76,7 @@ class Cart {
 	 */
 	public function init() {
 		add_action( 'wp_ajax_add_to_cart', [ $this, 'add_to_cart' ] );
-		add_action( 'wp_ajax_nopriv_add_to_cart', [ $this, 'add_to_cart' ] );
-
 		add_action( 'wp_ajax_delete_from_cart', [ $this, 'delete_from_cart' ] );
-		add_action( 'wp_ajax_nopriv_delete_from_cart', [ $this, 'delete_from_cart' ] );
 	}
 
 	/**
