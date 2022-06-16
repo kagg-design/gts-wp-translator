@@ -294,7 +294,7 @@ class Cart {
 			wp_send_json_error( __( 'Bad Nonce', 'gts-translation-order' ) );
 		}
 
-		$bulk = ! empty( $_POST['bulk'] ) && filter_var( wp_unslash( $_POST['bulk'] ), FILTER_SANITIZE_STRING );
+		$bulk = ! empty( $_POST['bulk'] ) && filter_var( wp_unslash( $_POST['bulk'] ), FILTER_VALIDATE_BOOLEAN );
 
 		if ( $bulk ) {
 			// bulk add.
