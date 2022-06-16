@@ -75,7 +75,7 @@ class Cart {
 	 * @return void
 	 */
 	public function init() {
-		add_action( 'wp_ajax_add_to_cart', [ $this, 'add_to_cart' ] );
+		add_action( 'wp_ajax_gts-to-add-to-cart', [ $this, 'add_to_cart' ] );
 		add_action( 'wp_ajax_delete_from_cart', [ $this, 'delete_from_cart' ] );
 	}
 
@@ -287,7 +287,7 @@ class Cart {
 
 		$nonce = ! empty( $_POST['nonce'] ) ? filter_var( wp_unslash( $_POST['nonce'] ), FILTER_SANITIZE_STRING ) : '';
 
-		if ( ! wp_verify_nonce( $nonce, 'gts_add_to_cart_nonce' ) ) {
+		if ( ! wp_verify_nonce( $nonce, 'gts-to-add-to-cart' ) ) {
 			wp_send_json_error( __( 'Bad Nonce', 'gts-translation-order' ) );
 		}
 
@@ -327,7 +327,7 @@ class Cart {
 	public function delete_from_cart() {
 		$nonce = ! empty( $_POST['nonce'] ) ? filter_var( wp_unslash( $_POST['nonce'] ), FILTER_SANITIZE_STRING ) : '';
 
-		if ( ! wp_verify_nonce( $nonce, 'gts_remove_from_cart_nonce' ) ) {
+		if ( ! wp_verify_nonce( $nonce, 'gts-to-delete-from-cart' ) ) {
 			wp_send_json_error( __( 'Bad Nonce', 'gts-translation-order' ) );
 		}
 
