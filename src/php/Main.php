@@ -52,6 +52,11 @@ class Main {
 	];
 
 	/**
+	 * Order table created option.
+	 */
+	const ORDER_TABLE_OPTION = 'gts_order_table_created';
+
+	/**
 	 * Translation Order page.
 	 *
 	 * @var Order Translation Order.
@@ -190,10 +195,9 @@ class Main {
 	public function create_order_table() {
 		global $wpdb;
 
-		$table = get_option( 'gts_order_table_create' );
+		$table = get_option( self::ORDER_TABLE_OPTION );
 
 		if ( ! $table ) {
-
 			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery
 			// phpcs:disable WordPress.DB.DirectDatabaseQuery.NoCaching
 			$sql = "CREATE TABLE `{$wpdb->prefix}gts_translation_order`  
@@ -213,11 +217,10 @@ class Main {
 			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 			dbDelta( $sql );
-
 			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery
 			// phpcs:enable WordPress.DB.DirectDatabaseQuery.NoCaching
 
-			update_option( 'gts_order_table_create', true );
+			update_option( self::ORDER_TABLE_OPTION, true );
 		}
 	}
 }
