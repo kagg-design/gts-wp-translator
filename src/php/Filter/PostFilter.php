@@ -86,7 +86,7 @@ class PostFilter {
 		$this->init();
 
 		$api                 = new API();
-		$this->language_list = $api->get_languages_list();
+		$this->language_list = $api->get_language_list();
 
 		$this->cost = new Cost();
 	}

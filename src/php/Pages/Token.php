@@ -32,20 +32,15 @@ class Token {
 	 *
 	 * @var string
 	 */
-	private $url_server;
+	private $server_url;
 
 	/**
 	 * Token construct.
 	 */
 	public function __construct() {
 		$this->token = get_option( self::GTS_TOKEN_NAME, '' );
-		$this->init();
 
-		if ( GTS_REST_DEBUG ) {
-			$this->url_server = GTS_REST_DEBUG_URL;
-		} else {
-			$this->url_server = GTS_REST_URL;
-		}
+		$this->init();
 	}
 
 	/**
@@ -137,7 +132,7 @@ class Token {
 		}
 
 		$response = wp_remote_post(
-			$this->url_server . 'add-token',
+			$this->server_url . 'add-token',
 			[
 				'body' => [
 					'token'         => $token,

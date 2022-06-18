@@ -57,40 +57,38 @@ class Main {
 	const ORDER_TABLE_OPTION = 'gts_order_table_created';
 
 	/**
+	 * API.
+	 *
+	 * @var API
+	 */
+	private $api;
+
+	/**
 	 * Translation Order page.
 	 *
-	 * @var Order Translation Order.
+	 * @var Order
 	 */
-	public $translation_order;
+	private $translation_order;
 
 	/**
 	 * Cart class.
 	 *
-	 * @var Cart $translation_cart Cart class.
+	 * @var Cart
 	 */
-	public $translation_cart;
-
-	/**
-	 * Filter class.
-	 *
-	 * @var PostFilter
-	 */
-	private $filter;
+	private $translation_cart;
 
 	/**
 	 * Token class.
 	 *
-	 * @var Token $translation_token Token class
+	 * @var Token
 	 */
-	public $translation_token;
+	private $translation_token;
 
 	/**
 	 * PluginInit construct.
 	 */
 	public function __construct() {
-		$this->filter = new PostFilter();
-
-		$this->init();
+		$this->hooks();
 	}
 
 	/**
@@ -98,14 +96,24 @@ class Main {
 	 *
 	 * @return void
 	 */
-	public function init() {
+	public function hooks() {
+		add_action( 'plugins_loaded', [ $this, 'init' ] );
 		add_action( 'plugins_loaded', [ $this, 'init_text_domain' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_scripts' ] );
 		add_action( 'admin_menu', [ $this, 'menu_page' ] );
 		add_action( 'init', [ $this, 'create_order_table' ] );
+	}
 
-		$this->translation_order = new Order( $this->filter );
-		$this->translation_cart  = new Cart();
+	/**
+	 * Init plugin.
+	 *
+	 * @return void
+	 */
+	public function init() {
+		$this->api               = new API();
+		$filter                  = new PostFilter();
+		$this->translation_order = new Order( $filter );
+		$this->translation_cart  = new Cart( $this->api );
 		$this->translation_token = new Token();
 	}
 

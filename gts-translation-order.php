@@ -36,14 +36,6 @@ const GTS_TRANSLATION_ORDER_VERSION = '0.0.1'; // Plugin version.
 const GTS_TRANSLATION_ORDER_PATH    = __DIR__; // Plugin path.
 define( 'GTS_TRANSLATION_ORDER_URL', untrailingslashit( plugin_dir_url( __FILE__ ) ) ); // Plugin url.
 
-/**
- * Debug mode.
- */
-const GTS_REST_DEBUG = true;
-
-const GTS_REST_DEBUG_URL = 'https://stages.i-wp-dev.com/wp-json/gts-translation-order/v1/';
-const GTS_REST_URL       = 'https://www.gts-translation.com/wp-json/gts-translation-order/v1/';
-
 require_once GTS_TRANSLATION_ORDER_PATH . '/vendor/autoload.php';
 
 new Main();
