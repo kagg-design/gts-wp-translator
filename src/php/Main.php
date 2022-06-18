@@ -197,28 +197,30 @@ class Main {
 
 		$table = get_option( self::ORDER_TABLE_OPTION );
 
-		if ( ! $table ) {
-			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$sql = "CREATE TABLE `{$wpdb->prefix}gts_translation_order`  
-					(
-					    `id` BIGINT NOT NULL AUTO_INCREMENT , 
-					    `posts_id` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL , 
-					    `status` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL , 
-					    `total_cost` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL , 
-					    `date_send` DATE NOT NULL DEFAULT CURRENT_TIMESTAMP , 
-					    `date_response` DATE NOT NULL , 
-					    `site_language` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL , 
-					    `target_languages` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL , 
-					    `industry` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL , 
-					    PRIMARY KEY (`id`)
-					);";
-
-			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-
-			dbDelta( $sql );
-			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-
-			update_option( self::ORDER_TABLE_OPTION, true );
+		if ( $table ) {
+			return;
 		}
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$sql = "CREATE TABLE `{$wpdb->prefix}gts_translation_order`  
+				(
+				    `id` BIGINT NOT NULL AUTO_INCREMENT,
+				    `posts_id` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+				    `status` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+				    `total_cost` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+				    `date_send` DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				    `date_response` DATE NOT NULL,
+				    `site_language` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+				    `target_languages` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+				    `industry` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+				    PRIMARY KEY (`id`)
+				)";
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+		dbDelta( $sql );
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+		update_option( self::ORDER_TABLE_OPTION, true );
 	}
 }
