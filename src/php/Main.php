@@ -198,8 +198,7 @@ class Main {
 		$table = get_option( self::ORDER_TABLE_OPTION );
 
 		if ( ! $table ) {
-			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery
-			// phpcs:disable WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$sql = "CREATE TABLE `{$wpdb->prefix}gts_translation_order`  
 					(
 					    `id` BIGINT NOT NULL AUTO_INCREMENT , 
@@ -217,8 +216,7 @@ class Main {
 			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 			dbDelta( $sql );
-			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery
-			// phpcs:enable WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 			update_option( self::ORDER_TABLE_OPTION, true );
 		}
