@@ -42,7 +42,7 @@ class Order {
 			<div class="row">
 				<div class="col">
 					<div class="wrap">
-						<h1 class="wp-heading-inline"><?php esc_attr_e( 'Pages for translation', 'gts-translation-order' ); ?></h1>
+						<h1 class="wp-heading-inline"><?php esc_attr_e( 'Select Posts for Translation', 'gts-translation-order' ); ?></h1>
 					</div>
 				</div>
 			</div>

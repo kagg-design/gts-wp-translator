@@ -171,7 +171,7 @@ class PostFilter {
 				id="target-language"
 				name="target_language"
 				value="<?php echo esc_attr( implode( ', ', $target_select->target ) ); ?>"
-				placeholder="<?php esc_html_e( 'Select a target languages', 'gts-translation-order' ); ?>"
+				placeholder="<?php esc_html_e( 'Target languages', 'gts-translation-order' ); ?>"
 				readonly>
 		<?php
 	}
@@ -196,18 +196,18 @@ class PostFilter {
 							<?php
 							$i = 0;
 							echo '<tr>';
-							foreach ( $this->language_list as $lang ) {
+							foreach ( $this->language_list as $language ) {
 								$i ++;
 								?>
 								<td class="cell">
 									<input
 											type="checkbox" name="regi_target_language[]"
-											value="<?php echo esc_html( $lang->language_name ); ?>"
-											id="<?php echo esc_html( $lang->language_name ); ?>"
+											value="<?php echo esc_html( $language->language_name ); ?>"
+											id="<?php echo esc_html( $language->language_name ); ?>"
 											class="lang-checkbox"
 									/>
-									<label for="<?php echo esc_html( $lang->language_name ); ?>">
-										<?php echo esc_html( $lang->language_name ); ?>
+									<label for="<?php echo esc_html( $language->language_name ); ?>">
+										<?php echo esc_html( $language->language_name ); ?>
 									</label>
 								</td>
 								<?php
@@ -248,7 +248,7 @@ class PostFilter {
 				name="gts_source_language"
 				aria-label="<?php esc_html_e( 'Source language', 'gts-translation-order' ); ?>">
 			<option value="0"
-					selected><?php esc_html_e( 'Select a source language', 'gts-translation-order' ); ?></option>
+					selected><?php esc_html_e( 'Source language', 'gts-translation-order' ); ?></option>
 			<?php
 			foreach ( $this->language_list as $language ) {
 				if ( $language->active ) {
@@ -499,6 +499,11 @@ class PostFilter {
 			return (object) json_decode( filter_var( wp_unslash( $_COOKIE[ $name ] ) ) );
 		}
 
-		return (object) null;
+		return (object) [
+			'post_type' => 'page',
+			'search'    => '',
+			'source'    => '',
+			'target'    => [],
+		];
 	}
 }
