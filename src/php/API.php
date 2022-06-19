@@ -62,7 +62,7 @@ class API {
 	/**
 	 * Language list transient.
 	 */
-	const LANGUAGES_LIST_TRANSIENT = 'gts-translation-order-languages_list';
+	const LANGUAGE_LIST_TRANSIENT = 'gts-translation-order-languages_list';
 
 	/**
 	 * GTS site url.
@@ -82,7 +82,7 @@ class API {
 	/**
 	 * Price list.
 	 */
-	const PRICE_LIST_TRANSIENT = 'get_price_languages_list';
+	const PRICES_TRANSIENT = 'get_price_languages_list';
 
 	/**
 	 * Token Access.
@@ -195,20 +195,20 @@ class API {
 	}
 
 	/**
-	 * Created transient languages list.
+	 * Get language list.
 	 *
 	 * @return array
 	 */
 	public function get_language_list() {
 
-		$languages_list = get_transient( self::LANGUAGES_LIST_TRANSIENT );
+//		$language_list = get_transient( self::LANGUAGE_LIST_TRANSIENT );
+//
+//		if ( false !== $language_list ) {
+//			return $language_list;
+//		}
 
-		if ( $languages_list ) {
-			return $languages_list;
-		}
-
-		$response = wp_remote_get(
-			$this->server_url . 'get-languages',
+		$response = $this->request(
+			$this->server_url . 'languages',
 			[
 				'body' => [
 					'token' => $this->token,
@@ -216,48 +216,63 @@ class API {
 			]
 		);
 
-		if ( is_wp_error( $response ) || 200 !== $response['response']['code'] ) {
-			return [];
-		}
+		$response = $response ?: [];
 
-		$response = json_decode( $response['body'] );
-
-		set_transient( self::LANGUAGES_LIST_TRANSIENT, $response, DAY_IN_SECONDS );
+		set_transient( self::LANGUAGE_LIST_TRANSIENT, $response, DAY_IN_SECONDS );
 
 		return $response;
 	}
 
 	/**
-	 * Get price list.
+	 * Get prices.
 	 *
 	 * @return array
 	 */
-	public function get_price_list() {
-		$prices = get_transient( self::PRICE_LIST_TRANSIENT . '' );
+	public function get_prices() {
+		$prices = get_transient( self::PRICES_TRANSIENT );
 
-		if ( ! $prices ) {
-			$response = wp_remote_request(
-				$this->server_url . 'get-languages',
-				[
-					'method' => 'GET',
-					'body'   => [
-						'token' => $this->token,
-					],
-				]
-			);
-
-			$response = json_decode( $response['body'] );
-
-			if ( is_wp_error( $response ) ) {
-				return [];
-			}
-
-			set_transient( self::PRICE_LIST_TRANSIENT, $response, DAY_IN_SECONDS );
-
-			return $response;
+		if ( false !== $prices ) {
+			return $prices;
 		}
 
-		return $prices;
+		$response = $this->request(
+			$this->server_url . 'prices',
+			[
+				'body' => [
+					'token' => $this->token,
+				],
+			]
+		);
+
+		$response = $response ?: [];
+
+		set_transient( self::PRICES_TRANSIENT, $response, DAY_IN_SECONDS );
+
+		return $response;
+	}
+
+	/**
+	 * Make a request to the server.
+	 *
+	 * @param string $url  Server url.
+	 * @param array  $args Arguments.
+	 *
+	 * @return mixed|false
+	 */
+	private function request( $url, $args ) {
+
+		$response = wp_remote_get(
+			$url,
+			$args
+		);
+
+		if ( is_wp_error( $response ) || 200 !== $response['response']['code'] ) {
+			return false;
+		}
+
+		$result = json_decode( $response['body'] );
+
+		return $result ?: false;
 	}
 
 	/**

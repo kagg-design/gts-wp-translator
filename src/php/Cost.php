@@ -27,7 +27,7 @@ class Cost {
 	public function __construct() {
 		$api = new API();
 
-		$this->translate_price = $api->get_price_list();
+		$this->translate_price = $api->get_prices();
 	}
 
 	/**

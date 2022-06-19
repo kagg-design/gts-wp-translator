@@ -85,23 +85,10 @@ class Main {
 	private $translation_token;
 
 	/**
-	 * PluginInit construct.
+	 * Main construct.
 	 */
 	public function __construct() {
 		$this->hooks();
-	}
-
-	/**
-	 * Init Hooks.
-	 *
-	 * @return void
-	 */
-	public function hooks() {
-		add_action( 'plugins_loaded', [ $this, 'init' ] );
-		add_action( 'plugins_loaded', [ $this, 'init_text_domain' ] );
-		add_action( 'admin_enqueue_scripts', [ $this, 'admin_scripts' ] );
-		add_action( 'admin_menu', [ $this, 'menu_page' ] );
-		add_action( 'init', [ $this, 'create_order_table' ] );
 	}
 
 	/**
@@ -110,6 +97,19 @@ class Main {
 	 * @return void
 	 */
 	public function init() {
+		/*
+		 * Prevent loading of the plugins code on REST request.
+		 * This allows activation of the plugin on the GTS server for test purposes.
+		 */
+
+		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ?
+			esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) :
+			'';
+
+		if ( 0 === strpos( $request_uri, '/' . rest_get_url_prefix() ) ) {
+			return;
+		}
+
 		$this->api               = new API();
 		$filter                  = new PostFilter();
 		$this->translation_order = new Order( $filter );
@@ -118,7 +118,20 @@ class Main {
 	}
 
 	/**
-	 * Init Text Domain.
+	 * Init Hooks.
+	 *
+	 * @return void
+	 */
+	private function hooks() {
+		add_action( 'plugins_loaded', [ $this, 'init_text_domain' ], 20 );
+		add_action( 'init', [ $this, 'init' ] );
+		add_action( 'init', [ $this, 'create_order_table' ] );
+		add_action( 'admin_enqueue_scripts', [ $this, 'admin_scripts' ] );
+		add_action( 'admin_menu', [ $this, 'menu_page' ] );
+	}
+
+	/**
+	 * Init text domain.
 	 *
 	 * @return void
 	 */
@@ -127,7 +140,7 @@ class Main {
 	}
 
 	/**
-	 * Add Script and Style to Admin panel.
+	 * Add script and style to admin panel.
 	 *
 	 * @param string $hook_suffix Top Level Page slug.
 	 *
