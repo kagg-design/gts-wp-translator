@@ -32,17 +32,17 @@ class PostFilter {
 	/**
 	 * Cookie filter name.
 	 */
-	const COOKIE_FILTER_NAME = 'gts_post_filter';
+	const COOKIE_FILTER_NAME = 'gts-translation-order-post-filter';
 
 	/**
 	 * Cookie cart name.
 	 */
-	const COOKIE_CART_NAME = 'gts_cart_data';
+	const COOKIE_CART_NAME = 'gts-translation-order-cart-data';
 
 	/**
 	 * Limit output posts.
 	 */
-	const LIMIT_OUTPUT = 50;
+	const OUTPUT_LIMIT = 50;
 
 	/**
 	 * Page number.
@@ -317,7 +317,7 @@ class PostFilter {
 
 			];
 		}
-		$limit = self::LIMIT_OUTPUT;
+		$limit = self::OUTPUT_LIMIT;
 		$posts = $this->get_posts_by_post_type( $filter_params->post_type, $filter_params->search, ( $this->page - 1 ) * $limit, $limit );
 
 		$curr_page_url = isset( $_SERVER['QUERY_STRING'] ) ? 'admin.php?' . filter_var( wp_unslash( $_SERVER['QUERY_STRING'] ), FILTER_SANITIZE_STRING ) : '';

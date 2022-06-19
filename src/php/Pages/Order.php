@@ -101,7 +101,7 @@ class Order {
 						</caption>
 					</table>
 					<?php
-					if ( $this->filter->count_posts > PostFilter::LIMIT_OUTPUT ) {
+					if ( $this->filter->count_posts > PostFilter::OUTPUT_LIMIT ) {
 						$this->filter->pagination->show();
 					}
 					?>

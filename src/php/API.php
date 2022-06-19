@@ -172,6 +172,7 @@ class API {
 			$auth          = get_option( self::AUTH_OPTION );
 			$auth['token'] = $token;
 			update_option( self::AUTH_OPTION, $auth );
+			$this->delete_transients();
 		}
 
 		return $token;
@@ -230,7 +231,7 @@ class API {
 		$this->update_auth_attempts_count();
 
 		if ( false !== $response ) {
-			delete_transient( self::SITE_KEY_LOCK );
+			$this->delete_transients();
 		}
 
 		/**
