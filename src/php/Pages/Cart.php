@@ -7,6 +7,7 @@
 
 namespace GTS\TranslationOrder\Pages;
 
+use GTS\TranslationOrder\Cookie;
 use GTS\TranslationOrder\Cost;
 use GTS\TranslationOrder\API;
 use stdClass;
@@ -15,6 +16,12 @@ use stdClass;
  * TranslationCart class file.
  */
 class Cart {
+
+	/**
+	 * Cart cookie name.
+	 */
+	const CART_COOKIE_NAME = 'gts-translation-order-cart-data';
+
 	/**
 	 * Languages list.
 	 *
@@ -146,7 +153,7 @@ class Cart {
 	 * @return void
 	 */
 	private function show_total_form() {
-		$filter     = $this->get_cookie( 'gts_post_filter' );
+		$filter     = Cookie::get_filter_cookie();
 		$user       = wp_get_current_user();
 		$user_email = ( $user && isset( $user->user_email ) ) ? $user->user_email : '';
 		?>
@@ -349,10 +356,8 @@ class Cart {
 	 * @param array $args Arguments.
 	 */
 	private function save_post_to_cart( array $args ) {
-
-		$cart_post_ids = ! empty( $_COOKIE['gts_cart_data'] ) ? (array) json_decode( filter_var( wp_unslash( $_COOKIE['gts_cart_data'] ) ) ) : (array) null;
-
-		$result = [];
+		$cart_post_ids = Cookie::get_cart_cookie();
+		$result        = [];
 
 		if ( 'add' === $args['type'] ) {
 			$result = array_merge( $cart_post_ids, $args['post_id'] );
@@ -362,33 +367,10 @@ class Cart {
 			$result = array_diff( $cart_post_ids, $args['post_id'] );
 		}
 
-		setcookie(
-			'gts_cart_data',
-			wp_json_encode( $result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ),
-			strtotime( '+30 days' ),
-			COOKIEPATH,
-			COOKIE_DOMAIN
-		);
-
-		$_COOKIE['gts_cart_data'] = $result;
+		Cookie::set( Cookie::CART_COOKIE_NAME, $result );
 
 		return $result;
 
-	}
-
-	/**
-	 * Get cookie filter params.
-	 *
-	 * @param string $name Name cookie.
-	 *
-	 * @return object
-	 */
-	private function get_cookie( $name ) {
-		if ( isset( $_COOKIE[ $name ] ) ) {
-			return (object) json_decode( filter_var( wp_unslash( $_COOKIE[ $name ] ) ) );
-		}
-
-		return (object) null;
 	}
 
 	/**
@@ -397,8 +379,9 @@ class Cart {
 	 * @return void
 	 */
 	private function show_table() {
-		$cart_item = $this->get_cookie( 'gts_cart_data' );
-		$filter    = $this->get_cookie( 'gts_post_filter' );
+		$cart_item = Cookie::get_cart_cookie();
+		$filter    = Cookie::get_filter_cookie();
+
 		if ( 0 !== count( (array) $cart_item ) ) {
 			foreach ( $cart_item as $item ) {
 				$post  = get_post( $item );

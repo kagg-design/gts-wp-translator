@@ -8,6 +8,7 @@
 namespace GTS\TranslationOrder\Filter;
 
 use GTS\TranslationOrder\Admin\AdminNotice;
+use GTS\TranslationOrder\Cookie;
 use GTS\TranslationOrder\Cost;
 use GTS\TranslationOrder\API;
 use GTS\TranslationOrder\Pagination;
@@ -28,16 +29,6 @@ class PostFilter {
 		'clients',
 		'notification',
 	];
-
-	/**
-	 * Cookie filter name.
-	 */
-	const COOKIE_FILTER_NAME = 'gts-translation-order-post-filter';
-
-	/**
-	 * Cookie cart name.
-	 */
-	const COOKIE_CART_NAME = 'gts-translation-order-cart-data';
 
 	/**
 	 * Limit output posts.
@@ -123,7 +114,7 @@ class PostFilter {
 	 * @return void
 	 */
 	public function show_post_types_select() {
-		$post_type_select = $this->get_cookie( self::COOKIE_FILTER_NAME );
+		$post_type_select = Cookie::get_filter_cookie();
 		?>
 		<select class="form-select" id="gts_to_post_type_select" aria-label="Post Type" name="gts_to_post_type_select">
 			<option value="null" selected><?php esc_html_e( 'Select post type', 'gts-translation-order' ); ?></option>
@@ -142,7 +133,7 @@ class PostFilter {
 	 * @return void
 	 */
 	public function show_search_field() {
-		$cookie = $this->get_cookie( self::COOKIE_FILTER_NAME );
+		$cookie = Cookie::get_filter_cookie();
 		$search = isset( $cookie->search ) ? $cookie->search : '';
 		?>
 		<label for="gts_to_search" class="hidden"></label>
@@ -162,7 +153,7 @@ class PostFilter {
 	 * @return void
 	 */
 	public function show_target_select_language() {
-		$target_select = $this->get_cookie( self::COOKIE_FILTER_NAME );
+		$target_select = Cookie::get_filter_cookie();
 		?>
 		<label for="target-language" class="hidden"></label>
 		<input
@@ -241,7 +232,7 @@ class PostFilter {
 	 * @return void
 	 */
 	public function show_source_language() {
-		$source_select = $this->get_cookie( self::COOKIE_FILTER_NAME );
+		$source_select = Cookie::get_filter_cookie();
 		?>
 		<select
 				class="form-select"
@@ -295,7 +286,7 @@ class PostFilter {
 			'target'    => explode( ', ', $target ),
 		];
 
-		$this->set_cookie( self::COOKIE_FILTER_NAME, $param );
+		Cookie::set( Cookie::FILTER_COOKIE_NAME, $param );
 	}
 
 
@@ -306,8 +297,9 @@ class PostFilter {
 	 */
 	public function show_table() {
 
-		$filter_params = $this->get_cookie( self::COOKIE_FILTER_NAME );
-		$cart_post_id  = (array) $this->get_cookie( self::COOKIE_CART_NAME );
+		$filter_params = Cookie::get_filter_cookie();
+		$cart_post_id  = (array) Cookie::get_cart_cookie();
+
 		if ( ! isset( $filter_params->post_type ) ) {
 			$filter_params = (object) [
 				'post_type' => 'null',
@@ -383,25 +375,6 @@ class PostFilter {
 			</tr>
 			<?php
 		}
-	}
-
-	/**
-	 * Set cookie.
-	 *
-	 * @param string           $name   Name cookie.
-	 * @param array|string|int $values Value.
-	 *
-	 * @return void
-	 */
-	private function set_cookie( $name, $values ) {
-
-		if ( is_array( $values ) ) {
-			$values = wp_json_encode( $values, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
-		}
-
-		setcookie( $name, $values, strtotime( '+30 days' ), COOKIEPATH, COOKIE_DOMAIN );
-
-		$_COOKIE[ $name ] = $values;
 	}
 
 	/**
@@ -485,25 +458,5 @@ class PostFilter {
 		}
 
 		return $prepared_in;
-	}
-
-	/**
-	 * Get cookie filter params.
-	 *
-	 * @param string $name Name cookie.
-	 *
-	 * @return object
-	 */
-	private function get_cookie( $name ) {
-		if ( isset( $_COOKIE[ $name ] ) ) {
-			return (object) json_decode( filter_var( wp_unslash( $_COOKIE[ $name ] ) ) );
-		}
-
-		return (object) [
-			'post_type' => 'page',
-			'search'    => '',
-			'source'    => '',
-			'target'    => [],
-		];
 	}
 }
