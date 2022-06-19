@@ -115,7 +115,7 @@ class Cart {
 				<div class="col-auto">
 					<table class="table table-dark table-striped total-table">
 						<tr>
-							<td>Total Cost:</td>
+							<td><?php esc_html_e( 'Total Cost:', 'gts-translation-order' ); ?></td>
 							<td>$<?php echo esc_attr( $this->total ); ?></td>
 						</tr>
 						<tr>
@@ -124,12 +124,12 @@ class Cart {
 							</td>
 						</tr>
 						<tr>
-							<td><?php esc_html_e( 'Send to Translation:', 'gts-translation-order' ); ?></td>
 							<td>
 								<button type="button" class="btn btn-primary">
-									<?php esc_html_e( 'Send', 'gts-translation-order' ); ?>
+									<?php esc_html_e( 'Send to translation', 'gts-translation-order' ); ?>
 								</button>
 							</td>
+							<td></td>
 						</tr>
 					</table>
 				</div>
@@ -153,7 +153,7 @@ class Cart {
 		<form action="" method="post">
 			<div class="mb-3">
 				<label for="gts_client_email" class="form-label">
-					<?php esc_html_e( 'Email address', 'gts-translation-order' ); ?>
+					<?php esc_html_e( 'Email', 'gts-translation-order' ); ?>
 				</label>
 				<input
 						type="email"
@@ -164,14 +164,14 @@ class Cart {
 						placeholder="name@example.com">
 			</div>
 			<div class="mb-3">
-				<label for="language"><?php esc_html_e( 'Select Languages', 'gts-translation-order' ); ?></label>
+				<label for="language"><?php esc_html_e( 'Source language', 'gts-translation-order' ); ?></label>
 				<select
 						class="form-select"
 						id="language"
 						name="gts_source_language"
-						aria-label="<?php esc_html_e( 'Select Languages', 'gts-translation-order' ); ?>">
+						aria-label="<?php esc_html_e( 'Source language', 'gts-translation-order' ); ?>">
 					<option value="0"
-							selected><?php esc_html_e( 'Select Languages', 'gts-translation-order' ); ?></option>
+							selected><?php esc_html_e( 'Source language', 'gts-translation-order' ); ?></option>
 					<?php
 					foreach ( $this->language_list as $item ) {
 						if ( $item->active ) {
@@ -193,18 +193,18 @@ class Cart {
 						id="target-language"
 						name="gts_target_language"
 						value="<?php echo esc_attr( implode( ', ', $filter->target ) ); ?>"
-						placeholder="<?php esc_html_e( 'Select a target languages', 'gts-translation-order' ); ?>"
+						placeholder="<?php esc_html_e( 'Select target languages', 'gts-translation-order' ); ?>"
 						readonly>
 			</div>
 			<div class="mb-3">
-				<label for="gts-industry"><?php esc_html_e( 'Select Industry', 'gts-translation-order' ); ?></label>
+				<label for="gts-industry"><?php esc_html_e( 'Industry', 'gts-translation-order' ); ?></label>
 				<select
 						class="form-select"
 						id="gts-industry"
 						name="gts-industry"
-						aria-label="<?php esc_html_e( 'Select Industry', 'gts-translation-order' ); ?>">
+						aria-label="<?php esc_html_e( 'Industry', 'gts-translation-order' ); ?>">
 					<option value="0" selected>
-						<?php esc_html_e( 'Select Industry', 'gts-translation-order' ); ?>
+						<?php esc_html_e( 'Industry', 'gts-translation-order' ); ?>
 					</option>
 					<?php foreach ( self::GTS_INDUSTRY_LIST as $item ) : ?>
 						<option value="<?php echo esc_attr( $item ); ?>">
