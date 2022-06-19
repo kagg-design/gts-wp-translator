@@ -34,7 +34,8 @@ if ( defined( 'GTS_TRANSLATION_ORDER_VERSION' ) ) {
 // Main constants.
 const GTS_TRANSLATION_ORDER_VERSION = '0.0.1'; // Plugin version.
 const GTS_TRANSLATION_ORDER_PATH    = __DIR__; // Plugin path.
-define( 'GTS_TRANSLATION_ORDER_URL', untrailingslashit( plugin_dir_url( __FILE__ ) ) ); // Plugin url.
+const GTS_TRANSLATION_ORDER_FILE    = __FILE__; // Plugin main file.
+define( 'GTS_TRANSLATION_ORDER_URL', untrailingslashit( plugin_dir_url( GTS_TRANSLATION_ORDER_FILE ) ) ); // Plugin url.
 
 require_once GTS_TRANSLATION_ORDER_PATH . '/vendor/autoload.php';
 

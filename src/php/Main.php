@@ -128,6 +128,8 @@ class Main {
 		add_action( 'init', [ $this, 'create_order_table' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_scripts' ] );
 		add_action( 'admin_menu', [ $this, 'menu_page' ] );
+
+		register_deactivation_hook( GTS_TRANSLATION_ORDER_FILE, [ $this, 'deactivate' ] );
 	}
 
 	/**
@@ -243,5 +245,14 @@ class Main {
 		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		update_option( self::ORDER_TABLE_OPTION, true );
+	}
+
+	/**
+	 * Plugin deactivation hook.
+	 *
+	 * @return void
+	 */
+	public function deactivate() {
+		$this->api->delete_transients();
 	}
 }

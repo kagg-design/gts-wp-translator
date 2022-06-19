@@ -7,62 +7,10 @@
 
 namespace GTS\TranslationOrder;
 
-use stdClass;
-use WPForms\Integrations\LiteConnect\Integration;
-
 /**
  * Api class file.
  */
 class API {
-
-	/**
-	 * Max number of attempts for generate_site_key().
-	 */
-	const MAX_GENERATE_KEY_ATTEMPTS = 20;
-
-	/**
-	 * Generate key attempt counter.
-	 */
-	const GENERATE_KEY_ATTEMPT_COUNTER_OPTION = 'gts-translation-order-generate-key-attempt-counter';
-
-	/**
-	 * The create_not_logged_in_nonce() action.
-	 */
-	const KEY_ACTION = 'gts-translation-order-key-action';
-
-	/**
-	 * The generate_site_key() lock transient name.
-	 */
-	const SITE_KEY_LOCK = 'gts-translation-order-site-key-lock';
-
-	/**
-	 * The generate_access_token() lock transient name.
-	 */
-	const ACCESS_TOKEN_LOCK = 'gts-translation-order-access-token-lock';
-
-	/**
-	 * The $_GET argument to trigger the auth key endpoint.
-	 */
-	const AUTH_KEY_ARG = 'gts-translation-order-auth-key';
-
-	/**
-	 * Option name.
-	 */
-	const AUTH_OPTION = 'gts-translation-auth';
-
-
-
-
-
-	/**
-	 * Token name.
-	 */
-	const GTS_TOKEN_NAME = 'gts-translation-order-token';
-
-	/**
-	 * Language list transient.
-	 */
-	const LANGUAGE_LIST_TRANSIENT = 'gts-translation-order-languages_list';
 
 	/**
 	 * GTS site url.
@@ -77,7 +25,47 @@ class API {
 	/**
 	 * REST namespace.
 	 */
-	const REST_NAMESPACE = 'gts-translation-order/v1';
+	const REST_NAMESPACE = 'quote/v1';
+
+	/**
+	 * Max number of attempts for generate_site_key().
+	 */
+	const MAX_AUTH_ATTEMPTS = 20;
+
+	/**
+	 * Auth attempt counter.
+	 */
+	const AUTH_ATTEMPT_COUNTER_OPTION = 'gts-translation-order-auth-attempt-counter';
+
+	/**
+	 * The create_not_logged_in_nonce() action.
+	 */
+	const KEY_ACTION = 'gts-translation-order-key-action';
+
+	/**
+	 * The generate_site_key() lock transient name.
+	 */
+	const SITE_KEY_LOCK = 'gts-translation-order-site-key-lock';
+
+	/**
+	 * The generate_token() lock transient name.
+	 */
+	const ACCESS_TOKEN_LOCK = 'gts-translation-order-access-token-lock';
+
+	/**
+	 * The $_GET argument to trigger the auth key endpoint.
+	 */
+	const AUTH_KEY_ARG = 'gts-translation-order-auth-key';
+
+	/**
+	 * Option name.
+	 */
+	const AUTH_OPTION = 'gts-translation-auth';
+
+	/**
+	 * Language list transient.
+	 */
+	const LANGUAGE_LIST_TRANSIENT = 'gts-translation-order-language-list';
 
 	/**
 	 * Price list.
@@ -85,7 +73,7 @@ class API {
 	const PRICES_TRANSIENT = 'get_price_languages_list';
 
 	/**
-	 * Token Access.
+	 * Access token.
 	 *
 	 * @var string $token Token.
 	 */
@@ -112,22 +100,94 @@ class API {
 
 		$this->endpoints();
 
-		$this->site_key = $this->get_site_key();
-		$this->token = get_option( self::GTS_TOKEN_NAME, '' );
+		$this->token = $this->get_token();
+	}
+
+	/**
+	 * Delete all transients.
+	 * Works on deactivation of the plugin.
+	 * So, a user can deactivate and re-activate the plugin to flush transient caches in case of any troubles.
+	 *
+	 * @return void
+	 */
+	public function delete_transients() {
+		delete_option( self::AUTH_ATTEMPT_COUNTER_OPTION );
+
+		delete_transient( self::SITE_KEY_LOCK );
+		delete_transient( self::ACCESS_TOKEN_LOCK );
+		delete_transient( self::LANGUAGE_LIST_TRANSIENT );
+		delete_transient( self::PRICES_TRANSIENT );
+	}
+
+	/**
+	 * Get token.
+	 *
+	 * @return string|false The token, or false on error.
+	 */
+	private function get_token() {
+		$auth = get_option( self::AUTH_OPTION, [] );
+
+		if ( ! empty( $auth['token'] ) ) {
+			return $auth['token'];
+		}
+
+		// Generate token.
+		return $this->generate_token();
+	}
+
+	/**
+	 * Generate the token.
+	 *
+	 * @return string|false The token, or false on error.
+	 */
+	private function generate_token() {
+		if ( $this->is_max_auth_attempts_reached() ) {
+			return false;
+		}
+
+		if ( get_transient( self::ACCESS_TOKEN_LOCK ) ) {
+			return false;
+		}
+
+		set_transient( self::ACCESS_TOKEN_LOCK, true, MINUTE_IN_SECONDS );
+
+		$site_key = $this->get_site_key();
+
+		if ( ! $site_key ) {
+			return false;
+		}
+
+		$token = $this->request(
+			$this->server_url . 'token',
+			[
+				'body' => [
+					'site_key' => $site_key,
+				],
+			]
+		);
+
+		$this->update_auth_attempts_count();
+
+		if ( false !== $token ) {
+			$auth          = get_option( self::AUTH_OPTION );
+			$auth['token'] = $token;
+			update_option( self::AUTH_OPTION, $auth );
+		}
+
+		return $token;
 	}
 
 	/**
 	 * Get the site key.
 	 *
-	 * @return array|false The site key, or false on error.
+	 * @return string|false The site key, or false on error.
 	 */
 	private function get_site_key() {
 
-		// If site key already exists, then we won't need to regenerate it.
 		$auth = get_option( self::AUTH_OPTION, [] );
 
-		if ( ! empty( $auth['key'] ) ) {
-			return $auth['key'];
+		if ( ! empty( $auth['site_key'] ) ) {
+			return $auth['site_key'];
 		}
 
 		// Generate the site key.
@@ -141,7 +201,7 @@ class API {
 	 */
 	private function generate_site_key() {
 
-		if ( $this->is_max_generate_key_attempts_reached() ) {
+		if ( $this->is_max_auth_attempts_reached() ) {
 			return;
 		}
 
@@ -162,36 +222,21 @@ class API {
 			'callback'    => add_query_arg( [ self::AUTH_KEY_ARG => '' ], trailingslashit( home_url() ) ),
 		];
 
-		$response = wp_remote_get(
-			$this->server_url . 'request-token',
+		$response = $this->request(
+			$this->server_url . 'key',
 			[ 'body' => $data ]
 		);
+
+		$this->update_auth_attempts_count();
 
 		if ( false !== $response ) {
 			delete_transient( self::SITE_KEY_LOCK );
 		}
 
-		$this->update_generate_key_attempts_count();
-
-		// At this point, we do not have the site key.
-		// It will be sent to our callback url.
-	}
-
-
-	/**
-	 * Request token.
-	 *
-	 * @return void
-	 */
-	public function request_token() {
-		$response = wp_remote_get(
-			$this->server_url . 'request-token',
-			[
-				'body' => [
-					'token' => $this->token,
-				],
-			]
-		);
+		/**
+		 * At this point, we do not have the site key.
+		 * It will be sent to our callback url.
+		 */
 	}
 
 	/**
@@ -201,11 +246,11 @@ class API {
 	 */
 	public function get_language_list() {
 
-//		$language_list = get_transient( self::LANGUAGE_LIST_TRANSIENT );
-//
-//		if ( false !== $language_list ) {
-//			return $language_list;
-//		}
+		$language_list = get_transient( self::LANGUAGE_LIST_TRANSIENT );
+
+		if ( false !== $language_list ) {
+			return $language_list;
+		}
 
 		$response = $this->request(
 			$this->server_url . 'languages',
@@ -276,24 +321,24 @@ class API {
 	}
 
 	/**
-	 * Check that we have not reached the max number of attempts to get keys from API using generate_keys().
+	 * Check that we have not reached the max number of attempts to get auth from API.
 	 *
 	 * @since {VERSION}
 	 *
 	 * @return bool
 	 */
-	private function is_max_generate_key_attempts_reached() {
+	private function is_max_auth_attempts_reached() {
 
-		$attempts_count = get_option( self::GENERATE_KEY_ATTEMPT_COUNTER_OPTION, 0 );
+		$attempts_count = get_option( self::AUTH_ATTEMPT_COUNTER_OPTION, 0 );
 
-		return $attempts_count >= self::MAX_GENERATE_KEY_ATTEMPTS;
+		return $attempts_count >= self::MAX_AUTH_ATTEMPTS;
 	}
 
 	/**
-	 * Update count of the attempts to get keys from API using generate_keys().
+	 * Update count of the attempts to get key and token from API.
 	 * It allows us to prevent sending requests to the API server infinitely.
 	 */
-	private function update_generate_key_attempts_count() {
+	private function update_auth_attempts_count() {
 
 		global $wpdb;
 
@@ -307,11 +352,11 @@ class API {
                 VALUES ( %s, 1, 'no' )
 				ON DUPLICATE KEY UPDATE
 					option_value = option_value + 1",
-				self::GENERATE_KEY_ATTEMPT_COUNTER_OPTION
+				self::AUTH_ATTEMPT_COUNTER_OPTION
 			)
 		);
 
-		wp_cache_delete( self::GENERATE_KEY_ATTEMPT_COUNTER_OPTION, 'options' );
+		wp_cache_delete( self::AUTH_ATTEMPT_COUNTER_OPTION, 'options' );
 	}
 
 	/**
@@ -356,41 +401,40 @@ class API {
 	 */
 	private function endpoint_key() {
 
-		$json     = file_get_contents( 'php://input' );
-		$response = json_decode( $json, true );
+		$nonce = sanitize_text_field(
+			wp_unslash(
+				isset( $_POST['nonce'] ) ? $_POST['nonce'] : ''
+			)
+		);
 
-		if ( ! $response ) {
-			$this->endpoint_die( 'API: No response.' );
-		}
+		$site_key = sanitize_text_field(
+			wp_unslash(
+				isset( $_POST['site_key'] ) ? $_POST['site_key'] : ''
+			)
+		);
 
-		if ( isset( $response['error'] ) ) {
-			$this->endpoint_die(
-				'API: Unable to add the site to system.',
-				$response
-			);
-		}
-
-		if ( ! isset( $response['key'], $response['id'], $response['nonce'] ) ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
+		if ( ! $site_key || ! $nonce ) {
 			$this->endpoint_die(
 				'API: Unknown communication error.',
-				$response
+				$_POST
 			);
 		}
 
-		if ( ! wp_verify_nonce( $response['nonce'], self::KEY_ACTION ) ) {
+		if ( ! wp_verify_nonce( $nonce, self::KEY_ACTION ) ) {
 			$this->endpoint_die(
 				'API: Nonce verification failed.',
-				$response
+				$_POST
 			);
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
-		unset( $response['nonce'] );
+		$auth             = get_option( self::AUTH_OPTION, [] );
+		$auth['site_key'] = $site_key;
 
-		$auth         = get_option( self::AUTH_OPTION, [] );
-		$auth['site'] = $response;
-
-		update_option( self::GENERATE_KEY_ATTEMPT_COUNTER_OPTION, 0 );
+		update_option( self::AUTH_ATTEMPT_COUNTER_OPTION, 0 );
 		update_option( self::AUTH_OPTION, $auth );
+		get_transient( self::ACCESS_TOKEN_LOCK );
 
 		exit();
 	}
@@ -435,9 +479,9 @@ class API {
 
 		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 		error_log(
-			$title,
+			$title . "\n" .
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-			print_r( [ 'response' => $response ] )
+			print_r( [ 'response' => $response ], true )
 		);
 	}
 }
