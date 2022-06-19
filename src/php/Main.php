@@ -124,7 +124,7 @@ class Main {
 	 */
 	private function hooks() {
 		add_action( 'plugins_loaded', [ $this, 'init_text_domain' ], 20 );
-		add_action( 'init', [ $this, 'init' ] );
+		add_action( 'plugins_loaded', [ $this, 'init' ] );
 		add_action( 'init', [ $this, 'create_order_table' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_scripts' ] );
 		add_action( 'admin_menu', [ $this, 'menu_page' ] );

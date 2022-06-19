@@ -64,7 +64,7 @@ class Order {
 						?>
 					</div>
 					<div class="col-auto">
-						<input type="submit" name="gts_filter_submit" class="btn-sm btn btn-primary" value="Submit">
+						<input type="submit" name="gts_filter_submit" class="btn-sm btn btn-primary" value="Filter">
 					</div>
 					<?php wp_nonce_field( 'gts_post_type_filter', 'gts_post_type_filter_nonce', false ); ?>
 				</div>
