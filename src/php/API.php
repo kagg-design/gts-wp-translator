@@ -28,7 +28,7 @@ class API {
 	const REST_NAMESPACE = 'quote/v1';
 
 	/**
-	 * Max number of attempts for generate_site_key().
+	 * Max number of attempts to get auth (site key and token).
 	 */
 	const MAX_AUTH_ATTEMPTS = 20;
 
@@ -433,9 +433,8 @@ class API {
 		$auth             = get_option( self::AUTH_OPTION, [] );
 		$auth['site_key'] = $site_key;
 
-		update_option( self::AUTH_ATTEMPT_COUNTER_OPTION, 0 );
 		update_option( self::AUTH_OPTION, $auth );
-		get_transient( self::ACCESS_TOKEN_LOCK );
+		$this->delete_transients();
 
 		exit();
 	}

@@ -57,28 +57,28 @@ class Main {
 	const ORDER_TABLE_OPTION = 'gts_order_table_created';
 
 	/**
-	 * API.
+	 * API claas instance.
 	 *
 	 * @var API
 	 */
 	private $api;
 
 	/**
-	 * Translation Order page.
+	 * Order class instance.
 	 *
 	 * @var Order
 	 */
 	private $translation_order;
 
 	/**
-	 * Cart class.
+	 * Cart class instance.
 	 *
 	 * @var Cart
 	 */
 	private $translation_cart;
 
 	/**
-	 * Token class.
+	 * Token class instance.
 	 *
 	 * @var Token
 	 */
@@ -123,8 +123,8 @@ class Main {
 	 * @return void
 	 */
 	private function hooks() {
-		add_action( 'plugins_loaded', [ $this, 'init_text_domain' ], 20 );
-		add_action( 'plugins_loaded', [ $this, 'init' ] );
+		add_action( 'plugins_loaded', [ $this, 'init_text_domain' ] );
+		add_action( 'plugins_loaded', [ $this, 'init' ], 20 );
 		add_action( 'init', [ $this, 'create_order_table' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_scripts' ] );
 		add_action( 'admin_menu', [ $this, 'menu_page' ] );

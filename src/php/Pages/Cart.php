@@ -18,11 +18,6 @@ use stdClass;
 class Cart {
 
 	/**
-	 * Cart cookie name.
-	 */
-	const CART_COOKIE_NAME = 'gts-translation-order-cart-data';
-
-	/**
 	 * Languages list.
 	 *
 	 * @var object|stdClass|null
