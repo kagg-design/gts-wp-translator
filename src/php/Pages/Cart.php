@@ -12,6 +12,7 @@ use GTS\TranslationOrder\Cost;
 use GTS\TranslationOrder\API;
 use GTS\TranslationOrder\Main;
 use stdClass;
+use wpdb;
 
 /**
  * TranslationCart class file.
@@ -59,6 +60,13 @@ class Cart {
 	 * @var float $total total.
 	 */
 	private $total;
+
+	/**
+	 * IDs of posts to process.
+	 *
+	 * @var int[]
+	 */
+	private $ids;
 
 	/**
 	 * TranslationOrder class file.
@@ -353,7 +361,38 @@ class Cart {
 	 * @return void
 	 */
 	public function send_to_translation() {
+		$this->ids = Cookie::get_cart_cookie();
+
+		require_once ABSPATH . 'wp-admin/includes/export.php';
+
+		add_filter( 'query', [ $this, 'add_ids_to_query' ] );
+
+		ob_start();
+		export_wp();
+		$posts = ob_get_clean();
+
+		remove_filter( 'query', [ $this, 'add_ids_to_query' ] );
+
 		wp_send_json_success();
+	}
+
+	/**
+	 * Filter db query to add post ids.
+	 *
+	 * @param string $query Database query.
+	 *
+	 * @return string
+	 */
+	public function add_ids_to_query( $query ) {
+		global $wpdb;
+
+		if ( ! preg_match( "/SELECT ID FROM {$wpdb->posts} .* WHERE /", $query ) ) {
+			return $query;
+		}
+
+		$in = $this->prepare_in( $this->ids );
+
+		return "SELECT {$wpdb->posts}.ID FROM {$wpdb->posts} WHERE {$wpdb->posts}.ID IN ( $in )";
 	}
 
 	/**
@@ -376,7 +415,6 @@ class Cart {
 		Cookie::set( Cookie::CART_COOKIE_NAME, $result );
 
 		return $result;
-
 	}
 
 	/**
@@ -422,5 +460,33 @@ class Cart {
 			</tr>
 			<?php
 		}
+	}
+
+	/**
+	 * Changes array of items into string of items, separated by comma and sql-escaped
+	 *
+	 * @see https://coderwall.com/p/zepnaw
+	 * @global wpdb       $wpdb
+	 *
+	 * @param mixed|array $items  item(s) to be joined into string.
+	 * @param string      $format %s or %d.
+	 *
+	 * @return string Items separated by comma and sql-escaped
+	 */
+	private function prepare_in( $items, $format = '%s' ) {
+		global $wpdb;
+
+		$items    = (array) $items;
+		$how_many = count( $items );
+		if ( $how_many > 0 ) {
+			$placeholders    = array_fill( 0, $how_many, $format );
+			$prepared_format = implode( ',', $placeholders );
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$prepared_in = $wpdb->prepare( $prepared_format, $items );
+		} else {
+			$prepared_in = '';
+		}
+
+		return $prepared_in;
 	}
 }
