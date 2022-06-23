@@ -10,6 +10,7 @@ namespace GTS\TranslationOrder\Pages;
 use GTS\TranslationOrder\Cookie;
 use GTS\TranslationOrder\Cost;
 use GTS\TranslationOrder\API;
+use GTS\TranslationOrder\Main;
 use stdClass;
 
 /**
@@ -77,8 +78,9 @@ class Cart {
 	 * @return void
 	 */
 	public function init() {
-		add_action( 'wp_ajax_gts-to-add-to-cart', [ $this, 'add_to_cart' ] );
-		add_action( 'wp_ajax_delete_from_cart', [ $this, 'delete_from_cart' ] );
+		add_action( 'wp_ajax_' . Main::ADD_TO_CART_ACTION, [ $this, 'add_to_cart' ] );
+		add_action( 'wp_ajax_' . Main::DELETE_FROM_CART_ACTION, [ $this, 'delete_from_cart' ] );
+		add_action( 'wp_ajax_' . Main::SEND_TO_TRANSLATION_ACTION, [ $this, 'send_to_translation' ] );
 	}
 
 	/**
@@ -127,7 +129,7 @@ class Cart {
 						</tr>
 						<tr>
 							<td>
-								<button type="button" class="btn btn-primary">
+								<button type="button" id="gts-to-send-to-translation" class="btn btn-primary">
 									<?php esc_html_e( 'Send to translation', 'gts-translation-order' ); ?>
 								</button>
 							</td>
@@ -343,6 +345,15 @@ class Cart {
 		);
 
 		wp_send_json_success( [ 'posts_id' => $result ] );
+	}
+
+	/**
+	 * Send cart items to translation.
+	 *
+	 * @return void
+	 */
+	public function send_to_translation() {
+		wp_send_json_success();
 	}
 
 	/**

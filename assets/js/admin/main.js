@@ -6,6 +6,8 @@
  * @param GTSTranslationOrderObject.addToCartNonce
  * @param GTSTranslationOrderObject.deleteFromCartAction
  * @param GTSTranslationOrderObject.deleteFromCartNonce
+ * @param GTSTranslationOrderObject.sendToTranslationAction
+ * @param GTSTranslationOrderObject.sendToTranslationNonce
  * @param GTSTranslationOrderObject.addToCartText
  * @param GTSTranslationOrderObject.deleteFromCartText
  */
@@ -204,7 +206,7 @@ jQuery( document ).ready( function( $ ) {
 			e.preventDefault();
 
 			let data = {
-				action: 'delete_from_cart',
+				action: GTSTranslationOrderObject.deleteFromCartAction,
 				nonce: GTSTranslationOrderObject.deleteFromCartNonce,
 				post_id: $( this ).data( 'post_id' )
 			};
@@ -241,4 +243,29 @@ jQuery( document ).ready( function( $ ) {
 			} );
 		} );
 	}
+
+	/**
+	 * Send posts to translation.
+	 */
+	$( '#gts-to-send-to-translation' ).click( function( e ) {
+		e.preventDefault();
+
+		let data = {
+			action: GTSTranslationOrderObject.sendToTranslationAction,
+			nonce: GTSTranslationOrderObject.sendToTranslationNonce,
+		};
+
+		let event = $( this );
+
+		$.post( {
+			url: GTSTranslationOrderObject.url,
+			data: data,
+			success: function( res ) {
+			},
+			error: function( xhr ) {
+				console.log( 'error...', xhr );
+				//error logging
+			}
+		} );
+	} );
 } );

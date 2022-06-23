@@ -28,6 +28,11 @@ class Main {
 	const DELETE_FROM_CART_ACTION = 'gts-to-delete-from-cart';
 
 	/**
+	 * Sent to translation action name.
+	 */
+	const SEND_TO_TRANSLATION_ACTION = 'gts-to-send-to-translation';
+
+	/**
 	 * Top menu slug.
 	 */
 	const GTS_MENU_SLUG = 'gts_translation_order';
@@ -163,13 +168,15 @@ class Main {
 			'gts-to-main',
 			'GTSTranslationOrderObject',
 			[
-				'url'                  => admin_url( 'admin-ajax.php' ),
-				'addToCartAction'      => self::ADD_TO_CART_ACTION,
-				'addToCartNonce'       => wp_create_nonce( self::ADD_TO_CART_ACTION ),
-				'deleteFromCartAction' => self::DELETE_FROM_CART_ACTION,
-				'deleteFromCartNonce'  => wp_create_nonce( self::DELETE_FROM_CART_ACTION ),
-				'addToCartText'        => __( 'Add item to cart', 'gts-translation-order' ),
-				'deleteFromCartText'   => __( 'Remove item from cart', 'gts-translation-order' ),
+				'url'                     => admin_url( 'admin-ajax.php' ),
+				'addToCartAction'         => self::ADD_TO_CART_ACTION,
+				'addToCartNonce'          => wp_create_nonce( self::ADD_TO_CART_ACTION ),
+				'deleteFromCartAction'    => self::DELETE_FROM_CART_ACTION,
+				'deleteFromCartNonce'     => wp_create_nonce( self::DELETE_FROM_CART_ACTION ),
+				'sendToTranslationAction' => self::SEND_TO_TRANSLATION_ACTION,
+				'sendToTranslationNonce'  => wp_create_nonce( self::SEND_TO_TRANSLATION_ACTION ),
+				'addToCartText'           => __( 'Adding item to cart', 'gts-translation-order' ),
+				'deleteFromCartText'      => __( 'Removing item from cart', 'gts-translation-order' ),
 			]
 		);
 	}
