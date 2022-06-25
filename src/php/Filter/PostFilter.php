@@ -299,7 +299,7 @@ class PostFilter {
 
 		$filter_params = Cookie::get_filter_cookie();
 		$cart_post_id  = (array) Cookie::get_cart_cookie();
-		$posts_status  = $this->get_order_post_id();
+		$posts_status  = $this->get_order_post_ids();
 
 		if ( ! isset( $filter_params->post_type ) ) {
 			$filter_params = (object) [
@@ -375,13 +375,17 @@ class PostFilter {
 				</td>
 				<td>$<?php echo esc_html( $price ); ?> </td>
 				<td>
-					<?php if ( ! $status ) { ?>
+					<?php
+					if ( ! $status ) {
+						?>
 						<a
 								href="#" data-post_id="<?php echo esc_attr( $post->id ); ?>"
 								class="plus <?php echo esc_attr( $button_class ); ?>">
 							<i class="bi <?php echo esc_attr( $icon_class ); ?>"></i>
 						</a>
-					<?php } ?>
+						<?php
+					}
+					?>
 				</td>
 			</tr>
 			<?php
@@ -389,44 +393,44 @@ class PostFilter {
 	}
 
 	/**
-	 * Get all ids post in orders.
+	 * Get all post ids in orders.
 	 *
 	 * @return array
 	 */
-	private function get_order_post_id() {
+	private function get_order_post_ids() {
 		global $wpdb;
 
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
-		$response = $wpdb->get_results( "SELECT `posts_id`, `status`  FROM `{$wpdb->prefix}gts_translation_order`" );
+		$items = $wpdb->get_results( "SELECT `posts_id`, `status`  FROM `{$wpdb->prefix}gts_translation_order`" );
 		// phpcs:enable WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
 
-		if ( ! $response ) {
+		if ( ! $items ) {
 			return [];
 		}
 
-		$posts_id = [];
-		foreach ( $response as $item ) {
-			$posts_id[] = [
+		$posts_ids = [];
+
+		foreach ( $items as $item ) {
+			$posts_ids[] = [
 				'ids'    => explode( ',', $item->posts_id ),
 				'status' => $item->status,
 			];
 		}
 
-		return $posts_id;
-
+		return $posts_ids;
 	}
 
 	/**
 	 * Get status.
 	 *
-	 * @param array $posts_ids    posts id in order.
-	 * @param int   $current_spot current post.
+	 * @param array $posts_ids    Posts ids in the order.
+	 * @param int   $current_post Current post.
 	 *
 	 * @return false|string
 	 */
-	private function get_status( $posts_ids, $current_spot ) {
-		foreach ( $posts_ids as $key => $id ) {
-			if ( in_array( $current_spot, $id['ids'], true ) ) {
+	private function get_status( $posts_ids, $current_post ) {
+		foreach ( $posts_ids as $id ) {
+			if ( in_array( $current_post, $id['ids'], true ) ) {
 				return $id['status'];
 			}
 		}

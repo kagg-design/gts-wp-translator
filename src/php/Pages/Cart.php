@@ -403,7 +403,7 @@ class Cart {
 		);
 
 		if ( ! $response->success ) {
-			wp_send_json_error( [ 'massage' => $response->error ] );
+			wp_send_json_error( [ 'message' => $response->error ] );
 		}
 
 		$this->change_status(

@@ -326,7 +326,6 @@ class API {
 		);
 
 		return $response->success ? $response : [];
-
 	}
 
 	/**
@@ -357,8 +356,6 @@ class API {
 	 * Check that we have not reached the max number of attempts to get auth from API.
 	 *
 	 * @return bool
-	 * @since {VERSION}
-	 *
 	 */
 	private function is_max_auth_attempts_reached() {
 
