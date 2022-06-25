@@ -10,6 +10,8 @@
  * @param GTSTranslationOrderObject.sendToTranslationNonce
  * @param GTSTranslationOrderObject.addToCartText
  * @param GTSTranslationOrderObject.deleteFromCartText
+ * @param GTSTranslationOrderObject.createOrder
+ * @param GTSTranslationOrderObject.cartCookieName
  */
 jQuery( document ).ready( function( $ ) {
 
@@ -228,7 +230,7 @@ jQuery( document ).ready( function( $ ) {
 				success: function( res ) {
 					if ( res.success ) {
 						if ( $( '.cart' ).length ) {
-							$(event).parents('tr').remove();
+							$( event ).parents( 'tr' ).remove();
 							location.reload();
 						}
 						event.off( 'click' );
@@ -253,14 +255,32 @@ jQuery( document ).ready( function( $ ) {
 		let data = {
 			action: GTSTranslationOrderObject.sendToTranslationAction,
 			nonce: GTSTranslationOrderObject.sendToTranslationNonce,
+			email: $( '#gts-client-email' ).val(),
+			source: $( '#gts-source-language' ).val(),
+			target: $( '#target-language' ).val(),
+			industry: $( '#gts-industry' ).val(),
+			total: $( '#total' ).text()
 		};
-
-		let event = $( this );
 
 		$.post( {
 			url: GTSTranslationOrderObject.url,
 			data: data,
 			success: function( res ) {
+				if ( res.success ) {
+					Swal.fire( {
+						position: 'top-end',
+						icon: 'success',
+						showConfirmButton: false,
+						timer: 1500,
+						title: GTSTranslationOrderObject.createOrder,
+					} );
+
+					deleteCookie( GTSTranslationOrderObject.cartCookieName );
+
+					setTimeout( function() {
+						location.reload();
+					}, 1500 )
+				}
 			},
 			error: function( xhr ) {
 				console.log( 'error...', xhr );
@@ -268,4 +288,13 @@ jQuery( document ).ready( function( $ ) {
 			}
 		} );
 	} );
+
+	/**
+	 * Delete cookie.
+	 *
+	 * @param name cookie name.
+	 */
+	function deleteCookie( name ) {
+		document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+	}
 } );

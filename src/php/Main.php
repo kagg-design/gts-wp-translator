@@ -57,6 +57,11 @@ class Main {
 	];
 
 	/**
+	 * Order status send.
+	 */
+	const ORDER_STATUS_SEND = 'Send';
+
+	/**
 	 * Order table created option.
 	 */
 	const ORDER_TABLE_OPTION = 'gts_order_table_created';
@@ -177,6 +182,8 @@ class Main {
 				'sendToTranslationNonce'  => wp_create_nonce( self::SEND_TO_TRANSLATION_ACTION ),
 				'addToCartText'           => __( 'Adding item to cart', 'gts-translation-order' ),
 				'deleteFromCartText'      => __( 'Removing item from cart', 'gts-translation-order' ),
+				'createOrder'             => __( 'Order has been created and we will contact you soon', 'gts-translation-order' ),
+				'cartCookieName'          => Cookie::CART_COOKIE_NAME,
 			]
 		);
 	}
@@ -239,10 +246,11 @@ class Main {
 				    `status` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
 				    `total_cost` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
 				    `date_send` DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-				    `date_response` DATE NOT NULL,
+				    `date_response` DATE NULL,
 				    `site_language` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
 				    `target_languages` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
 				    `industry` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+				    `order_id` INT NULL,
 				    PRIMARY KEY (`id`)
 				)";
 

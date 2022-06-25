@@ -225,7 +225,10 @@ class API {
 
 		$response = $this->request(
 			$this->server_url . 'key',
-			[ 'body' => $data ]
+			[
+				'method' => 'GET',
+				'body'   => $data,
+			]
 		);
 
 		$this->update_auth_attempts_count();
@@ -256,7 +259,8 @@ class API {
 		$response = $this->request(
 			$this->server_url . 'languages',
 			[
-				'body' => [
+				'method' => 'GET',
+				'body'   => [
 					'token' => $this->token,
 				],
 			]
@@ -284,7 +288,8 @@ class API {
 		$response = $this->request(
 			$this->server_url . 'prices',
 			[
-				'body' => [
+				'method' => 'GET',
+				'body'   => [
 					'token' => $this->token,
 				],
 			]
@@ -298,6 +303,33 @@ class API {
 	}
 
 	/**
+	 * Send Order.
+	 *
+	 * @param array $args Arguments.
+	 *
+	 * @return array|false|mixed
+	 */
+	public function send_order( $args ) {
+		$response = $this->request(
+			$this->server_url . 'create-order',
+			[
+				'method' => 'POST',
+				'body'   => [
+					'token'    => $this->token,
+					'email'    => $args['email'],
+					'source'   => $args['source'],
+					'target'   => $args['target'],
+					'industry' => $args['industry'],
+					'file'     => $args['file'],
+				],
+			]
+		);
+
+		return $response->success ? $response : [];
+
+	}
+
+	/**
 	 * Make a request to the server.
 	 *
 	 * @param string $url  Server url.
@@ -307,7 +339,7 @@ class API {
 	 */
 	private function request( $url, $args ) {
 
-		$response = wp_remote_get(
+		$response = wp_remote_request(
 			$url,
 			$args
 		);
@@ -324,9 +356,9 @@ class API {
 	/**
 	 * Check that we have not reached the max number of attempts to get auth from API.
 	 *
+	 * @return bool
 	 * @since {VERSION}
 	 *
-	 * @return bool
 	 */
 	private function is_max_auth_attempts_reached() {
 

@@ -69,13 +69,20 @@ class Cart {
 	private $ids;
 
 	/**
+	 * Api GTS Translation.
+	 *
+	 * @var API
+	 */
+	private $api;
+
+	/**
 	 * TranslationOrder class file.
 	 */
 	public function __construct() {
 		$this->init();
 
-		$api                 = new API();
-		$this->language_list = $api->get_language_list();
+		$this->api           = new API();
+		$this->language_list = $this->api->get_language_list();
 		$this->cost          = new Cost();
 		$this->total         = 0;
 	}
@@ -128,7 +135,7 @@ class Cart {
 					<table class="table table-dark table-striped total-table">
 						<tr>
 							<td><?php esc_html_e( 'Total Cost:', 'gts-translation-order' ); ?></td>
-							<td>$<?php echo esc_attr( $this->total ); ?></td>
+							<td>$<span id="total"><?php echo esc_attr( $this->total ); ?></span></td>
 						</tr>
 						<tr>
 							<td colspan="2">
@@ -164,23 +171,23 @@ class Cart {
 		?>
 		<form action="" method="post">
 			<div class="mb-3">
-				<label for="gts_client_email" class="form-label">
+				<label for="gts-client-email" class="form-label">
 					<?php esc_html_e( 'Email', 'gts-translation-order' ); ?>
 				</label>
 				<input
 						type="email"
 						name="gts_client_email"
 						class="form-control"
-						id="gts_client_email"
+						id="gts-client-email"
 						value="<?php echo esc_html( $user_email ); ?>"
 						placeholder="name@example.com">
 			</div>
 			<div class="mb-3">
-				<label for="language"><?php esc_html_e( 'Source language', 'gts-translation-order' ); ?></label>
+				<label for="gts-source-language"><?php esc_html_e( 'Source language', 'gts-translation-order' ); ?></label>
 				<select
 						class="form-select"
-						id="language"
 						name="gts_source_language"
+						id="gts-source-language"
 						aria-label="<?php esc_html_e( 'Source language', 'gts-translation-order' ); ?>">
 					<option value="0"
 							selected><?php esc_html_e( 'Source language', 'gts-translation-order' ); ?></option>
@@ -299,7 +306,7 @@ class Cart {
 
 		$nonce = ! empty( $_POST['nonce'] ) ? filter_var( wp_unslash( $_POST['nonce'] ), FILTER_SANITIZE_STRING ) : '';
 
-		if ( ! wp_verify_nonce( $nonce, 'gts-to-add-to-cart' ) ) {
+		if ( ! wp_verify_nonce( $nonce, Main::ADD_TO_CART_ACTION ) ) {
 			wp_send_json_error( __( 'Bad Nonce', 'gts-translation-order' ) );
 		}
 
@@ -339,7 +346,7 @@ class Cart {
 	public function delete_from_cart() {
 		$nonce = ! empty( $_POST['nonce'] ) ? filter_var( wp_unslash( $_POST['nonce'] ), FILTER_SANITIZE_STRING ) : '';
 
-		if ( ! wp_verify_nonce( $nonce, 'gts-to-delete-from-cart' ) ) {
+		if ( ! wp_verify_nonce( $nonce, Main::DELETE_FROM_CART_ACTION ) ) {
 			wp_send_json_error( __( 'Bad Nonce', 'gts-translation-order' ) );
 		}
 
@@ -363,17 +370,56 @@ class Cart {
 	public function send_to_translation() {
 		$this->ids = Cookie::get_cart_cookie();
 
+		$nonce = ! empty( $_POST['nonce'] ) ? filter_var( wp_unslash( $_POST['nonce'] ), FILTER_SANITIZE_STRING ) : '';
+
+		if ( ! wp_verify_nonce( $nonce, Main::SEND_TO_TRANSLATION_ACTION ) ) {
+			wp_send_json_error( __( 'Bad Nonce', 'gts-translation-order' ) );
+		}
+
+		$email    = ! empty( $_POST['email'] ) ? filter_var( wp_unslash( $_POST['email'] ), FILTER_SANITIZE_EMAIL ) : '';
+		$source   = ! empty( $_POST['source'] ) ? filter_var( wp_unslash( $_POST['source'] ), FILTER_SANITIZE_STRING ) : '';
+		$target   = ! empty( $_POST['target'] ) ? filter_var( wp_unslash( $_POST['target'] ), FILTER_SANITIZE_STRING ) : '';
+		$industry = ! empty( $_POST['industry'] ) ? filter_var( wp_unslash( $_POST['industry'] ), FILTER_SANITIZE_STRING ) : '';
+		$total    = ! empty( $_POST['total'] ) ? filter_var( wp_unslash( $_POST['total'] ), FILTER_VALIDATE_FLOAT ) : 0;
+
 		require_once ABSPATH . 'wp-admin/includes/export.php';
 
 		add_filter( 'query', [ $this, 'add_ids_to_query' ] );
 
 		ob_start();
 		export_wp();
-		$posts = ob_get_clean();
+		$export_file = ob_get_clean();
 
 		remove_filter( 'query', [ $this, 'add_ids_to_query' ] );
 
-		wp_send_json_success();
+		$response = $this->api->send_order(
+			[
+				'email'    => $email,
+				'source'   => $source,
+				'target'   => $target,
+				'industry' => $industry,
+				'file'     => $export_file,
+			]
+		);
+
+		if ( ! $response->success ) {
+			wp_send_json_error( [ 'massage' => $response->error ] );
+		}
+
+		$this->change_status(
+			[
+				'posts_id'         => implode( ',', $this->ids ),
+				'status'           => Main::ORDER_STATUS_SEND,
+				'total_cost'       => $total,
+				'date_send'        => gmdate( 'Y-m-d H:i:s', time() ),
+				'site_language'    => $source,
+				'target_languages' => $target,
+				'industry'         => $industry,
+				'order_id'         => $response->order_id,
+			]
+		);
+
+		wp_send_json_success( $response );
 	}
 
 	/**
@@ -488,5 +534,33 @@ class Cart {
 		}
 
 		return $prepared_in;
+	}
+
+	/**
+	 * Change Status.
+	 *
+	 * @param array $args Arguments.
+	 *
+	 * @return void
+	 */
+	public function change_status( $args ) {
+		global $wpdb;
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery
+		$wpdb->insert(
+			$wpdb->prefix . 'gts_translation_order',
+			$args,
+			[
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%d',
+			]
+		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery
 	}
 }

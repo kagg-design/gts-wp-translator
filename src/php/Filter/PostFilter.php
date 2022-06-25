@@ -299,6 +299,7 @@ class PostFilter {
 
 		$filter_params = Cookie::get_filter_cookie();
 		$cart_post_id  = (array) Cookie::get_cart_cookie();
+		$posts_status  = $this->get_order_post_id();
 
 		if ( ! isset( $filter_params->post_type ) ) {
 			$filter_params = (object) [
@@ -338,7 +339,6 @@ class PostFilter {
 			</tr>
 			<?php
 		}
-
 		foreach ( $posts['posts'] as $post ) {
 			$title        = $post->post_title;
 			$title        = $title ?: __( '(no title)', 'gts-translation-order' );
@@ -351,9 +351,13 @@ class PostFilter {
 			if ( ! empty( $filter_params->source ) && ! empty( $filter_params->target ) ) {
 				$price = $this->cost->price_by_post( $filter_params->source, $filter_params->target, $post->id );
 			}
+			$status       = $this->get_status( $posts_status, $post->id );
+			$status_class = $status ? 'text-bg-primary' : 'bg-secondary';
+
 			?>
 			<tr>
 				<th scope="row">
+					<?php if ( ! $status ) { ?>
 					<label for="<?php echo esc_attr( $id ); ?>" class="hidden"></label>
 					<input
 							type="checkbox"
@@ -361,20 +365,73 @@ class PostFilter {
 							id="<?php echo esc_attr( $id ); ?>"
 							name="<?php echo esc_attr( $name ); ?>">
 				</th>
+				<?php } ?>
 				<td><?php echo esc_html( $title ); ?></td>
 				<td><?php echo esc_html( $post->post_type ); ?></td>
-				<td><span class="badge bg-secondary">Not translated</span></td>
+				<td>
+					<span class="badge <?php echo esc_attr( $status_class ); ?>">
+						<?php echo esc_html( $status ?: __( 'Not translated', 'gts-translation-order' ) ); ?>
+					</span>
+				</td>
 				<td>$<?php echo esc_html( $price ); ?> </td>
 				<td>
-					<a
-							href="#" data-post_id="<?php echo esc_attr( $post->id ); ?>"
-							class="plus <?php echo esc_attr( $button_class ); ?>">
-						<i class="bi <?php echo esc_attr( $icon_class ); ?>"></i>
-					</a>
+					<?php if ( ! $status ) { ?>
+						<a
+								href="#" data-post_id="<?php echo esc_attr( $post->id ); ?>"
+								class="plus <?php echo esc_attr( $button_class ); ?>">
+							<i class="bi <?php echo esc_attr( $icon_class ); ?>"></i>
+						</a>
+					<?php } ?>
 				</td>
 			</tr>
 			<?php
 		}
+	}
+
+	/**
+	 * Get all ids post in orders.
+	 *
+	 * @return array
+	 */
+	private function get_order_post_id() {
+		global $wpdb;
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
+		$response = $wpdb->get_results( "SELECT `posts_id`, `status`  FROM `{$wpdb->prefix}gts_translation_order`" );
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
+
+		if ( ! $response ) {
+			return [];
+		}
+
+		$posts_id = [];
+		foreach ( $response as $item ) {
+			$posts_id[] = [
+				'ids'    => explode( ',', $item->posts_id ),
+				'status' => $item->status,
+			];
+		}
+
+		return $posts_id;
+
+	}
+
+	/**
+	 * Get status.
+	 *
+	 * @param array $posts_ids    posts id in order.
+	 * @param int   $current_spot current post.
+	 *
+	 * @return false|string
+	 */
+	private function get_status( $posts_ids, $current_spot ) {
+		foreach ( $posts_ids as $key => $id ) {
+			if ( in_array( $current_spot, $id['ids'], true ) ) {
+				return $id['status'];
+			}
+		}
+
+		return false;
 	}
 
 	/**
