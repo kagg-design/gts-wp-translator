@@ -311,12 +311,9 @@ class PostFilter {
 			];
 		}
 
-		// @todo Fix bug - order of limit and offset here is vice versa to method params.
-		$limit = self::OUTPUT_LIMIT;
-		$posts = $this->get_posts_by_post_type( $filter_params->post_type, $filter_params->search, ( $this->page - 1 ) * $limit, $limit );
-
-		$curr_page_url = isset( $_SERVER['QUERY_STRING'] ) ? 'admin.php?' . filter_var( wp_unslash( $_SERVER['QUERY_STRING'] ), FILTER_SANITIZE_STRING ) : '';
-
+		$limit             = self::OUTPUT_LIMIT;
+		$posts             = $this->get_posts_by_post_type( $filter_params->post_type, $filter_params->search, ( $this->page - 1 ) * $limit, $limit );
+		$curr_page_url     = isset( $_SERVER['QUERY_STRING'] ) ? 'admin.php?' . filter_var( wp_unslash( $_SERVER['QUERY_STRING'] ), FILTER_SANITIZE_STRING ) : '';
 		$this->count_posts = 0;
 		$count             = $posts['rows_found'];
 
@@ -341,6 +338,7 @@ class PostFilter {
 			</tr>
 			<?php
 		}
+
 		foreach ( $posts['posts'] as $post ) {
 			$title        = $post->post_title;
 			$title        = $title ?: __( '(no title)', 'gts-translation-order' );
@@ -447,12 +445,12 @@ class PostFilter {
 	 *
 	 * @param string|null $post_type Post type.
 	 * @param string|null $search    Search string.
-	 * @param int         $number    Number of post to output.
 	 * @param int         $offset    Offset.
+	 * @param int         $limit     Limit.
 	 *
 	 * @return array
 	 */
-	private function get_posts_by_post_type( $post_type = null, $search = null, $number = 25, $offset = 0 ) {
+	private function get_posts_by_post_type( $post_type = null, $search = null, $offset = 0, $limit = 20 ) {
 		global $wpdb;
 
 		$post_types = [ $post_type ];
@@ -471,13 +469,12 @@ class PostFilter {
 
 		$sql .= 'LIMIT %d, %d';
 
-		// @todo Fix bug - LIMIT clause format is LIMIT [offset, limit] - i.e. vice versa.
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		$result = $wpdb->get_results(
 			$wpdb->prepare(
 				$sql,
-				esc_sql( $number ),
-				esc_sql( $offset )
+				esc_sql( $offset ),
+				esc_sql( $limit )
 			)
 		);
 
