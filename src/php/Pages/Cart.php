@@ -392,13 +392,20 @@ class Cart {
 
 		remove_filter( 'query', [ $this, 'add_ids_to_query' ] );
 
+		$user_meta  = get_user_meta( get_current_user_id() );
+		$full_name  = ! empty( $user_meta['first_name'][0] ) ? $user_meta['first_name'][0] . ' ' . $user_meta['last_name'][0] : get_bloginfo( 'name' );
+		$word_count = $this->cost->get_total_words( $this->ids );
+
 		$response = $this->api->send_order(
 			[
-				'email'    => $email,
-				'source'   => $source,
-				'target'   => $target,
-				'industry' => $industry,
-				'file'     => $export_file,
+				'email'      => $email,
+				'source'     => $source,
+				'target'     => $target,
+				'industry'   => $industry,
+				'file'       => $export_file,
+				'full_name'  => $full_name,
+				'word_count' => $word_count,
+				'total'      => $total,
 			]
 		);
 
@@ -539,11 +546,11 @@ class Cart {
 	/**
 	 * Change Status.
 	 *
-	 * @todo Change db format.
-	 *
 	 * @param array $args Arguments.
 	 *
 	 * @return void
+	 * @todo Change db format.
+	 *
 	 */
 	private function save_order( $args ) {
 		global $wpdb;

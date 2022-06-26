@@ -44,6 +44,23 @@ class Cost {
 	}
 
 	/**
+	 * Get total word count.
+	 *
+	 * @param array $post_ids Post ID.
+	 *
+	 * @return array|int|string[]
+	 */
+	public function get_total_words( $post_ids ) {
+		$total = 0;
+
+		foreach ( $post_ids as $id ) {
+			$total += $this->get_count_words( $id );
+		}
+
+		return $total;
+	}
+
+	/**
 	 * Get count symbols.
 	 *
 	 * @param int|string $post_id Post ID.

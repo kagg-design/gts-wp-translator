@@ -315,15 +315,20 @@ class API {
 			[
 				'method' => 'POST',
 				'body'   => [
-					'token'    => $this->token,
-					'email'    => $args['email'],
-					'source'   => $args['source'],
-					'target'   => $args['target'],
-					'industry' => $args['industry'],
-					'file'     => $args['file'],
+					'token'      => $this->token,
+					'email'      => $args['email'],
+					'source'     => $args['source'],
+					'target'     => $args['target'],
+					'industry'   => $args['industry'],
+					'file'       => $args['file'],
+					'full_name'  => $args['full_name'],
+					'word_count' => $args['word_count'],
+					'total'      => $args['total'],
 				],
 			]
 		);
+
+		var_dump($response);
 
 		return $response->success ? $response : [];
 	}
@@ -346,6 +351,13 @@ class API {
 		if ( is_wp_error( $response ) || 200 !== $response['response']['code'] ) {
 			return false;
 		}
+		//bool(true)
+		//bool(true)
+		//string(33) "/tmp/gts-translation-order-wUK33e"
+		//string(87) "/var/www/html/stages.i-wp-dev.com/public/wp-content/uploads/freeQuote/fq_89989/Test.xml"
+		//
+		//
+		//	{"success":true,"order_id":89989,"ref":"P16562675545799"}
 
 		$result = json_decode( $response['body'] );
 
