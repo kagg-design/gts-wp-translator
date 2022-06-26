@@ -291,7 +291,7 @@ class PostFilter {
 
 
 	/**
-	 * Show table post to translate.
+	 * Show post table to translate.
 	 *
 	 * @return void
 	 */
@@ -310,6 +310,8 @@ class PostFilter {
 
 			];
 		}
+
+		// @todo Fix bug - order of limit and offset here is vice versa to method params.
 		$limit = self::OUTPUT_LIMIT;
 		$posts = $this->get_posts_by_post_type( $filter_params->post_type, $filter_params->search, ( $this->page - 1 ) * $limit, $limit );
 
@@ -395,6 +397,8 @@ class PostFilter {
 	/**
 	 * Get all post ids in orders.
 	 *
+	 * @todo Change db format.
+	 *
 	 * @return array
 	 */
 	private function get_order_post_ids() {
@@ -467,6 +471,7 @@ class PostFilter {
 
 		$sql .= 'LIMIT %d, %d';
 
+		// @todo Fix bug - LIMIT clause format is LIMIT [offset, limit] - i.e. vice versa.
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		$result = $wpdb->get_results(
 			$wpdb->prepare(

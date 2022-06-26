@@ -406,7 +406,7 @@ class Cart {
 			wp_send_json_error( [ 'message' => $response->error ] );
 		}
 
-		$this->change_status(
+		$this->save_order(
 			[
 				'posts_id'         => implode( ',', $this->ids ),
 				'status'           => Main::ORDER_STATUS_SEND,
@@ -539,11 +539,13 @@ class Cart {
 	/**
 	 * Change Status.
 	 *
+	 * @todo Change db format.
+	 *
 	 * @param array $args Arguments.
 	 *
 	 * @return void
 	 */
-	public function change_status( $args ) {
+	private function save_order( $args ) {
 		global $wpdb;
 
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery
