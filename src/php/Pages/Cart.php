@@ -313,26 +313,23 @@ class Cart {
 		$bulk = ! empty( $_POST['bulk'] ) && filter_var( wp_unslash( $_POST['bulk'] ), FILTER_VALIDATE_BOOLEAN );
 
 		if ( $bulk ) {
-			// bulk add.
-
-			$posts_id = ! empty( $_POST['post_id'] ) ? filter_input( INPUT_POST, 'post_id', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY ) : null;
-			$result   = $this->save_post_to_cart(
+			// Bulk add.
+			$post_id = ! empty( $_POST['post_id'] ) ? filter_input( INPUT_POST, 'post_id', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY ) : null;
+			$result  = $this->save_post_to_cart(
 				[
 					'type'    => 'add',
-					'post_id' => $posts_id,
+					'post_id' => $post_id,
 				]
 			);
-
 		} else {
-			// single add.
-			$posts_id = ! empty( $_POST['post_id'] ) ? filter_var( wp_unslash( $_POST['post_id'] ), FILTER_SANITIZE_NUMBER_INT ) : null;
-			$result   = $this->save_post_to_cart(
+			// Single add.
+			$post_id = ! empty( $_POST['post_id'] ) ? filter_var( wp_unslash( $_POST['post_id'] ), FILTER_SANITIZE_NUMBER_INT ) : null;
+			$result  = $this->save_post_to_cart(
 				[
 					'type'    => 'add',
-					'post_id' => [ $posts_id ],
+					'post_id' => [ $post_id ],
 				]
 			);
-
 		}
 
 		wp_send_json_success( [ 'posts_id' => $result ] );
@@ -406,18 +403,22 @@ class Cart {
 			wp_send_json_error( [ 'message' => $response->error ] );
 		}
 
-		$this->save_order(
+		$result = $this->save_order(
 			[
-				'posts_id'         => implode( ',', $this->ids ),
-				'status'           => Main::ORDER_STATUS_SEND,
-				'total_cost'       => $total,
-				'date_send'        => gmdate( 'Y-m-d H:i:s', time() ),
-				'site_language'    => $source,
+				'order_id'         => $response->order_id,
+				'post_id'          => $this->ids,
+				'status'           => Main::ORDER_STATUS_SENT,
+				'total'            => $total,
+				'date'             => gmdate( 'Y-m-d H:i:s', time() ),
+				'source_language'  => $source,
 				'target_languages' => $target,
 				'industry'         => $industry,
-				'order_id'         => $response->order_id,
 			]
 		);
+
+		if ( ! $result ) {
+			wp_send_json_error( [ 'message' => __( 'Cannot save order.', 'gts-translation-order' ) ] );
+		}
 
 		wp_send_json_success( $response );
 	}
@@ -539,30 +540,66 @@ class Cart {
 	/**
 	 * Change Status.
 	 *
-	 * @todo Change db format.
-	 *
 	 * @param array $args Arguments.
 	 *
-	 * @return void
+	 * @return bool
 	 */
 	private function save_order( $args ) {
 		global $wpdb;
 
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery
-		$wpdb->insert(
-			$wpdb->prefix . 'gts_translation_order',
-			$args,
-			[
-				'%s',
-				'%s',
-				'%s',
-				'%s',
-				'%s',
-				'%s',
-				'%s',
-				'%d',
-			]
+		$formats = [
+			'order_id'         => '%d',
+			'post_id'          => '%d',
+			'status'           => '%s',
+			'total'            => '%f',
+			'date'             => '%s',
+			'source_language'  => '%s',
+			'target_languages' => '%s',
+			'industry'         => '%s',
+		];
+
+		ksort( $args );
+		ksort( $formats );
+
+		$columns_arr = array_keys( $formats );
+
+		if ( array_keys( $args ) !== $columns_arr ) {
+			return false;
+		}
+
+		$columns         = implode( ', ', $columns_arr );
+		$ids             = $args['post_id'];
+		$args['post_id'] = 0;
+		$values_arr      = [];
+		$table_name      = Main::ORDER_TABLE_NAME;
+
+		foreach ( (array) $ids as $id ) {
+			$args['post_id'] = $id;
+
+			// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+			$value = $wpdb->prepare(
+				implode( ', ', array_values( $formats ) ),
+				array_values( $args )
+			);
+			// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+
+			$values_arr[] = '(' . $value . ')';
+		}
+
+		if ( ! $values_arr ) {
+			return false;
+		}
+
+		$values = implode( ', ', $values_arr );
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$result = $wpdb->query(
+			"INSERT INTO $wpdb->prefix$table_name
+    		($columns)
+			VALUES $values"
 		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return false !== $result;
 	}
 }

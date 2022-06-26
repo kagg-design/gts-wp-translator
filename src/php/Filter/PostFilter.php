@@ -11,6 +11,7 @@ use GTS\TranslationOrder\Admin\AdminNotice;
 use GTS\TranslationOrder\Cookie;
 use GTS\TranslationOrder\Cost;
 use GTS\TranslationOrder\API;
+use GTS\TranslationOrder\Main;
 use GTS\TranslationOrder\Pagination;
 use wpdb;
 
@@ -298,8 +299,7 @@ class PostFilter {
 	public function show_table() {
 
 		$filter_params = Cookie::get_filter_cookie();
-		$cart_post_id  = (array) Cookie::get_cart_cookie();
-		$posts_status  = $this->get_order_post_ids();
+		$cart_post_id  = Cookie::get_cart_cookie();
 
 		if ( ! isset( $filter_params->post_type ) ) {
 			$filter_params = (object) [
@@ -312,10 +312,14 @@ class PostFilter {
 		}
 
 		$limit             = self::OUTPUT_LIMIT;
-		$posts             = $this->get_posts_by_post_type( $filter_params->post_type, $filter_params->search, ( $this->page - 1 ) * $limit, $limit );
+		$post_info         = $this->get_posts_by_post_type( $filter_params->post_type, $filter_params->search, ( $this->page - 1 ) * $limit, $limit );
 		$curr_page_url     = isset( $_SERVER['QUERY_STRING'] ) ? 'admin.php?' . filter_var( wp_unslash( $_SERVER['QUERY_STRING'] ), FILTER_SANITIZE_STRING ) : '';
 		$this->count_posts = 0;
-		$count             = $posts['rows_found'];
+		$posts             = $post_info['posts'];
+		$count             = $post_info['rows_found'];
+		$post_ids          = wp_list_pluck( $posts, 'ID' );
+		$post_ids          = array_map( 'intval', $post_ids );
+		$posts_statuses    = $this->get_post_statuses( $post_ids );
 
 		if ( $count > 0 ) {
 			$p = new Pagination();
@@ -333,25 +337,26 @@ class PostFilter {
 			?>
 			<tr>
 				<td colspan="6">
-					<?php esc_html_e( 'Post not found', 'gts-translation-order' ); ?>
+					<?php esc_html_e( 'No posts found.', 'gts-translation-order' ); ?>
 				</td>
 			</tr>
 			<?php
 		}
 
-		foreach ( $posts['posts'] as $post ) {
+		foreach ( $posts as $post ) {
 			$title        = $post->post_title;
 			$title        = $title ?: __( '(no title)', 'gts-translation-order' );
-			$id           = "gts_to_translate-$post->id";
-			$name         = "gts_to_translate[$post->id]";
-			$icon_class   = in_array( $post->id, $cart_post_id, true ) ? 'bi-dash-square' : 'bi-plus-square';
-			$button_class = in_array( $post->id, $cart_post_id, true ) ? 'remove-to-cart' : 'add-to-cart';
+			$id           = "gts_to_translate-$post->ID";
+			$name         = "gts_to_translate[$post->ID]";
+			$icon_class   = in_array( $post->ID, $cart_post_id, true ) ? 'bi-dash-square' : 'bi-plus-square';
+			$button_class = in_array( $post->ID, $cart_post_id, true ) ? 'remove-to-cart' : 'add-to-cart';
 			$price        = 0;
 
 			if ( ! empty( $filter_params->source ) && ! empty( $filter_params->target ) ) {
-				$price = $this->cost->price_by_post( $filter_params->source, $filter_params->target, $post->id );
+				$price = $this->cost->price_by_post( $filter_params->source, $filter_params->target, $post->ID );
 			}
-			$status       = $this->get_status( $posts_status, $post->id );
+
+			$status       = isset( $posts_statuses[ $post->ID ] ) ? $posts_statuses[ $post->ID ] : '';
 			$status_class = $status ? 'text-bg-primary' : 'bg-secondary';
 
 			?>
@@ -361,7 +366,7 @@ class PostFilter {
 					<label for="<?php echo esc_attr( $id ); ?>" class="hidden"></label>
 					<input
 							type="checkbox"
-							data-id="<?php echo esc_attr( $post->id ); ?>"
+							data-id="<?php echo esc_attr( $post->ID ); ?>"
 							id="<?php echo esc_attr( $id ); ?>"
 							name="<?php echo esc_attr( $name ); ?>">
 				</th>
@@ -379,7 +384,7 @@ class PostFilter {
 					if ( ! $status ) {
 						?>
 						<a
-								href="#" data-post_id="<?php echo esc_attr( $post->id ); ?>"
+								href="#" data-post_id="<?php echo esc_attr( $post->ID ); ?>"
 								class="plus <?php echo esc_attr( $button_class ); ?>">
 							<i class="bi <?php echo esc_attr( $icon_class ); ?>"></i>
 						</a>
@@ -395,49 +400,38 @@ class PostFilter {
 	/**
 	 * Get all post ids in orders.
 	 *
-	 * @todo Change db format.
+	 * @param int[] $post_ids Post ids.
 	 *
 	 * @return array
 	 */
-	private function get_order_post_ids() {
+	private function get_post_statuses( $post_ids ) {
 		global $wpdb;
 
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
-		$items = $wpdb->get_results( "SELECT `posts_id`, `status`  FROM `{$wpdb->prefix}gts_translation_order`" );
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
+		$table_name = Main::ORDER_TABLE_NAME;
+		$in         = $this->prepare_in( $post_ids, '%d' );
 
-		if ( ! $items ) {
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$results = $wpdb->get_results(
+			"SELECT post_id, status FROM $wpdb->prefix$table_name
+					WHERE id IN(
+					    SELECT MAX(id) FROM $wpdb->prefix$table_name
+					    WHERE post_id IN($in)
+					    GROUP BY post_id
+					    )"
+		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		if ( ! $results ) {
 			return [];
 		}
 
-		$posts_ids = [];
+		$statuses = [];
 
-		foreach ( $items as $item ) {
-			$posts_ids[] = [
-				'ids'    => explode( ',', $item->posts_id ),
-				'status' => $item->status,
-			];
+		foreach ( $results as $result ) {
+			$statuses[ $result->post_id ] = $result->status;
 		}
 
-		return $posts_ids;
-	}
-
-	/**
-	 * Get status.
-	 *
-	 * @param array $posts_ids    Posts ids in the order.
-	 * @param int   $current_post Current post.
-	 *
-	 * @return false|string
-	 */
-	private function get_status( $posts_ids, $current_post ) {
-		foreach ( $posts_ids as $id ) {
-			if ( in_array( $current_post, $id['ids'], true ) ) {
-				return $id['status'];
-			}
-		}
-
-		return false;
+		return $statuses;
 	}
 
 	/**
@@ -461,7 +455,7 @@ class PostFilter {
 
 		$slq_post_type = $this->prepare_in( $post_types );
 
-		$sql = "SELECT SQL_CALC_FOUND_ROWS id, post_title, post_type FROM `{$wpdb->prefix}posts` WHERE `post_type` IN ($slq_post_type)";
+		$sql = "SELECT SQL_CALC_FOUND_ROWS ID, post_title, post_type FROM `$wpdb->posts` WHERE `post_type` IN ($slq_post_type)";
 
 		if ( $search ) {
 			$sql .= "AND `post_title` LIKE '%" . $wpdb->esc_like( $search ) . "%'";
