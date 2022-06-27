@@ -191,7 +191,7 @@ class Main {
 				'sendToTranslationAction' => self::SEND_TO_TRANSLATION_ACTION,
 				'sendToTranslationNonce'  => wp_create_nonce( self::SEND_TO_TRANSLATION_ACTION ),
 				'addToCartText'           => __( 'Adding item to cart', 'gts-translation-order' ),
-				'addToSendOrderText'      => __( 'Order is being sent', 'gts-translation-order' ),
+				'sendOrderText'           => __( 'Order is being sent', 'gts-translation-order' ),
 				'deleteFromCartText'      => __( 'Removing item from cart', 'gts-translation-order' ),
 				'createOrder'             => __( 'Order has been created and we will contact you soon', 'gts-translation-order' ),
 				'cartCookieName'          => Cookie::CART_COOKIE_NAME,
