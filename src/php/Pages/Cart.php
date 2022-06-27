@@ -466,7 +466,7 @@ class Cart {
 
 		foreach ( $this->ids as $id ) {
 			$price[] = [
-				'price' => $this->cost->price_by_post( $source, $languages, $id ),
+				'price' => round( $this->cost->price_by_post( $source, $languages, $id ), 2 ),
 				'id'    => $id,
 			];
 		}
