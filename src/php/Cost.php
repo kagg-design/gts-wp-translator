@@ -33,11 +33,11 @@ class Cost {
 	/**
 	 * Get post word count.
 	 *
-	 * @param string|int $post_id post id.
+	 * @param string|int $post_id Post id.
 	 *
-	 * @return array|int|string[]
+	 * @return int
 	 */
-	private function get_count_words( $post_id ) {
+	private function get_word_count( $post_id ) {
 		$post_object = get_post( (int) $post_id );
 
 		return str_word_count( wp_strip_all_tags( strip_shortcodes( $post_object->post_content ), true ) );
@@ -48,13 +48,13 @@ class Cost {
 	 *
 	 * @param array $post_ids Post ID.
 	 *
-	 * @return array|int|string[]
+	 * @return int
 	 */
 	public function get_total_words( $post_ids ) {
 		$total = 0;
 
 		foreach ( $post_ids as $id ) {
-			$total += $this->get_count_words( $id );
+			$total += $this->get_word_count( $id );
 		}
 
 		return $total;
@@ -67,7 +67,7 @@ class Cost {
 	 *
 	 * @return int
 	 */
-	private function get_count_symbols( $post_id ) {
+	private function get_symbol_count( $post_id ) {
 		$post_object = get_post( (int) $post_id );
 
 		$count = iconv_strlen( wp_strip_all_tags( strip_shortcodes( $post_object->post_content ), true ) );
@@ -94,9 +94,9 @@ class Cost {
 			$prices = $this->get_language_price( $source_language, $item );
 
 			if ( isset( $prices->is_rate_per_char ) && $prices->is_rate_per_char ) {
-				$count_word = $this->get_count_symbols( $post_id );
+				$count_word = $this->get_symbol_count( $post_id );
 			} else {
-				$count_word = $this->get_count_words( $post_id );
+				$count_word = $this->get_word_count( $post_id );
 			}
 
 			if ( 0 !== $count_word ) {

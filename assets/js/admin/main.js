@@ -12,8 +12,8 @@
  * @param GTSTranslationOrderObject.deleteFromCartText
  * @param GTSTranslationOrderObject.createOrder
  * @param GTSTranslationOrderObject.cartCookieName
- * @param GTSTranslationOrderObject.updatePriceTranslation
- * @param GTSTranslationOrderObject.updatePriceTranslationNonce
+ * @param GTSTranslationOrderObject.updatePrice
+ * @param GTSTranslationOrderObject.updatePriceNonce
  */
 jQuery( document ).ready( function( $ ) {
 
@@ -305,8 +305,8 @@ jQuery( document ).ready( function( $ ) {
 	 */
 	$( '#save-target-language' ).click( function( e ) {
 		let data = {
-			action: GTSTranslationOrderObject.updatePriceTranslation,
-			nonce: GTSTranslationOrderObject.updatePriceTranslationNonce,
+			action: GTSTranslationOrderObject.updatePrice,
+			nonce: GTSTranslationOrderObject.updatePriceNonce,
 			target: $( '#target-language' ).val(),
 			source: $( '#gts-source-language' ).val()
 		}

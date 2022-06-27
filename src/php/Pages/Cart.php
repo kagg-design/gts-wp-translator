@@ -96,7 +96,7 @@ class Cart {
 		add_action( 'wp_ajax_' . Main::ADD_TO_CART_ACTION, [ $this, 'add_to_cart' ] );
 		add_action( 'wp_ajax_' . Main::DELETE_FROM_CART_ACTION, [ $this, 'delete_from_cart' ] );
 		add_action( 'wp_ajax_' . Main::SEND_TO_TRANSLATION_ACTION, [ $this, 'send_to_translation' ] );
-		add_action( 'wp_ajax_' . Main::UPDATE_PRICE_ACTION, [ $this, 'update_price_translation' ] );
+		add_action( 'wp_ajax_' . Main::UPDATE_PRICE_ACTION, [ $this, 'update_price' ] );
 	}
 
 	/**
@@ -392,8 +392,14 @@ class Cart {
 
 		remove_filter( 'query', [ $this, 'add_ids_to_query' ] );
 
-		$user_meta  = get_user_meta( get_current_user_id() );
-		$full_name  = ! empty( $user_meta['first_name'][0] ) ? $user_meta['first_name'][0] . ' ' . $user_meta['last_name'][0] : get_bloginfo( 'name' );
+		$user       = wp_get_current_user();
+		$user_login = $user ? $user->user_login : '';
+		$user_id    = get_current_user_id();
+		$user_meta  = get_user_meta( $user_id );
+		$first_name = isset( $user_meta['first_name'][0] ) ? $user_meta['first_name'][0] : '';
+		$last_name  = isset( $user_meta['last_name'][0] ) ? $user_meta['last_name'][0] : '';
+		$full_name  = $first_name . ' ' . $last_name;
+		$full_name  = trim( $full_name ) ? $full_name : $user_login;
 		$word_count = $this->cost->get_total_words( $this->ids );
 
 		$response = $this->api->send_order(
@@ -438,24 +444,23 @@ class Cart {
 	 *
 	 * @return void
 	 */
-	public function update_price_translation() {
+	public function update_price() {
 		$this->ids = Cookie::get_cart_cookie();
 		$filter    = Cookie::get_filter_cookie();
 
 		$nonce = ! empty( $_POST['nonce'] ) ? filter_var( wp_unslash( $_POST['nonce'] ), FILTER_SANITIZE_STRING ) : '';
 
 		if ( ! wp_verify_nonce( $nonce, Main::UPDATE_PRICE_ACTION ) ) {
-			wp_send_json_error( __( 'Bad Nonce', 'gts-translation-order' ) );
+			wp_send_json_error( __( 'Bad Nonce.', 'gts-translation-order' ) );
 		}
 
-		$language = ! empty( $_POST['target'] ) ? filter_var( wp_unslash( $_POST['target'] ), FILTER_SANITIZE_STRING ) : '';
-		$source   = ! empty( $_POST['source'] ) ? filter_var( wp_unslash( $_POST['source'] ), FILTER_SANITIZE_STRING ) : '';
-
-		if ( empty( $language ) ) {
-			wp_send_json_error( __( 'Languages not selected', 'gts-translation-order' ) );
-		}
-
+		$language  = ! empty( $_POST['target'] ) ? filter_var( wp_unslash( $_POST['target'] ), FILTER_SANITIZE_STRING ) : '';
+		$source    = ! empty( $_POST['source'] ) ? filter_var( wp_unslash( $_POST['source'] ), FILTER_SANITIZE_STRING ) : '';
 		$languages = explode( ', ', $language );
+
+		if ( ! $source || ! $languages ) {
+			wp_send_json_error( __( 'Languages not selected.', 'gts-translation-order' ) );
+		}
 
 		$price = [];
 

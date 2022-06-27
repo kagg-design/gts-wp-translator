@@ -35,7 +35,7 @@ class Main {
 	/**
 	 * Update price action name.
 	 */
-	const UPDATE_PRICE_ACTION = 'gts-update-price';
+	const UPDATE_PRICE_ACTION = 'gts-to-update-price';
 
 	/**
 	 * Top menu slug.
@@ -183,19 +183,19 @@ class Main {
 			'gts-to-main',
 			'GTSTranslationOrderObject',
 			[
-				'url'                         => admin_url( 'admin-ajax.php' ),
-				'addToCartAction'             => self::ADD_TO_CART_ACTION,
-				'addToCartNonce'              => wp_create_nonce( self::ADD_TO_CART_ACTION ),
-				'deleteFromCartAction'        => self::DELETE_FROM_CART_ACTION,
-				'deleteFromCartNonce'         => wp_create_nonce( self::DELETE_FROM_CART_ACTION ),
-				'sendToTranslationAction'     => self::SEND_TO_TRANSLATION_ACTION,
-				'sendToTranslationNonce'      => wp_create_nonce( self::SEND_TO_TRANSLATION_ACTION ),
-				'addToCartText'               => __( 'Adding item to cart', 'gts-translation-order' ),
-				'deleteFromCartText'          => __( 'Removing item from cart', 'gts-translation-order' ),
-				'createOrder'                 => __( 'Order has been created and we will contact you soon', 'gts-translation-order' ),
-				'cartCookieName'              => Cookie::CART_COOKIE_NAME,
-				'updatePriceTranslation'      => self::UPDATE_PRICE_ACTION,
-				'updatePriceTranslationNonce' => wp_create_nonce( self::UPDATE_PRICE_ACTION ),
+				'url'                     => admin_url( 'admin-ajax.php' ),
+				'addToCartAction'         => self::ADD_TO_CART_ACTION,
+				'addToCartNonce'          => wp_create_nonce( self::ADD_TO_CART_ACTION ),
+				'deleteFromCartAction'    => self::DELETE_FROM_CART_ACTION,
+				'deleteFromCartNonce'     => wp_create_nonce( self::DELETE_FROM_CART_ACTION ),
+				'sendToTranslationAction' => self::SEND_TO_TRANSLATION_ACTION,
+				'sendToTranslationNonce'  => wp_create_nonce( self::SEND_TO_TRANSLATION_ACTION ),
+				'addToCartText'           => __( 'Adding item to cart', 'gts-translation-order' ),
+				'deleteFromCartText'      => __( 'Removing item from cart', 'gts-translation-order' ),
+				'createOrder'             => __( 'Order has been created and we will contact you soon', 'gts-translation-order' ),
+				'cartCookieName'          => Cookie::CART_COOKIE_NAME,
+				'updatePrice'             => self::UPDATE_PRICE_ACTION,
+				'updatePriceNonce'        => wp_create_nonce( self::UPDATE_PRICE_ACTION ),
 			]
 		);
 	}
