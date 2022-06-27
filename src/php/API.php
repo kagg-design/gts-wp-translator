@@ -328,7 +328,7 @@ class API {
 			]
 		);
 
-		return $response->success ? $response : [];
+		return $response->success ? $response : (object) [ 'error' => __( 'Request failed', 'gts-translation-order' ) ];
 	}
 
 	/**
