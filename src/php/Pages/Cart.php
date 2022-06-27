@@ -419,7 +419,7 @@ class Cart {
 			]
 		);
 
-		if ( ! $response->success ) {
+		if ( ! $response || ! $response->success ) {
 			wp_send_json_error( [ 'message' => $response->error ] );
 		}
 

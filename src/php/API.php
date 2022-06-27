@@ -307,7 +307,7 @@ class API {
 	 *
 	 * @param array $args Arguments.
 	 *
-	 * @return array|false|mixed
+	 * @return object|false
 	 */
 	public function send_order( $args ) {
 		$response = $this->request(
@@ -328,7 +328,7 @@ class API {
 			]
 		);
 
-		return $response->success ? $response : [];
+		return isset( $response->success ) ? $response : false;
 	}
 
 	/**
