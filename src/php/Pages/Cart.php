@@ -146,7 +146,7 @@ class Cart {
 						<tr>
 							<td>
 								<?php
-								$disable_class = 0 === $this->total ? 'disabled' : '';
+								$disable_class = count( Cookie::get_cart_cookie() ) ? '' : 'disabled';
 								?>
 								<button type="button" id="gts-to-send-to-translation"
 										class="btn btn-primary <?php echo esc_attr( $disable_class ); ?>">
@@ -533,7 +533,7 @@ class Cart {
 		$cart_item = Cookie::get_cart_cookie();
 		$filter    = Cookie::get_filter_cookie();
 
-		if ( 0 !== count( (array) $cart_item ) ) {
+		if ( 0 !== count( $cart_item ) ) {
 			foreach ( $cart_item as $item ) {
 				$post  = get_post( $item );
 				$title = $post->post_title;

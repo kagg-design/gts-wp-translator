@@ -14,7 +14,7 @@
  * @param GTSTranslationOrderObject.cartCookieName
  * @param GTSTranslationOrderObject.updatePrice
  * @param GTSTranslationOrderObject.updatePriceNonce
- * @param GTSTranslationOrderObject.addToSendOrderText
+ * @param GTSTranslationOrderObject.sendOrderText
  */
 jQuery( document ).ready( function( $ ) {
 
@@ -282,7 +282,7 @@ jQuery( document ).ready( function( $ ) {
 			data: data,
 			beforeSend: function() {
 				Swal.fire( {
-					title: GTSTranslationOrderObject.addToSendOrderText,
+					title: GTSTranslationOrderObject.sendOrderText,
 					didOpen: () => {
 						Swal.showLoading();
 					},
