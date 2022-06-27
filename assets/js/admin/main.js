@@ -20,6 +20,10 @@ jQuery( document ).ready( function( $ ) {
 	removeFromCart();
 	addToCart();
 
+	function round( value, decimals ) {
+		return Number( Math.round( value + 'e' + decimals ) + 'e-' + decimals );
+	}
+
 	/**
 	 * Init modal target language.
 	 */
