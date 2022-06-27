@@ -145,7 +145,11 @@ class Cart {
 						</tr>
 						<tr>
 							<td>
-								<button type="button" id="gts-to-send-to-translation" class="btn btn-primary">
+								<?php
+								$disable_class = 0 === $this->total ? 'disabled' : '';
+								?>
+								<button type="button" id="gts-to-send-to-translation"
+										class="btn btn-primary <?php echo esc_attr( $disable_class ); ?>">
 									<?php esc_html_e( 'Send to translation', 'gts-translation-order' ); ?>
 								</button>
 							</td>
