@@ -136,7 +136,7 @@ class Cart {
 					<table class="table table-dark table-striped total-table">
 						<tr>
 							<td><?php esc_html_e( 'Total Cost:', 'gts-translation-order' ); ?></td>
-							<td>$<span id="total"><?php echo esc_attr( $this->total ); ?></span></td>
+							<td>$<span id="total"><?php echo number_format( $this->total, 2 ); ?></span></td>
 						</tr>
 						<tr>
 							<td colspan="2">
@@ -545,7 +545,7 @@ class Cart {
 				<tr>
 					<td><?php echo esc_html( $title ); ?></td>
 					<td><?php echo esc_html( $post->post_type ); ?></td>
-					<td class="price">$<?php echo esc_html( $price ); ?></td>
+					<td class="price">$<?php echo number_format( $price, 2 ); ?></td>
 					<td>
 						<a
 								href="#" data-post_id="<?php echo esc_attr( $post->ID ); ?>"

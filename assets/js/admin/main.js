@@ -54,6 +54,8 @@ jQuery( document ).ready( function( $ ) {
 		$( '#gts_target_language' ).val( languagesSlugArray.join( ',' ) )
 
 		languageModal.hide();
+
+		updatePrice();
 	} );
 
 
@@ -307,7 +309,7 @@ jQuery( document ).ready( function( $ ) {
 	/**
 	 * Update price.
 	 */
-	$( '#save-target-language' ).click( function( e ) {
+	function updatePrice() {
 		let data = {
 			action: GTSTranslationOrderObject.updatePrice,
 			nonce: GTSTranslationOrderObject.updatePriceNonce,
@@ -338,5 +340,5 @@ jQuery( document ).ready( function( $ ) {
 				//error logging
 			},
 		} );
-	} );
+	}
 } );
