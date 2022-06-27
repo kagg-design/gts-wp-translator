@@ -33,6 +33,11 @@ class Main {
 	const SEND_TO_TRANSLATION_ACTION = 'gts-to-send-to-translation';
 
 	/**
+	 * Update price action name.
+	 */
+	const UPDATE_PRICE_ACTION = 'gts-update-price';
+
+	/**
 	 * Top menu slug.
 	 */
 	const GTS_MENU_SLUG = 'gts_translation_order';
@@ -57,14 +62,19 @@ class Main {
 	];
 
 	/**
-	 * Order status send.
+	 * Order status sent.
 	 */
-	const ORDER_STATUS_SEND = 'Send';
+	const ORDER_STATUS_SENT = 'Sent';
 
 	/**
 	 * Order table created option.
 	 */
 	const ORDER_TABLE_OPTION = 'gts_order_table_created';
+
+	/**
+	 * Order table name.
+	 */
+	const ORDER_TABLE_NAME = 'gts_to_orders';
 
 	/**
 	 * API claas instance.
@@ -173,17 +183,19 @@ class Main {
 			'gts-to-main',
 			'GTSTranslationOrderObject',
 			[
-				'url'                     => admin_url( 'admin-ajax.php' ),
-				'addToCartAction'         => self::ADD_TO_CART_ACTION,
-				'addToCartNonce'          => wp_create_nonce( self::ADD_TO_CART_ACTION ),
-				'deleteFromCartAction'    => self::DELETE_FROM_CART_ACTION,
-				'deleteFromCartNonce'     => wp_create_nonce( self::DELETE_FROM_CART_ACTION ),
-				'sendToTranslationAction' => self::SEND_TO_TRANSLATION_ACTION,
-				'sendToTranslationNonce'  => wp_create_nonce( self::SEND_TO_TRANSLATION_ACTION ),
-				'addToCartText'           => __( 'Adding item to cart', 'gts-translation-order' ),
-				'deleteFromCartText'      => __( 'Removing item from cart', 'gts-translation-order' ),
-				'createOrder'             => __( 'Order has been created and we will contact you soon', 'gts-translation-order' ),
-				'cartCookieName'          => Cookie::CART_COOKIE_NAME,
+				'url'                         => admin_url( 'admin-ajax.php' ),
+				'addToCartAction'             => self::ADD_TO_CART_ACTION,
+				'addToCartNonce'              => wp_create_nonce( self::ADD_TO_CART_ACTION ),
+				'deleteFromCartAction'        => self::DELETE_FROM_CART_ACTION,
+				'deleteFromCartNonce'         => wp_create_nonce( self::DELETE_FROM_CART_ACTION ),
+				'sendToTranslationAction'     => self::SEND_TO_TRANSLATION_ACTION,
+				'sendToTranslationNonce'      => wp_create_nonce( self::SEND_TO_TRANSLATION_ACTION ),
+				'addToCartText'               => __( 'Adding item to cart', 'gts-translation-order' ),
+				'deleteFromCartText'          => __( 'Removing item from cart', 'gts-translation-order' ),
+				'createOrder'                 => __( 'Order has been created and we will contact you soon', 'gts-translation-order' ),
+				'cartCookieName'              => Cookie::CART_COOKIE_NAME,
+				'updatePriceTranslation'      => self::UPDATE_PRICE_ACTION,
+				'updatePriceTranslationNonce' => wp_create_nonce( self::UPDATE_PRICE_ACTION ),
 			]
 		);
 	}
@@ -232,32 +244,32 @@ class Main {
 	public function create_order_table() {
 		global $wpdb;
 
-		$table = get_option( self::ORDER_TABLE_OPTION );
-
-		if ( $table ) {
+		if ( get_option( self::ORDER_TABLE_OPTION ) ) {
 			return;
 		}
 
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$sql = "CREATE TABLE `{$wpdb->prefix}gts_translation_order`  
+		$table_name = self::ORDER_TABLE_NAME;
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+		$sql = "CREATE TABLE `$wpdb->prefix$table_name`  
 				(
-				    `id` BIGINT NOT NULL AUTO_INCREMENT,
-				    `posts_id` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
-				    `status` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
-				    `total_cost` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
-				    `date_send` DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-				    `date_response` DATE NULL,
-				    `site_language` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
-				    `target_languages` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
-				    `industry` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
-				    `order_id` INT NULL,
-				    PRIMARY KEY (`id`)
+				    `id`               BIGINT AUTO_INCREMENT PRIMARY KEY,
+				    `order_id`         INT             NULL,
+				    `post_id`          BIGINT UNSIGNED NULL,
+				    `status`           VARCHAR(16)     NULL,
+				    `total`            DOUBLE          NULL,
+				    `date`             DATE            NULL,
+				    `source_language`  VARCHAR(200)    NULL,
+				    `target_languages` MEDIUMTEXT      NULL,
+				    `industry`         VARCHAR(100)    NULL,
+				    INDEX (order_id),
+				    INDEX (post_id)
 				)";
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		dbDelta( $sql );
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query( $sql );
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 		update_option( self::ORDER_TABLE_OPTION, true );
 	}

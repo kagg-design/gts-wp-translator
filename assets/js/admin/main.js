@@ -12,6 +12,8 @@
  * @param GTSTranslationOrderObject.deleteFromCartText
  * @param GTSTranslationOrderObject.createOrder
  * @param GTSTranslationOrderObject.cartCookieName
+ * @param GTSTranslationOrderObject.updatePriceTranslation
+ * @param GTSTranslationOrderObject.updatePriceTranslationNonce
  */
 jQuery( document ).ready( function( $ ) {
 
@@ -297,4 +299,38 @@ jQuery( document ).ready( function( $ ) {
 	function deleteCookie( name ) {
 		document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 	}
+
+	/**
+	 * Update price.
+	 */
+	$( '#save-target-language' ).click( function( e ) {
+		let data = {
+			action: GTSTranslationOrderObject.updatePriceTranslation,
+			nonce: GTSTranslationOrderObject.updatePriceTranslationNonce,
+			target: $( '#target-language' ).val(),
+			source: $( '#gts-source-language' ).val()
+		}
+
+		$.ajax( {
+			type: 'POST',
+			url: GTSTranslationOrderObject.url,
+			data: data,
+			success: function( res ) {
+				if ( res.success ) {
+					let newPriceArray = res.data.newPrice;
+					let total = 0
+					$.each( newPriceArray, function( i, val ) {
+						$( `[data-post_id=${val.id}]` ).parents( 'tr' ).find( '.price' ).text( '$' + val.price )
+						total += val.price
+					} );
+
+					$('#total').text(total);
+				}
+			},
+			error: function( xhr, ajaxOptions, thrownError ) {
+				console.log( 'error...', xhr );
+				//error logging
+			},
+		} );
+	} );
 } );

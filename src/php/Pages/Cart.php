@@ -96,6 +96,7 @@ class Cart {
 		add_action( 'wp_ajax_' . Main::ADD_TO_CART_ACTION, [ $this, 'add_to_cart' ] );
 		add_action( 'wp_ajax_' . Main::DELETE_FROM_CART_ACTION, [ $this, 'delete_from_cart' ] );
 		add_action( 'wp_ajax_' . Main::SEND_TO_TRANSLATION_ACTION, [ $this, 'send_to_translation' ] );
+		add_action( 'wp_ajax_' . Main::UPDATE_PRICE_ACTION, [ $this, 'update_price_translation' ] );
 	}
 
 	/**
@@ -256,7 +257,8 @@ class Cart {
 						<table class="table">
 							<tbody>
 							<?php
-							$i = 0;
+							$i      = 0;
+							$target = Cookie::get_filter_cookie()->target;
 							echo '<tr>';
 							foreach ( $this->language_list as $lang ) {
 								$i ++;
@@ -267,6 +269,7 @@ class Cart {
 											value="<?php echo esc_html( $lang->language_name ); ?>"
 											id="<?php echo esc_html( $lang->language_name ); ?>"
 											class="lang-checkbox"
+										<?php echo in_array( $lang->language_name, $target, true ) ? 'checked' : ''; ?>
 									/>
 									<label for="<?php echo esc_html( $lang->language_name ); ?>">
 										<?php echo esc_html( $lang->language_name ); ?>
@@ -313,26 +316,23 @@ class Cart {
 		$bulk = ! empty( $_POST['bulk'] ) && filter_var( wp_unslash( $_POST['bulk'] ), FILTER_VALIDATE_BOOLEAN );
 
 		if ( $bulk ) {
-			// bulk add.
-
-			$posts_id = ! empty( $_POST['post_id'] ) ? filter_input( INPUT_POST, 'post_id', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY ) : null;
-			$result   = $this->save_post_to_cart(
+			// Bulk add.
+			$post_id = ! empty( $_POST['post_id'] ) ? filter_input( INPUT_POST, 'post_id', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY ) : null;
+			$result  = $this->save_post_to_cart(
 				[
 					'type'    => 'add',
-					'post_id' => $posts_id,
+					'post_id' => $post_id,
 				]
 			);
-
 		} else {
-			// single add.
-			$posts_id = ! empty( $_POST['post_id'] ) ? filter_var( wp_unslash( $_POST['post_id'] ), FILTER_SANITIZE_NUMBER_INT ) : null;
-			$result   = $this->save_post_to_cart(
+			// Single add.
+			$post_id = ! empty( $_POST['post_id'] ) ? filter_var( wp_unslash( $_POST['post_id'] ), FILTER_SANITIZE_NUMBER_INT ) : null;
+			$result  = $this->save_post_to_cart(
 				[
 					'type'    => 'add',
-					'post_id' => [ $posts_id ],
+					'post_id' => [ $post_id ],
 				]
 			);
-
 		}
 
 		wp_send_json_success( [ 'posts_id' => $result ] );
@@ -413,20 +413,65 @@ class Cart {
 			wp_send_json_error( [ 'message' => $response->error ] );
 		}
 
-		$this->save_order(
+		$result = $this->save_order(
 			[
-				'posts_id'         => implode( ',', $this->ids ),
-				'status'           => Main::ORDER_STATUS_SEND,
-				'total_cost'       => $total,
-				'date_send'        => gmdate( 'Y-m-d H:i:s', time() ),
-				'site_language'    => $source,
+				'order_id'         => $response->order_id,
+				'post_id'          => $this->ids,
+				'status'           => Main::ORDER_STATUS_SENT,
+				'total'            => $total,
+				'date'             => gmdate( 'Y-m-d H:i:s', time() ),
+				'source_language'  => $source,
 				'target_languages' => $target,
 				'industry'         => $industry,
-				'order_id'         => $response->order_id,
 			]
 		);
 
+		if ( ! $result ) {
+			wp_send_json_error( [ 'message' => __( 'Cannot save order.', 'gts-translation-order' ) ] );
+		}
+
 		wp_send_json_success( $response );
+	}
+
+	/**
+	 * Update price.
+	 *
+	 * @return void
+	 */
+	public function update_price_translation() {
+		$this->ids = Cookie::get_cart_cookie();
+		$filter    = Cookie::get_filter_cookie();
+
+		$nonce = ! empty( $_POST['nonce'] ) ? filter_var( wp_unslash( $_POST['nonce'] ), FILTER_SANITIZE_STRING ) : '';
+
+		if ( ! wp_verify_nonce( $nonce, Main::UPDATE_PRICE_ACTION ) ) {
+			wp_send_json_error( __( 'Bad Nonce', 'gts-translation-order' ) );
+		}
+
+		$language = ! empty( $_POST['target'] ) ? filter_var( wp_unslash( $_POST['target'] ), FILTER_SANITIZE_STRING ) : '';
+		$source   = ! empty( $_POST['source'] ) ? filter_var( wp_unslash( $_POST['source'] ), FILTER_SANITIZE_STRING ) : '';
+
+		if ( empty( $language ) ) {
+			wp_send_json_error( __( 'Languages not selected', 'gts-translation-order' ) );
+		}
+
+		$languages = explode( ', ', $language );
+
+		$price = [];
+
+		foreach ( $this->ids as $id ) {
+			$price[] = [
+				'price' => $this->cost->price_by_post( $source, $languages, $id ),
+				'id'    => $id,
+			];
+		}
+
+		$filter->source = $source;
+		$filter->target = $languages;
+
+		Cookie::set( Cookie::FILTER_COOKIE_NAME, (array) $filter );
+
+		wp_send_json_success( [ 'newPrice' => $price ] );
 	}
 
 	/**
@@ -495,7 +540,7 @@ class Cart {
 				<tr>
 					<td><?php echo esc_html( $title ); ?></td>
 					<td><?php echo esc_html( $post->post_type ); ?></td>
-					<td>$<?php echo esc_html( $price ); ?></td>
+					<td class="price">$<?php echo esc_html( $price ); ?></td>
 					<td>
 						<a
 								href="#" data-post_id="<?php echo esc_attr( $post->ID ); ?>"
@@ -548,28 +593,65 @@ class Cart {
 	 *
 	 * @param array $args Arguments.
 	 *
-	 * @return void
-	 * @todo Change db format.
-	 *
+	 * @return bool
 	 */
 	private function save_order( $args ) {
 		global $wpdb;
 
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery
-		$wpdb->insert(
-			$wpdb->prefix . 'gts_translation_order',
-			$args,
-			[
-				'%s',
-				'%s',
-				'%s',
-				'%s',
-				'%s',
-				'%s',
-				'%s',
-				'%d',
-			]
+		$formats = [
+			'order_id'         => '%d',
+			'post_id'          => '%d',
+			'status'           => '%s',
+			'total'            => '%f',
+			'date'             => '%s',
+			'source_language'  => '%s',
+			'target_languages' => '%s',
+			'industry'         => '%s',
+		];
+
+		ksort( $args );
+		ksort( $formats );
+
+		$columns_arr = array_keys( $formats );
+
+		if ( array_keys( $args ) !== $columns_arr ) {
+			return false;
+		}
+
+		$columns         = implode( ', ', $columns_arr );
+		$ids             = $args['post_id'];
+		$args['post_id'] = 0;
+		$values_arr      = [];
+		$table_name      = Main::ORDER_TABLE_NAME;
+
+		foreach ( (array) $ids as $id ) {
+			$args['post_id'] = $id;
+
+			// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+			$value = $wpdb->prepare(
+				implode( ', ', array_values( $formats ) ),
+				array_values( $args )
+			);
+			// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+
+			$values_arr[] = '(' . $value . ')';
+		}
+
+		if ( ! $values_arr ) {
+			return false;
+		}
+
+		$values = implode( ', ', $values_arr );
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$result = $wpdb->query(
+			"INSERT INTO $wpdb->prefix$table_name
+    		($columns)
+			VALUES $values"
 		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery
+
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return false !== $result;
 	}
 }
