@@ -324,7 +324,7 @@ jQuery( document ).ready( function( $ ) {
 						total += val.price
 					} );
 
-					total = Math.round(total * Math.pow(10, 2)) / Math.pow(10, 2);
+					total = round( parseFloat( total ), 2 );
 
 					$('#total').text(total);
 				}
