@@ -111,6 +111,8 @@ jQuery( document ).ready( function( $ ) {
 						event.off( 'click' );
 						change_icon( data.post_id, 'add' );
 						Swal.close();
+					}else{
+						error_message(res.data.message)
 					}
 				},
 				error: function( xhr ) {
@@ -158,6 +160,8 @@ jQuery( document ).ready( function( $ ) {
 				if ( res.success ) {
 					Swal.close();
 					location.reload();
+				}else{
+					error_message(res.data.message)
 				}
 			},
 			error: function( xhr ) {
@@ -245,6 +249,8 @@ jQuery( document ).ready( function( $ ) {
 						event.off( 'click' );
 						change_icon( data.post_id, 'remove' );
 						Swal.close();
+					}else{
+						error_message(res.data.message)
 					}
 				},
 				error: function( xhr ) {
@@ -298,6 +304,8 @@ jQuery( document ).ready( function( $ ) {
 					setTimeout( function() {
 						location.reload();
 					}, 1500 )
+				}else{
+					error_message(res.data.message)
 				}
 			},
 			error: function( xhr ) {
@@ -342,7 +350,7 @@ jQuery( document ).ready( function( $ ) {
 
 					total = round( parseFloat( total ), 2 );
 
-					$('#total').text(total);
+					$( '#total' ).text( total );
 				}
 			},
 			error: function( xhr, ajaxOptions, thrownError ) {
@@ -350,5 +358,19 @@ jQuery( document ).ready( function( $ ) {
 				//error logging
 			},
 		} );
+	}
+
+	/**
+	 * Open error windows.
+	 *
+	 * @param message
+	 */
+	function error_message( message ) {
+		Swal.close();
+		Swal.fire( {
+			icon: 'error',
+			title: 'Oops...',
+			text: message,
+		} )
 	}
 } );
