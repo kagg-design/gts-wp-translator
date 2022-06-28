@@ -125,7 +125,7 @@ class Main {
 		$this->api               = new API();
 		$filter                  = new PostFilter();
 		$this->translation_order = new Order( $filter );
-		$this->translation_cart  = new Cart( $this->api );
+		$this->translation_cart  = new Cart();
 	}
 
 	/**
@@ -247,8 +247,6 @@ class Main {
 				    INDEX (order_id),
 				    INDEX (post_id)
 				)";
-
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		$wpdb->query( $sql );
 		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared

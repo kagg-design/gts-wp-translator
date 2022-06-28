@@ -84,7 +84,7 @@ class Pagination {
 	 *
 	 * @var string|null
 	 */
-	private $urlF = null;
+	private $urlF;
 
 	/**
 	 * Pagination html.
@@ -177,6 +177,8 @@ class Pagination {
 	 * Set show counter.
 	 *
 	 * @param bool $value Show counter.
+	 *
+	 * @noinspection PhpUnused
 	 */
 	public function showCounter( $value ) {
 		$this->showCounter = $value;
@@ -186,6 +188,8 @@ class Pagination {
 	 * Set class name.
 	 *
 	 * @param string $value Class name of pagination div.
+	 *
+	 * @noinspection PhpUnused
 	 */
 	public function changeClass( $value = '' ) {
 		$this->className = $value;
@@ -195,6 +199,8 @@ class Pagination {
 	 * Set prev label.
 	 *
 	 * @param string $value Prev label.
+	 *
+	 * @noinspection PhpUnused
 	 */
 	public function prevLabel( $value ) {
 		$this->prevT = $value;
@@ -204,6 +210,8 @@ class Pagination {
 	 * Set prev icon.
 	 *
 	 * @param string $value Prev icon.
+	 *
+	 * @noinspection PhpUnused
 	 */
 	public function prevIcon( $value ) {
 		$this->prevI = $value;
@@ -213,6 +221,8 @@ class Pagination {
 	 * Set next label.
 	 *
 	 * @param string $value Next label.
+	 *
+	 * @noinspection PhpUnused
 	 */
 	public function nextLabel( $value ) {
 		$this->nextT = $value;
@@ -222,6 +232,8 @@ class Pagination {
 	 * Set next icon.
 	 *
 	 * @param string $value Next icon.
+	 *
+	 * @noinspection PhpUnused
 	 */
 	public function nextIcon( $value ) {
 		$this->nextI = $value;
@@ -242,6 +254,8 @@ class Pagination {
 	 * @param string $value Friendly url.
 	 *
 	 * @return string|null
+	 *
+	 * @noinspection PhpUnused
 	 */
 	public function urlFriendly( $value = '%' ) {
 		$this->urlF = null;

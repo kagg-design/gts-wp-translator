@@ -494,13 +494,13 @@ class Cart {
 	public function add_ids_to_query( $query ) {
 		global $wpdb;
 
-		if ( ! preg_match( "/SELECT ID FROM {$wpdb->posts} .* WHERE /", $query ) ) {
+		if ( ! preg_match( "/SELECT ID FROM $wpdb->posts .* WHERE /", $query ) ) {
 			return $query;
 		}
 
 		$in = $this->prepare_in( $this->ids );
 
-		return "SELECT {$wpdb->posts}.ID FROM {$wpdb->posts} WHERE {$wpdb->posts}.ID IN ( $in )";
+		return "SELECT $wpdb->posts.ID FROM $wpdb->posts WHERE $wpdb->posts.ID IN ( $in )";
 	}
 
 	/**

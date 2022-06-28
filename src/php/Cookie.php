@@ -48,13 +48,7 @@ class Cookie {
 	 * @return array
 	 */
 	public static function get_cart_cookie() {
-		$value = (array) self::get( self::CART_COOKIE_NAME );
-
-		if ( null !== $value ) {
-			return $value;
-		}
-
-		return [];
+		return (array) self::get( self::CART_COOKIE_NAME );
 	}
 
 	/**
