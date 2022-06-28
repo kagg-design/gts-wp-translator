@@ -36,3 +36,9 @@
 #gts_token {
 	width: 450px;
 }
+.modal.show .modal-dialog{
+	max-width: 900px;
+}
+.modal-body tr label{
+	font-size: 13px;
+}

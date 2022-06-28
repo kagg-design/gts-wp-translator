@@ -280,7 +280,7 @@ class Cart {
 									</label>
 								</td>
 								<?php
-								if ( 3 === $i ) {
+								if ( 4 === $i ) {
 									echo '</tr><tr>';
 									$i = 0;
 								}
