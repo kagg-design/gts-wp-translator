@@ -42,3 +42,7 @@
 .modal-body tr label{
 	font-size: 13px;
 }
+.modal-body tr td{
+	margin: 0;
+	padding: 2px !important;
+}
