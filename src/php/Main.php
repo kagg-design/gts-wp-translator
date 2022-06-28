@@ -10,7 +10,6 @@ namespace GTS\TranslationOrder;
 use GTS\TranslationOrder\Filter\PostFilter;
 use GTS\TranslationOrder\Pages\Cart;
 use GTS\TranslationOrder\Pages\Order;
-use GTS\TranslationOrder\Pages\Token;
 
 /**
  * PluginInit class file.
@@ -98,13 +97,6 @@ class Main {
 	private $translation_cart;
 
 	/**
-	 * Token class instance.
-	 *
-	 * @var Token
-	 */
-	private $translation_token;
-
-	/**
 	 * Main construct.
 	 */
 	public function __construct() {
@@ -134,7 +126,6 @@ class Main {
 		$filter                  = new PostFilter();
 		$this->translation_order = new Order( $filter );
 		$this->translation_cart  = new Cart( $this->api );
-		$this->translation_token = new Token();
 	}
 
 	/**
@@ -225,16 +216,6 @@ class Main {
 			self::GTS_SUB_MENU_CART_SLUG,
 			[ $this->translation_cart, 'show_translation_cart' ]
 		);
-
-		add_submenu_page(
-			self::GTS_MENU_SLUG,
-			__( 'Token', 'gts-translation-order' ),
-			__( 'Token', 'gts-translation-order' ),
-			'edit_others_posts',
-			self::GTS_SUB_MENU_TOKEN_SLUG,
-			[ $this->translation_token, 'show_token_page' ]
-		);
-
 	}
 
 	/**

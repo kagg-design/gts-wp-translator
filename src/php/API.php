@@ -77,7 +77,7 @@ class API {
 	 *
 	 * @var string $token Token.
 	 */
-	public $token;
+	private $token;
 
 	/**
 	 * Server URL.
