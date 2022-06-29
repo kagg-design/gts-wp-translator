@@ -60,7 +60,7 @@ class API {
 	/**
 	 * Option name.
 	 */
-	const AUTH_OPTION = 'gts-translation-auth';
+	const AUTH_OPTION = 'gts-translation-order-auth';
 
 	/**
 	 * Language list transient.
