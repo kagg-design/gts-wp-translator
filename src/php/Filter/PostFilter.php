@@ -351,7 +351,7 @@ class PostFilter {
 			$title        = $title ?: __( '(no title)', 'gts-translation-order' );
 			$id           = "gts_to_translate-$post->ID";
 			$name         = "gts_to_translate[$post->ID]";
-			$icon_class   = in_array( $post->ID, $cart_post_id, true ) ? 'bi-dash-square' : 'bi-plus-square';
+			$icon_class   = in_array( $post->ID, $cart_post_id, true ) ? 'icon-dash-square' : 'icon-plus-square';
 			$button_class = in_array( $post->ID, $cart_post_id, true ) ? 'remove-to-cart' : 'add-to-cart';
 			$price        = 0;
 
@@ -389,7 +389,7 @@ class PostFilter {
 						<a
 								href="#" data-post_id="<?php echo esc_attr( $post->ID ); ?>"
 								class="plus <?php echo esc_attr( $button_class ); ?>">
-							<i class="bi <?php echo esc_attr( $icon_class ); ?>"></i>
+							<i class="<?php echo esc_attr( $icon_class ); ?>"></i>
 						</a>
 						<?php
 					}

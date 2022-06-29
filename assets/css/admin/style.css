@@ -1,3 +1,32 @@
+@font-face {
+	font-family: 'icon';
+	src: url('../../fonts/icon.eot');
+	src: url('../../fonts/icon.eot?#iefix') format('embedded-opentype'),
+	url('../../fonts/icon.woff') format('woff'),
+	url('../../fonts/icon.ttf') format('truetype'),
+	url('../../fonts/icon.svg#icon') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class*='icon-']:before {
+	display: inline-block;
+	font-family: 'icon';
+	font-style: normal;
+	font-weight: normal;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale
+}
+
+.icon-dash-square:before {
+	content: '\0041';
+}
+
+.icon-plus-square:before {
+	content: '\0042';
+}
+
 .wp-menu-image img {
 	width: 20px;
 }
@@ -7,11 +36,11 @@
 }
 
 #gts-translation-order a:hover > i,
-#gts-translation-order a:hover > i.bi-dash-square {
+#gts-translation-order a:hover > i.icon-dash-square {
 	color: #05135c;
 }
 
-#gts-translation-order a i.bi-dash-square {
+#gts-translation-order a i.icon-dash-square {
 	color: #bb0000;
 }
 

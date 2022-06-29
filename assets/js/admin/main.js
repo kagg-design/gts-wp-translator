@@ -61,25 +61,6 @@ jQuery( document ).ready( function( $ ) {
 
 
 	/**
-	 * Change icon and text.
-	 */
-	let flag_view = false;
-	$( '#eye_btn' ).click( function( e ) {
-		if ( ! flag_view ) {
-			$( '#gts_token' ).attr( 'type', 'text' )
-			$( this ).find( 'i' ).removeClass( 'bi-eye-fill' )
-			$( this ).find( 'i' ).addClass( 'bi-eye-slash-fill' )
-		} else {
-			$( '#gts_token' ).attr( 'type', 'password' )
-			$( this ).find( 'i' ).removeClass( 'bi-eye-slash-fill' )
-			$( this ).find( 'i' ).addClass( 'bi-eye-fill' )
-		}
-
-		flag_view = ! flag_view;
-	} );
-
-
-	/**
 	 * Single add to cart ajax.
 	 */
 	function addToCart() {
@@ -181,14 +162,14 @@ jQuery( document ).ready( function( $ ) {
 		let button = $( icon ).parent();
 
 		if ( 'add' === type ) {
-			icon.removeClass( 'bi-plus-square' ).addClass( 'bi-dash-square' );
+			icon.removeClass( 'icon-plus-square' ).addClass( 'icon-dash-square' );
 			button.removeClass( 'add-to-cart' ).addClass( 'remove-to-cart' );
 
 			removeFromCart();
 		}
 
 		if ( 'remove' === type ) {
-			icon.removeClass( 'bi-dash-square' ).addClass( 'bi-plus-square' );
+			icon.removeClass( 'icon-dash-square' ).addClass( 'icon-plus-square' );
 			button.removeClass( 'remove-to-cart' ).addClass( 'add-to-cart' );
 
 			addToCart();
