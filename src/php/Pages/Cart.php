@@ -187,57 +187,16 @@ class Cart {
 						value="<?php echo esc_html( $user_email ); ?>"
 						placeholder="name@example.com">
 			</div>
-			<div class="mb-3">
-				<label for="gts-source-language"><?php esc_html_e( 'Source language', 'gts-translation-order' ); ?></label>
-				<select
-						class="form-select"
-						name="gts_source_language"
-						id="gts-source-language"
-						aria-label="<?php esc_html_e( 'Source language', 'gts-translation-order' ); ?>">
-					<option value="0"
-							selected><?php esc_html_e( 'Source language', 'gts-translation-order' ); ?></option>
-					<?php
-					foreach ( $this->language_list as $item ) {
-						if ( $item->active ) {
-							?>
-							<option value="<?php echo esc_attr( $item->language_name ); ?>" <?php selected( $item->language_name, $filter->source ); ?>>
-								<?php echo esc_html( $item->language_name ); ?>
-							</option>
-							<?php
-						}
-					}
-					?>
-				</select>
-			</div>
-			<div class="mb-3">
-				<label for="target-language" class="hidden"></label>
-				<input
-						type="text"
-						class="form-control"
-						id="target-language"
-						name="gts_target_language"
-						value="<?php echo esc_attr( implode( ', ', $filter->target ) ); ?>"
-						placeholder="<?php esc_html_e( 'Select target languages', 'gts-translation-order' ); ?>"
-						readonly>
-			</div>
-			<div class="mb-3">
-				<label for="gts-industry"><?php esc_html_e( 'Industry', 'gts-translation-order' ); ?></label>
-				<select
-						class="form-select"
-						id="gts-industry"
-						name="gts-industry"
-						aria-label="<?php esc_html_e( 'Industry', 'gts-translation-order' ); ?>">
-					<option value="0" selected>
-						<?php esc_html_e( 'Industry', 'gts-translation-order' ); ?>
-					</option>
-					<?php foreach ( self::GTS_INDUSTRY_LIST as $item ) : ?>
-						<option value="<?php echo esc_attr( $item ); ?>">
-							<?php echo esc_html( $item ); ?>
-						</option>
-					<?php endforeach; ?>
-				</select>
-			</div>
 			<input type="hidden" name="gts_target_language" id="gts_target_language">
+			<input
+					type="hidden" name="gts-source-language" id="gts-source-language"
+					value="<?php echo esc_attr( $filter->source ); ?>">
+			<input
+					type="hidden" name="target-language" id="target-language"
+					value="<?php echo esc_attr( implode( ', ', $filter->target ) ); ?>">
+			<input
+					type="hidden" name="gts-industry" id="gts-industry"
+					value="General">
 			<?php wp_nonce_field( 'gts_translation_cart', 'gts_translation_cart_nonce', false ); ?>
 		</form>
 		<?php
@@ -317,27 +276,28 @@ class Cart {
 			wp_send_json_error( __( 'Bad Nonce', 'gts-translation-order' ) );
 		}
 
-		$bulk = ! empty( $_POST['bulk'] ) && filter_var( wp_unslash( $_POST['bulk'] ), FILTER_VALIDATE_BOOLEAN );
+		$filter = Cookie::get_filter_cookie();
 
-		if ( $bulk ) {
-			// Bulk add.
-			$post_id = ! empty( $_POST['post_id'] ) ? filter_input( INPUT_POST, 'post_id', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY ) : null;
-			$result  = $this->save_post_to_cart(
-				[
-					'type'    => 'add',
-					'post_id' => $post_id,
-				]
-			);
-		} else {
-			// Single add.
-			$post_id = ! empty( $_POST['post_id'] ) ? filter_var( wp_unslash( $_POST['post_id'] ), FILTER_SANITIZE_NUMBER_INT ) : null;
-			$result  = $this->save_post_to_cart(
-				[
-					'type'    => 'add',
-					'post_id' => [ $post_id ],
-				]
-			);
+		$source    = ! empty( $_POST['source'] ) ? filter_var( wp_unslash( $_POST['source'] ), FILTER_SANITIZE_STRING ) : '';
+		$target    = ! empty( $_POST['target'] ) ? filter_var( wp_unslash( $_POST['target'] ), FILTER_SANITIZE_STRING ) : '';
+		$languages = explode( ', ', $target );
+
+		if ( ! $source || ! $languages ) {
+			wp_send_json_error( __( 'Languages not selected.', 'gts-translation-order' ) );
 		}
+
+		$filter->source = $source;
+		$filter->target = $languages;
+
+		Cookie::set( Cookie::FILTER_COOKIE_NAME, (array) $filter );
+
+		$post_id = ! empty( $_POST['post_id'] ) ? filter_input( INPUT_POST, 'post_id', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY ) : null;
+		$result  = $this->save_post_to_cart(
+			[
+				'type'    => 'add',
+				'post_id' => $post_id,
+			]
+		);
 
 		wp_send_json_success( [ 'posts_id' => $result ] );
 	}

@@ -15,11 +15,12 @@
  * @param GTSTranslationOrderObject.updatePrice
  * @param GTSTranslationOrderObject.updatePriceNonce
  * @param GTSTranslationOrderObject.sendOrderText
+ * @param GTSTranslationOrderObject.emptyTarget
+ * @param GTSTranslationOrderObject.emptySource
  */
 jQuery( document ).ready( function( $ ) {
 
 	removeFromCart();
-	addToCart();
 
 	function round( value, decimals ) {
 		return Number( Math.round( value + 'e' + decimals ) + 'e-' + decimals );
@@ -78,51 +79,6 @@ jQuery( document ).ready( function( $ ) {
 		flag_view = ! flag_view;
 	} );
 
-
-	/**
-	 * Single add to cart ajax.
-	 */
-	function addToCart() {
-		$( '.add-to-cart' ).click( function( e ) {
-			e.preventDefault();
-
-			let event = $( this );
-
-			let data = {
-				action: GTSTranslationOrderObject.addToCartAction,
-				nonce: GTSTranslationOrderObject.addToCartNonce,
-				post_id: $( this ).data( 'post_id' )
-			};
-
-			$.ajax( {
-				type: 'POST',
-				url: GTSTranslationOrderObject.url,
-				data: data,
-				beforeSend: function() {
-					Swal.fire( {
-						title: GTSTranslationOrderObject.addToCartText,
-						didOpen: () => {
-							Swal.showLoading();
-						},
-					} );
-				},
-				success: function( res ) {
-					if ( res.success ) {
-						event.off( 'click' );
-						change_icon( data.post_id, 'add' );
-						Swal.close();
-					}else{
-						error_message(res.data.message)
-					}
-				},
-				error: function( xhr ) {
-					console.log( 'error...', xhr );
-					//error logging
-				}
-			} );
-		} );
-	}
-
 	/**
 	 * Bulk add to cart ajax.
 	 */
@@ -133,6 +89,30 @@ jQuery( document ).ready( function( $ ) {
 
 		let elements = $( '[name^=\'gts_to_translate\']:checked' );
 
+		let target = $( '#target-language' ).val();
+		let source = $( '#gts_source_language option:selected' ).val();
+
+
+		if ( 0 === target.length ) {
+			Swal.fire( {
+				icon: 'error',
+				title: 'Error',
+				text: GTSTranslationOrderObject.emptyTarget,
+			} );
+
+			return;
+		}
+
+		if ( '0' === source ) {
+			Swal.fire( {
+				icon: 'error',
+				title: 'Error',
+				text: GTSTranslationOrderObject.emptySource,
+			} );
+
+			return;
+		}
+
 		$.each( elements, function( i, val ) {
 			postsID.push( $( val ).data( 'id' ) );
 		} );
@@ -141,7 +121,9 @@ jQuery( document ).ready( function( $ ) {
 			action: GTSTranslationOrderObject.addToCartAction,
 			nonce: GTSTranslationOrderObject.addToCartNonce,
 			bulk: true,
-			post_id: postsID
+			post_id: postsID,
+			target: target,
+			source: source
 		};
 
 		$.ajax( {
@@ -160,8 +142,8 @@ jQuery( document ).ready( function( $ ) {
 				if ( res.success ) {
 					Swal.close();
 					location.reload();
-				}else{
-					error_message(res.data.message)
+				} else {
+					error_message( res.data.message )
 				}
 			},
 			error: function( xhr ) {
@@ -190,8 +172,6 @@ jQuery( document ).ready( function( $ ) {
 		if ( 'remove' === type ) {
 			icon.removeClass( 'bi-dash-square' ).addClass( 'bi-plus-square' );
 			button.removeClass( 'remove-to-cart' ).addClass( 'add-to-cart' );
-
-			addToCart();
 		}
 	}
 
@@ -249,8 +229,8 @@ jQuery( document ).ready( function( $ ) {
 						event.off( 'click' );
 						change_icon( data.post_id, 'remove' );
 						Swal.close();
-					}else{
-						error_message(res.data.message)
+					} else {
+						error_message( res.data.message )
 					}
 				},
 				error: function( xhr ) {
@@ -304,8 +284,8 @@ jQuery( document ).ready( function( $ ) {
 					setTimeout( function() {
 						location.reload();
 					}, 1500 )
-				}else{
-					error_message(res.data.message)
+				} else {
+					error_message( res.data.message )
 				}
 			},
 			error: function( xhr ) {

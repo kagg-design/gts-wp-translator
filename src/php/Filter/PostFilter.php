@@ -241,6 +241,7 @@ class PostFilter {
 		<select
 				class="form-select"
 				name="gts_source_language"
+				id="gts_source_language"
 				aria-label="<?php esc_html_e( 'Source language', 'gts-translation-order' ); ?>">
 			<option value="0"
 					selected><?php esc_html_e( 'Source language', 'gts-translation-order' ); ?></option>
@@ -347,13 +348,11 @@ class PostFilter {
 		}
 
 		foreach ( $posts as $post ) {
-			$title        = $post->post_title;
-			$title        = $title ?: __( '(no title)', 'gts-translation-order' );
-			$id           = "gts_to_translate-$post->ID";
-			$name         = "gts_to_translate[$post->ID]";
-			$icon_class   = in_array( $post->ID, $cart_post_id, true ) ? 'bi-dash-square' : 'bi-plus-square';
-			$button_class = in_array( $post->ID, $cart_post_id, true ) ? 'remove-to-cart' : 'add-to-cart';
-			$price        = 0;
+			$title = $post->post_title;
+			$title = $title ?: __( '(no title)', 'gts-translation-order' );
+			$id    = "gts_to_translate-$post->ID";
+			$name  = "gts_to_translate[$post->ID]";
+			$price = 0;
 
 			if ( ! empty( $filter_params->source ) && ! empty( $filter_params->target ) ) {
 				$price = $this->cost->price_by_post( $filter_params->source, $filter_params->target, $post->ID );

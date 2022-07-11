@@ -188,6 +188,8 @@ class Main {
 				'cartCookieName'          => Cookie::CART_COOKIE_NAME,
 				'updatePrice'             => self::UPDATE_PRICE_ACTION,
 				'updatePriceNonce'        => wp_create_nonce( self::UPDATE_PRICE_ACTION ),
+				'emptyTarget'             => __( 'Fill in the fields Target languages', 'gts-translation-order' ),
+				'emptySource'             => __( 'Fill in the fields Source language', 'gts-translation-order' ),
 			]
 		);
 	}
