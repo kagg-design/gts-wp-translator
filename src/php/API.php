@@ -84,7 +84,7 @@ class API {
 	 *
 	 * @var string.
 	 */
-	private $server_url;
+	public $server_url;
 
 	/**
 	 * Api construct.

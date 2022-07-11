@@ -170,6 +170,12 @@ class Main {
 		wp_enqueue_style( 'gts-to-admin-style', GTS_TRANSLATION_ORDER_URL . '/assets/css/admin/style.css', '', GTS_TRANSLATION_ORDER_VERSION );
 		wp_enqueue_script( 'gts-to-main', GTS_TRANSLATION_ORDER_URL . '/assets/js/admin/main.js', [ 'jquery' ], GTS_TRANSLATION_ORDER_VERSION, true );
 
+		$site = API::GTS_SITE;
+
+		if ( defined( 'GTS_TRANSLATION_ORDER_DEBUG_SITE' ) && GTS_TRANSLATION_ORDER_DEBUG_SITE ) {
+			$site = GTS_TRANSLATION_ORDER_DEBUG_SITE;
+		}
+
 		wp_localize_script(
 			'gts-to-main',
 			'GTSTranslationOrderObject',
@@ -190,6 +196,12 @@ class Main {
 				'updatePriceNonce'        => wp_create_nonce( self::UPDATE_PRICE_ACTION ),
 				'emptyTarget'             => __( 'Fill in the fields Target languages', 'gts-translation-order' ),
 				'emptySource'             => __( 'Fill in the fields Source language', 'gts-translation-order' ),
+				'sendOrderTitle'          => __( 'You have been successfully registered on the site', 'gts-translation-order' ),
+				'sendOrderTextConfirm'    => __( 'We sent access to your email.', 'gts-translation-order' ),
+				'sendOrderTextButton'     => __( 'Proceed to checkout', 'gts-translation-order' ),
+				'sendCancelButton'        => __( 'Cancel', 'gts-translation-order' ),
+				'paymentLinkRedirect'     => $site . '/confirm/?fqid=',
+				'backToSelectRedirect'    => get_admin_url( null, 'admin.php?page=' . self::GTS_MENU_SLUG ),
 			]
 		);
 	}

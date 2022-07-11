@@ -17,6 +17,12 @@
  * @param GTSTranslationOrderObject.sendOrderText
  * @param GTSTranslationOrderObject.emptyTarget
  * @param GTSTranslationOrderObject.emptySource
+ * @param GTSTranslationOrderObject.sendOrderTitle
+ * @param GTSTranslationOrderObject.sendOrderTextConfirm
+ * @param GTSTranslationOrderObject.sendOrderTextButton
+ * @param GTSTranslationOrderObject.paymentLinkRedirect
+ * @param GTSTranslationOrderObject.backToSelectRedirect
+ * @param GTSTranslationOrderObject.sendCancelButton
  */
 jQuery( document ).ready( function( $ ) {
 
@@ -277,13 +283,27 @@ jQuery( document ).ready( function( $ ) {
 						showConfirmButton: false,
 						timer: 1500,
 						title: GTSTranslationOrderObject.createOrder,
+						willClose: () => {
+							Swal.fire( {
+								icon: 'success',
+								showCancelButton: true,
+								confirmButtonText: '<i class="fa fa-thumbs-up"></i> ' + GTSTranslationOrderObject.sendOrderTextButton,
+								cancelButtonText: '<i class="fa fa-thumbs-down"></i>' + GTSTranslationOrderObject.sendCancelButton,
+								title: GTSTranslationOrderObject.sendOrderTitle,
+								text: GTSTranslationOrderObject.sendOrderTextConfirm,
+							} ).then( ( result ) => {
+								/* Read more about isConfirmed, isDenied below */
+								if ( result.isConfirmed ) {
+									location.href = GTSTranslationOrderObject.paymentLinkRedirect + res.data.order_id;
+								} else if ( result.isDenied ) {
+									location.href = GTSTranslationOrderObject.backToSelectRedirect
+								}
+							} )
+						}
 					} );
 
-					deleteCookie( GTSTranslationOrderObject.cartCookieName );
 
-					setTimeout( function() {
-						location.reload();
-					}, 1500 )
+					deleteCookie( GTSTranslationOrderObject.cartCookieName );
 				} else {
 					error_message( res.data.message )
 				}
