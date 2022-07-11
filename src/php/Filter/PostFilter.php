@@ -447,7 +447,7 @@ class PostFilter {
 
 		$slq_post_type = $this->prepare_in( $post_types );
 
-		$sql = "SELECT SQL_CALC_FOUND_ROWS ID, post_title, post_type FROM `$wpdb->posts` WHERE `post_type` IN ($slq_post_type)";
+		$sql = "SELECT SQL_CALC_FOUND_ROWS ID, post_title, post_type FROM `$wpdb->posts` WHERE `post_type` IN ($slq_post_type) AND `post_status` = 'publish' ";
 
 		if ( $search ) {
 			$sql .= "AND `post_title` LIKE '%" . $wpdb->esc_like( $search ) . "%'";
