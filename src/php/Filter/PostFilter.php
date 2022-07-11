@@ -361,9 +361,9 @@ class PostFilter {
 			$status       = isset( $posts_statuses[ $post->ID ] ) ? $posts_statuses[ $post->ID ] : '';
 			$status_class = $status ? 'text-bg-primary' : 'bg-secondary';
 			$words_count  = $this->cost->get_word_count( $post->ID );
-
+			$tr_class     = in_array( $post->ID, $cart_post_id, true ) ? 'table-primary' : '';
 			?>
-			<tr>
+			<tr class="<?php echo esc_attr( $tr_class ); ?>">
 				<th scope="row">
 					<?php if ( ! $status ) { ?>
 					<label for="<?php echo esc_attr( $id ); ?>" class="hidden"></label>
