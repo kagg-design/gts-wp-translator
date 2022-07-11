@@ -473,7 +473,7 @@ class Cart {
 		$result        = [];
 
 		if ( 'add' === $args['type'] ) {
-			$result = array_merge( $cart_post_ids, $args['post_id'] );
+			$result = array_unique( array_merge( $cart_post_ids, $args['post_id'] ) );
 		}
 
 		if ( 'remove' === $args['type'] ) {
