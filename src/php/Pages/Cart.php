@@ -144,7 +144,19 @@ class Cart {
 							</td>
 						</tr>
 						<tr>
-							<td>
+							<td colspan="2">
+								<?php
+								$url = get_admin_url( null, 'admin.php?page=' . Main::GTS_MENU_SLUG );
+								?>
+								<a
+										href="<?php echo esc_url( $url ); ?>"
+										id="gts-to-bakc-to-translation" class="btn btn-primary">
+									<?php esc_html_e( 'Back to selection', 'gts-translation-order' ); ?>
+								</a>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
 								<?php
 								$disable_class = count( Cookie::get_cart_cookie() ) ? '' : 'disabled';
 								?>
@@ -153,7 +165,6 @@ class Cart {
 									<?php esc_html_e( 'Send to translation', 'gts-translation-order' ); ?>
 								</button>
 							</td>
-							<td></td>
 						</tr>
 					</table>
 				</div>

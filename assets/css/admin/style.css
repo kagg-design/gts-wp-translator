@@ -54,3 +54,7 @@
 	padding-left: 30px;
 	padding-right: 30px;
 }
+
+#gts-to-send-to-translation, #gts-to-bakc-to-translation{
+	width: 100%;
+}
