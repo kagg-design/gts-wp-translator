@@ -361,6 +361,7 @@ class PostFilter {
 
 			$status       = isset( $posts_statuses[ $post->ID ] ) ? $posts_statuses[ $post->ID ] : '';
 			$status_class = $status ? 'text-bg-primary' : 'bg-secondary';
+			$words_count  = $this->cost->get_word_count( $post->ID );
 
 			?>
 			<tr>
@@ -381,6 +382,7 @@ class PostFilter {
 						<?php echo esc_html( $status ?: __( 'Not translated', 'gts-translation-order' ) ); ?>
 					</span>
 				</td>
+				<td><?php echo esc_html( $words_count ); ?></td>
 				<td>$<?php echo esc_html( $price ); ?> </td>
 				<td>
 					<?php

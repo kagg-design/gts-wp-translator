@@ -37,7 +37,7 @@ class Cost {
 	 *
 	 * @return int
 	 */
-	private function get_word_count( $post_id ) {
+	public function get_word_count( $post_id ) {
 		$post_object = get_post( (int) $post_id );
 
 		return str_word_count( wp_strip_all_tags( strip_shortcodes( $post_object->post_content ), true ) );
