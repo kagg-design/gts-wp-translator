@@ -199,8 +199,8 @@ class Main {
 	 */
 	public function menu_page() {
 		add_menu_page(
-			__( 'Translation Order', 'gts-translation-order' ),
-			__( 'Translation Order', 'gts-translation-order' ),
+			__( 'GTS WP Translator', 'gts-translation-order' ),
+			__( 'GTS WP Translator', 'gts-translation-order' ),
 			'edit_others_posts',
 			self::GTS_MENU_SLUG,
 			[ $this->translation_order, 'show_translation_page' ],
