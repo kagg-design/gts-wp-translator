@@ -384,19 +384,6 @@ class PostFilter {
 				</td>
 				<td><?php echo esc_html( $words_count ); ?></td>
 				<td>$<?php echo esc_html( $price ); ?> </td>
-				<td>
-					<?php
-					if ( ! $status ) {
-						?>
-						<a
-								href="#" data-post_id="<?php echo esc_attr( $post->ID ); ?>"
-								class="plus <?php echo esc_attr( $button_class ); ?>">
-							<i class="bi <?php echo esc_attr( $icon_class ); ?>"></i>
-						</a>
-						<?php
-					}
-					?>
-				</td>
 			</tr>
 			<?php
 		}

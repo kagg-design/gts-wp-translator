@@ -56,8 +56,8 @@ class Main {
 	 */
 	const GTS_PAGES_MENU_SLUGS = [
 		'toplevel_page_' . self::GTS_MENU_SLUG,
-		'translation-order_page_' . self::GTS_SUB_MENU_CART_SLUG,
-		'translation-order_page_' . self::GTS_SUB_MENU_TOKEN_SLUG,
+		'gts-wp-translator_page_' . self::GTS_SUB_MENU_CART_SLUG,
+		'gts-wp-translator_page_' . self::GTS_SUB_MENU_TOKEN_SLUG,
 	];
 
 	/**

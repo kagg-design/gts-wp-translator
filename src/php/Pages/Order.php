@@ -85,7 +85,6 @@ class Order {
 							<th scope="col"><?php esc_attr_e( 'Status', 'gts-translation-order' ); ?></th>
 							<th scope="col"><?php esc_attr_e( 'Word count', 'gts-translation-order' ); ?></th>
 							<th scope="col"><?php esc_attr_e( 'Cost', 'gts-translation-order' ); ?></th>
-							<th scope="col"><?php esc_attr_e( 'Action', 'gts-translation-order' ); ?></th>
 						</tr>
 						</thead>
 						<tbody class="table-group-divider">
