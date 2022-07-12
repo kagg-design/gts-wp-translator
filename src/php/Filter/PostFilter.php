@@ -447,7 +447,7 @@ class PostFilter {
 		$slq_post_type = $this->prepare_in( $post_types );
 		$table_name    = Main::ORDER_TABLE_NAME;
 
-		$sql = "SELECT SQL_CALC_FOUND_ROWS po.ID, po.post_title, po.post_type 
+		$sql = "SELECT DISTINCT SQL_CALC_FOUND_ROWS po.ID, po.post_title, po.post_type 
 				FROM `$wpdb->posts` po, $wpdb->prefix$table_name ot 
 				WHERE `post_type` IN ($slq_post_type) 
 				AND `post_status` = 'publish' 
