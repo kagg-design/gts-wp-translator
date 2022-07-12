@@ -69,6 +69,13 @@ class Cart {
 	private $ids;
 
 	/**
+	 * Post id to query.
+	 *
+	 * @var int
+	 */
+	private $id;
+
+	/**
 	 * Api GTS Translation.
 	 *
 	 * @var API
@@ -351,23 +358,32 @@ class Cart {
 			wp_send_json_error( __( 'Bad Nonce', 'gts-translation-order' ) );
 		}
 
-		$email    = ! empty( $_POST['email'] ) ? filter_var( wp_unslash( $_POST['email'] ), FILTER_SANITIZE_EMAIL ) : '';
-		$source   = ! empty( $_POST['source'] ) ? filter_var( wp_unslash( $_POST['source'] ), FILTER_SANITIZE_STRING ) : '';
-		$target   = ! empty( $_POST['target'] ) ? filter_var( wp_unslash( $_POST['target'] ), FILTER_SANITIZE_STRING ) : '';
-		$industry = ! empty( $_POST['industry'] ) ? filter_var( wp_unslash( $_POST['industry'] ), FILTER_SANITIZE_STRING ) : '';
-		$total    = ! empty( $_POST['total'] ) ? filter_var( wp_unslash( $_POST['total'] ), FILTER_SANITIZE_STRING ) : 0;
-		$total    = (float) str_replace( ',', '', $total );
+		$email        = ! empty( $_POST['email'] ) ? filter_var( wp_unslash( $_POST['email'] ), FILTER_SANITIZE_EMAIL ) : '';
+		$source       = ! empty( $_POST['source'] ) ? filter_var( wp_unslash( $_POST['source'] ), FILTER_SANITIZE_STRING ) : '';
+		$target       = ! empty( $_POST['target'] ) ? filter_var( wp_unslash( $_POST['target'] ), FILTER_SANITIZE_STRING ) : '';
+		$industry     = ! empty( $_POST['industry'] ) ? filter_var( wp_unslash( $_POST['industry'] ), FILTER_SANITIZE_STRING ) : '';
+		$total        = ! empty( $_POST['total'] ) ? filter_var( wp_unslash( $_POST['total'] ), FILTER_SANITIZE_STRING ) : 0;
+		$total        = (float) str_replace( ',', '', $total );
+		$export_files = [];
 
-		require_once ABSPATH . 'wp-admin/includes/export.php';
+		require ABSPATH . 'wp-admin/includes/export.php';
 
-		add_filter( 'query', [ $this, 'add_ids_to_query' ] );
 
 		ob_start();
-		export_wp();
-		$export_file = ob_get_clean();
 
-		remove_filter( 'query', [ $this, 'add_ids_to_query' ] );
+		foreach ( $this->ids as $id ) {
+			$this->id = $id;
+			add_filter( 'query', [ $this, 'add_ids_to_query' ] );
 
+			export_wp();
+			$export_file = ob_get_clean();
+
+			$export_files[] = [
+				'file_name' => get_the_title( $id ),
+				'file'      => $export_file,
+			];
+			remove_filter( 'query', [ $this, 'add_ids_to_query' ] );
+		}
 		$user       = wp_get_current_user();
 		$user_login = $user ? $user->user_login : '';
 		$user_id    = get_current_user_id();
@@ -384,7 +400,7 @@ class Cart {
 				'source'     => $source,
 				'target'     => $target,
 				'industry'   => $industry,
-				'file'       => $export_file,
+				'file'       => $export_files,
 				'full_name'  => $full_name,
 				'word_count' => $word_count,
 				'total'      => $total,
@@ -469,9 +485,7 @@ class Cart {
 			return $query;
 		}
 
-		$in = $this->prepare_in( $this->ids );
-
-		return "SELECT $wpdb->posts.ID FROM $wpdb->posts WHERE $wpdb->posts.ID IN ( $in )";
+		return "SELECT $wpdb->posts.ID FROM $wpdb->posts WHERE $wpdb->posts.ID = $this->id";
 	}
 
 	/**
