@@ -10,6 +10,7 @@ namespace GTS\TranslationOrder\Pages;
 use GTS\TranslationOrder\Cookie;
 use GTS\TranslationOrder\Cost;
 use GTS\TranslationOrder\API;
+use GTS\TranslationOrder\Export;
 use GTS\TranslationOrder\Main;
 use stdClass;
 use wpdb;
@@ -365,25 +366,25 @@ class Cart {
 		$total        = ! empty( $_POST['total'] ) ? filter_var( wp_unslash( $_POST['total'] ), FILTER_SANITIZE_STRING ) : 0;
 		$total        = (float) str_replace( ',', '', $total );
 		$export_files = [];
+		$export       = new Export();
 
-		require ABSPATH . 'wp-admin/includes/export.php';
-
-
-		ob_start();
+		add_filter( 'query', [ $this, 'add_ids_to_query' ] );
 
 		foreach ( $this->ids as $id ) {
 			$this->id = $id;
-			add_filter( 'query', [ $this, 'add_ids_to_query' ] );
 
-			export_wp();
+			ob_start();
+			$export->export_wp();
 			$export_file = ob_get_clean();
 
 			$export_files[] = [
 				'file_name' => get_the_title( $id ),
 				'file'      => $export_file,
 			];
-			remove_filter( 'query', [ $this, 'add_ids_to_query' ] );
 		}
+
+		remove_filter( 'query', [ $this, 'add_ids_to_query' ] );
+
 		$user       = wp_get_current_user();
 		$user_login = $user ? $user->user_login : '';
 		$user_id    = get_current_user_id();

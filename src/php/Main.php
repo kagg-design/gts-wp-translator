@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin init class.
+ * Plugin main class.
  *
  * @package gts/translation-order
  */
@@ -12,7 +12,7 @@ use GTS\TranslationOrder\Pages\Cart;
 use GTS\TranslationOrder\Pages\Order;
 
 /**
- * PluginInit class file.
+ * Main class file.
  */
 class Main {
 
