@@ -683,7 +683,7 @@ class Export {
 	 * @param string $meta_key  Meta key.
 	 * @return bool
 	 */
-	private function wxr_filter_postmeta( $return_me, $meta_key ) {
+	public function wxr_filter_postmeta( $return_me, $meta_key ) {
 		if ( '_edit_lock' === $meta_key ) {
 			$return_me = true;
 		}
