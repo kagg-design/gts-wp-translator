@@ -360,7 +360,7 @@ class PostFilter {
 
 			$status       = isset( $posts_statuses[ $post->ID ] ) ? $posts_statuses[ $post->ID ] : '';
 			$status_class = $status ? 'text-bg-primary' : 'bg-secondary';
-			$words_count  = $this->cost->get_word_count( $post->ID );
+			$word_count   = $this->cost->get_word_count( $post->ID );
 			$tr_class     = in_array( $post->ID, $cart_post_id, true ) ? 'table-primary' : '';
 			?>
 			<tr class="<?php echo esc_attr( $tr_class ); ?>">
@@ -381,7 +381,7 @@ class PostFilter {
 						<?php echo esc_html( $status ?: __( 'Not translated', 'gts-translation-order' ) ); ?>
 					</span>
 				</td>
-				<td><?php echo esc_html( $words_count ); ?></td>
+				<td><?php echo esc_html( $word_count ); ?></td>
 				<td>$<?php echo esc_html( $price ); ?> </td>
 			</tr>
 			<?php
@@ -451,7 +451,7 @@ class PostFilter {
 				FROM `$wpdb->posts` po, $wpdb->prefix$table_name ot 
 				WHERE `post_type` IN ($slq_post_type) 
 				AND `post_status` = 'publish' 
-				AND po.ID NOT IN (SELECT DISTINCT post_id FROM $wpdb->prefix$table_name ) ";
+				AND po.ID NOT IN (SELECT DISTINCT post_id FROM $wpdb->prefix$table_name )";
 
 		if ( $search ) {
 			$sql .= "AND `post_title` LIKE '%" . $wpdb->esc_like( $search ) . "%'";

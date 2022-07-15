@@ -158,7 +158,7 @@ class Cart {
 								?>
 								<a
 										href="<?php echo esc_url( $url ); ?>"
-										id="gts-to-bakc-to-translation" class="btn btn-primary">
+										id="gts-to-back-to-translation" class="btn btn-primary">
 									<?php esc_html_e( 'Back to selection', 'gts-translation-order' ); ?>
 								</a>
 							</td>

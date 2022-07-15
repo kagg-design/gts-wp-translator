@@ -15,8 +15,8 @@
  * @param GTSTranslationOrderObject.updatePrice
  * @param GTSTranslationOrderObject.updatePriceNonce
  * @param GTSTranslationOrderObject.sendOrderText
- * @param GTSTranslationOrderObject.emptyTarget
  * @param GTSTranslationOrderObject.emptySource
+ * @param GTSTranslationOrderObject.emptyTarget
  * @param GTSTranslationOrderObject.sendOrderTitle
  * @param GTSTranslationOrderObject.sendOrderTextConfirm
  * @param GTSTranslationOrderObject.sendOrderTextButton
