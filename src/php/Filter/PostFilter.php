@@ -398,6 +398,10 @@ class PostFilter {
 	private function get_post_statuses( $post_ids ) {
 		global $wpdb;
 
+		if ( ! $post_ids ) {
+			return [];
+		}
+
 		$table_name = Main::ORDER_TABLE_NAME;
 		$in         = $this->prepare_in( $post_ids, '%d' );
 
@@ -406,7 +410,7 @@ class PostFilter {
 			"SELECT post_id, status FROM $wpdb->prefix$table_name
 					WHERE id IN(
 					    SELECT MAX(id) FROM $wpdb->prefix$table_name
-					    WHERE post_id IN($in)
+					    WHERE post_id IN ( $in )
 					    GROUP BY post_id
 					    )"
 		);
@@ -447,11 +451,11 @@ class PostFilter {
 		$slq_post_type = $this->prepare_in( $post_types );
 		$table_name    = Main::ORDER_TABLE_NAME;
 
-		$sql = "SELECT DISTINCT SQL_CALC_FOUND_ROWS po.ID, po.post_title, po.post_type 
-				FROM `$wpdb->posts` po, $wpdb->prefix$table_name ot 
-				WHERE `post_type` IN ($slq_post_type) 
+		$sql = "SELECT SQL_CALC_FOUND_ROWS po.ID, po.post_title, po.post_type 
+				FROM `$wpdb->posts` po 
+				WHERE `post_type` IN ( $slq_post_type ) 
 				AND `post_status` = 'publish' 
-				AND po.ID NOT IN (SELECT DISTINCT post_id FROM $wpdb->prefix$table_name )";
+				AND po.ID NOT IN (SELECT DISTINCT post_id FROM $wpdb->prefix$table_name)";
 
 		if ( $search ) {
 			$sql .= "AND `post_title` LIKE '%" . $wpdb->esc_like( $search ) . "%'";

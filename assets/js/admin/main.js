@@ -99,21 +99,21 @@ jQuery( document ).ready( function( $ ) {
 		let source = $( '#gts_source_language option:selected' ).val();
 
 
-		if ( 0 === target.length ) {
-			Swal.fire( {
-				icon: 'error',
-				title: 'Error',
-				text: GTSTranslationOrderObject.emptyTarget,
-			} );
-
-			return;
-		}
-
 		if ( '0' === source ) {
 			Swal.fire( {
 				icon: 'error',
 				title: 'Error',
 				text: GTSTranslationOrderObject.emptySource,
+			} );
+
+			return;
+		}
+
+		if ( 0 === target.length ) {
+			Swal.fire( {
+				icon: 'error',
+				title: 'Error',
+				text: GTSTranslationOrderObject.emptyTarget,
 			} );
 
 			return;
