@@ -200,7 +200,7 @@ class Main {
 				'sendOrderTextConfirm'    => __( 'We have sent access information to your email.', 'gts-translation-order' ),
 				'sendOrderTextButton'     => __( 'Proceed to checkout', 'gts-translation-order' ),
 				'sendCancelButton'        => __( 'Cancel', 'gts-translation-order' ),
-				'paymentLinkRedirect'     => $site . '/project-details/?refnum=',
+				'paymentLinkRedirect'     => $site . '/confirm/?fqid=',
 				'backToSelectRedirect'    => get_admin_url( null, 'admin.php?page=' . self::GTS_MENU_SLUG ),
 			]
 		);
