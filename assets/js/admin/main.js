@@ -294,7 +294,7 @@ jQuery( document ).ready( function( $ ) {
 							} ).then( ( result ) => {
 								/* Read more about isConfirmed, isDenied below */
 								if ( result.isConfirmed ) {
-									location.href = GTSTranslationOrderObject.paymentLinkRedirect + res.data.order_id;
+									window.open( GTSTranslationOrderObject.paymentLinkRedirect + res.data.ref, '_blank' );
 								} else if ( result.isDenied ) {
 									location.href = GTSTranslationOrderObject.backToSelectRedirect
 								}

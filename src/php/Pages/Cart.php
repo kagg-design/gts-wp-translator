@@ -408,7 +408,11 @@ class Cart {
 			]
 		);
 
-		if ( ! $response || ! $response->success ) {
+		if ( false === $response || ( empty( $response->success ) && empty( $response->error ) ) ) {
+			wp_send_json_error( [ 'message' => __( 'Unknown communication error.', 'gts-translation-order' ) ] );
+		}
+
+		if ( empty( $response->success ) ) {
 			wp_send_json_error( [ 'message' => $response->error ] );
 		}
 

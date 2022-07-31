@@ -197,10 +197,10 @@ class Main {
 				'emptySource'             => __( 'Please fill in the Source language field', 'gts-translation-order' ),
 				'emptyTarget'             => __( 'Please fill in the Target languages field', 'gts-translation-order' ),
 				'sendOrderTitle'          => __( 'You have been successfully registered on the site', 'gts-translation-order' ),
-				'sendOrderTextConfirm'    => __( 'We sent access to your email', 'gts-translation-order' ),
+				'sendOrderTextConfirm'    => __( 'We have sent access information to your email.', 'gts-translation-order' ),
 				'sendOrderTextButton'     => __( 'Proceed to checkout', 'gts-translation-order' ),
 				'sendCancelButton'        => __( 'Cancel', 'gts-translation-order' ),
-				'paymentLinkRedirect'     => $site . '/confirm/?fqid=',
+				'paymentLinkRedirect'     => $site . '/project-details/?refnum=',
 				'backToSelectRedirect'    => get_admin_url( null, 'admin.php?page=' . self::GTS_MENU_SLUG ),
 			]
 		);
