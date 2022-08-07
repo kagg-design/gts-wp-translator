@@ -284,8 +284,8 @@ jQuery( document ).ready( function( $ ) {
 					Swal.fire( {
 						icon: 'success',
 						showCancelButton: true,
-						confirmButtonText: '<i class="fa fa-thumbs-up"></i> ' + GTSTranslationOrderObject.sendOrderTextButton,
-						cancelButtonText: '<i class="fa fa-thumbs-down"></i>' + GTSTranslationOrderObject.sendCancelButton,
+						confirmButtonText: GTSTranslationOrderObject.sendOrderTextButton,
+						cancelButtonText: GTSTranslationOrderObject.sendCancelButton,
 						title: GTSTranslationOrderObject.sendOrderTitle,
 						text: GTSTranslationOrderObject.sendOrderTextConfirm,
 					} ).then( ( result ) => {
