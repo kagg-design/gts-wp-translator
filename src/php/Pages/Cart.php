@@ -60,7 +60,7 @@ class Cart {
 	 *
 	 * @var float $total total.
 	 */
-	private $total;
+	private $total = 0;
 
 	/**
 	 * IDs of posts to process.
@@ -92,7 +92,6 @@ class Cart {
 		$this->api           = new API();
 		$this->language_list = $this->api->get_language_list();
 		$this->cost          = new Cost();
-		$this->total         = 0;
 	}
 
 	/**
@@ -113,6 +112,8 @@ class Cart {
 	 * @return void
 	 */
 	public function show_translation_cart() {
+		$items_count = count( Cookie::get_cart_cookie() );
+
 		?>
 		<div class="container">
 			<div class="row">
@@ -131,16 +132,16 @@ class Cart {
 					</table>
 				</div>
 				<div class="col-auto">
-					<table class="table table-dark table-striped total-table">
+					<table class="table table-dark total-table">
+						<tr>
+							<td><?php esc_html_e( 'Items:', 'gts-translation-order' ); ?></td>
+							<td><span id="item_count"><?php echo esc_html( $items_count ); ?></span></td>
+						</tr>
 						<tr>
 							<td><?php esc_html_e( 'Total Cost:', 'gts-translation-order' ); ?></td>
 							<td>$<span id="total"><?php echo number_format( $this->total, 2 ); ?></span></td>
 						</tr>
-						<tr>
-							<td colspan="2">
-								<?php $this->show_total_form(); ?>
-							</td>
-						</tr>
+						<?php $this->show_total_form(); ?>
 						<tr>
 							<td colspan="2">
 								<?php
@@ -156,7 +157,7 @@ class Cart {
 						<tr>
 							<td colspan="2">
 								<?php
-								$disable_class = count( Cookie::get_cart_cookie() ) ? '' : 'disabled';
+								$disable_class = $items_count ? '' : 'disabled';
 								?>
 								<button type="button" id="gts-to-send-to-translation"
 										class="btn btn-primary <?php echo esc_attr( $disable_class ); ?>">
@@ -183,11 +184,13 @@ class Cart {
 		$user       = wp_get_current_user();
 		$user_email = ( $user && isset( $user->user_email ) ) ? $user->user_email : '';
 		?>
-		<form action="" method="post">
-			<div class="mb-3">
-				<label for="gts-client-email" class="form-label">
-					<?php esc_html_e( 'Email', 'gts-translation-order' ); ?>
+		<tr>
+			<td>
+				<label for="gts-client-email">
+					<?php esc_html_e( 'Email:', 'gts-translation-order' ); ?>
 				</label>
+			</td>
+			<td>
 				<input
 						type="email"
 						name="gts_client_email"
@@ -195,19 +198,25 @@ class Cart {
 						id="gts-client-email"
 						value="<?php echo esc_html( $user_email ); ?>"
 						placeholder="name@example.com">
-			</div>
-			<input type="hidden" name="gts_target_language" id="gts_target_language">
-			<input
-					type="hidden" name="gts-source-language" id="gts-source-language"
-					value="<?php echo esc_attr( $filter->source ); ?>">
-			<input
-					type="hidden" name="target-language" id="target-language"
-					value="<?php echo esc_attr( implode( ', ', $filter->target ) ); ?>">
-			<input
-					type="hidden" name="gts-industry" id="gts-industry"
-					value="General">
-			<?php wp_nonce_field( 'gts_translation_cart', 'gts_translation_cart_nonce', false ); ?>
-		</form>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" class="hidden">
+				<form action="" method="POST">
+					<input type="hidden" name="gts_target_language" id="gts_target_language">
+					<input
+							type="hidden" name="gts-source-language" id="gts-source-language"
+							value="<?php echo esc_attr( $filter->source ); ?>">
+					<input
+							type="hidden" name="target-language" id="target-language"
+							value="<?php echo esc_attr( implode( ', ', $filter->target ) ); ?>">
+					<input
+							type="hidden" name="gts-industry" id="gts-industry"
+							value="General">
+					<?php wp_nonce_field( 'gts_translation_cart', 'gts_translation_cart_nonce', false ); ?>
+				</form>
+			</td>
+		</tr>
 		<?php
 	}
 
@@ -511,40 +520,44 @@ class Cart {
 	 * @return void
 	 */
 	private function show_table() {
-		$cart_item = Cookie::get_cart_cookie();
-		$filter    = Cookie::get_filter_cookie();
+		$cart_items = Cookie::get_cart_cookie();
+		$filter     = Cookie::get_filter_cookie();
 
-		if ( 0 !== count( $cart_item ) ) {
-			foreach ( $cart_item as $item ) {
-				$post  = get_post( $item );
-				$title = $post->post_title;
-				$title = $title ?: __( '(no title)', 'gts-translation-order' );
-				$price = 0;
-
-				if ( ! empty( $filter->source ) && $filter->target ) {
-					$price = $this->cost->price_by_post( $filter->source, $filter->target, $post->ID );
-
-					$this->total += $price;
-				}
-				?>
-				<tr>
-					<td><?php echo esc_html( $title ); ?></td>
-					<td><?php echo esc_html( $post->post_type ); ?></td>
-					<td class="price">$<?php echo number_format( $price, 2 ); ?></td>
-					<td>
-						<a
-								href="#" data-post_id="<?php echo esc_attr( $post->ID ); ?>"
-								class="plus remove-from-cart">
-							<span class="dashicons dashicons-minus"></span>
-						</a>
-					</td>
-				</tr>
-				<?php
-			}
-		} else {
+		if ( 0 === count( $cart_items ) ) {
 			?>
 			<tr>
 				<td colspan="6"><?php esc_html_e( 'Cart is Empty', 'gts-translation-order' ); ?></td>
+			</tr>
+			<?php
+
+			return;
+		}
+
+		$this->total = 0;
+
+		foreach ( $cart_items as $item ) {
+			$post  = get_post( $item );
+			$title = $post->post_title;
+			$title = $title ?: __( '(no title)', 'gts-translation-order' );
+			$price = 0;
+
+			if ( ! empty( $filter->source ) && $filter->target ) {
+				$price = $this->cost->price_by_post( $filter->source, $filter->target, $post->ID );
+
+				$this->total += $price;
+			}
+			?>
+			<tr>
+				<td><?php echo esc_html( $title ); ?></td>
+				<td><?php echo esc_html( $post->post_type ); ?></td>
+				<td class="price">$<?php echo number_format( $price, 2 ); ?></td>
+				<td>
+					<a
+							href="#" data-post_id="<?php echo esc_attr( $post->ID ); ?>"
+							class="plus remove-from-cart">
+						<span class="dashicons dashicons-minus"></span>
+					</a>
+				</td>
 			</tr>
 			<?php
 		}
