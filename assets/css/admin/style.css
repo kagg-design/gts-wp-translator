@@ -2,19 +2,6 @@
 	width: 20px;
 }
 
-#gts-translation-order a i {
-	color: #00a32a;
-}
-
-#gts-translation-order a:hover > i,
-#gts-translation-order a:hover > i.bi-dash-square {
-	color: #05135c;
-}
-
-#gts-translation-order a i.bi-dash-square {
-	color: #bb0000;
-}
-
 #filter-form {
 	padding: 10px;
 	background: #bbbbbb;

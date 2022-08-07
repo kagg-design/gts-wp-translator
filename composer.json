@@ -26,9 +26,6 @@
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
-  "require": {
-    "twbs/bootstrap-icons": "^1.8"
-  },
   "require-dev": {
     "roave/security-advisories": "dev-latest",
     "squizlabs/php_codesniffer": "^3.6",

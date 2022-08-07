@@ -22,6 +22,13 @@ Add new plugin using WordPress admin interface. Select a zip file for uploading.
 
 == Changelog ==
 
+= 1.1.0 =
+* Optimization of vendor files. 
+
+= 1.0.1 =
+* Fixed: Reworked admin pages.
+* Added: Export several files.
+
 = 1.0.0 =
 * Initial release.
 

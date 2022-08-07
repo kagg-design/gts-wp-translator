@@ -161,14 +161,15 @@ class Main {
 	 */
 	public function admin_scripts( $hook_suffix ) {
 		if ( in_array( $hook_suffix, self::GTS_PAGES_MENU_SLUGS, true ) ) {
+			wp_enqueue_style( 'bootstrap', '//cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css', '', '5.2.0' );
 			wp_enqueue_script( 'bootstrap', '//cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js', [ 'jquery' ], '5.2.0', true );
 			wp_enqueue_script( 'sweetalert2', '//cdn.jsdelivr.net/npm/sweetalert2@11', [ 'jquery' ], '2.11.0', true );
-			wp_enqueue_style( 'bootstrap', '//cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css', '', '5.2.0' );
-			wp_enqueue_style( 'bootstrap-icon', GTS_TRANSLATION_ORDER_URL . '/vendor/twbs/bootstrap-icons/font/bootstrap-icons.css', '', '1.8.0' );
 		}
 
-		wp_enqueue_style( 'gts-to-admin-style', GTS_TRANSLATION_ORDER_URL . '/assets/css/admin/style.css', '', GTS_TRANSLATION_ORDER_VERSION );
-		wp_enqueue_script( 'gts-to-main', GTS_TRANSLATION_ORDER_URL . '/assets/js/admin/main.js', [ 'jquery' ], GTS_TRANSLATION_ORDER_VERSION, true );
+		$min = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+
+		wp_enqueue_style( 'gts-to-admin-style', GTS_TRANSLATION_ORDER_URL . "/assets/css/admin/style{$min}.css", '', GTS_TRANSLATION_ORDER_VERSION );
+		wp_enqueue_script( 'gts-to-main', GTS_TRANSLATION_ORDER_URL . "/assets/js/admin/main{$min}.js", [ 'jquery' ], GTS_TRANSLATION_ORDER_VERSION, true );
 
 		$site = API::GTS_SITE;
 
