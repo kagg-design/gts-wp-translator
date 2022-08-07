@@ -198,10 +198,11 @@ class Main {
 				'emptyTarget'             => __( 'Please fill in the Target languages field', 'gts-translation-order' ),
 				'sendOrderTitle'          => __( 'You have been successfully registered on the site', 'gts-translation-order' ),
 				'sendOrderTextConfirm'    => __( 'We have sent access information to your email.', 'gts-translation-order' ),
-				'sendOrderTextButton'     => __( 'Proceed to checkout', 'gts-translation-order' ),
-				'sendCancelButton'        => __( 'Cancel', 'gts-translation-order' ),
-				'paymentLinkRedirect'     => $site . '/confirm/?fqid=',
-				'backToSelectRedirect'    => get_admin_url( null, 'admin.php?page=' . self::GTS_MENU_SLUG ),
+				'sendOrderTextButton'     => __( 'Proceed to payment', 'gts-translation-order' ),
+				'sendCancelButton'        => __( 'Back to selection', 'gts-translation-order' ),
+				'paymentLink'             => $site . '/confirm/?fqid=',
+				'selectPostsLink'         => admin_url( 'admin.php?page=' . self::GTS_MENU_SLUG ),
+				'cartLink'                => admin_url( 'admin.php?page=' . self::GTS_SUB_MENU_CART_SLUG ),
 			]
 		);
 	}

@@ -19,9 +19,10 @@
  * @param GTSTranslationOrderObject.sendOrderTitle
  * @param GTSTranslationOrderObject.sendOrderTextConfirm
  * @param GTSTranslationOrderObject.sendOrderTextButton
- * @param GTSTranslationOrderObject.paymentLinkRedirect
- * @param GTSTranslationOrderObject.backToSelectRedirect
  * @param GTSTranslationOrderObject.sendCancelButton
+ * @param GTSTranslationOrderObject.paymentLink
+ * @param GTSTranslationOrderObject.selectPostsLink
+ * @param GTSTranslationOrderObject.cartLink
  */
 jQuery( document ).ready( function( $ ) {
 
@@ -291,10 +292,11 @@ jQuery( document ).ready( function( $ ) {
 					} ).then( ( result ) => {
 						/* Read more about isConfirmed, isDenied below */
 						if ( result.isConfirmed ) {
-							window.open( GTSTranslationOrderObject.paymentLinkRedirect + res.data.order_id, '_blank' );
+							window.open( GTSTranslationOrderObject.paymentLink + res.data.order_id, '_blank' );
 						} else if ( result.isDenied ) {
-							location.href = GTSTranslationOrderObject.backToSelectRedirect
+							location.href = GTSTranslationOrderObject.selectPostsLink;
 						}
+						location.href = GTSTranslationOrderObject.cartLink;
 					} );
 
 					deleteCookie( GTSTranslationOrderObject.cartCookieName );
