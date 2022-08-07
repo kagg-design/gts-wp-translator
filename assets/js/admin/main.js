@@ -10,7 +10,6 @@
  * @param GTSTranslationOrderObject.sendToTranslationNonce
  * @param GTSTranslationOrderObject.addToCartText
  * @param GTSTranslationOrderObject.deleteFromCartText
- * @param GTSTranslationOrderObject.createOrder
  * @param GTSTranslationOrderObject.cartCookieName
  * @param GTSTranslationOrderObject.updatePrice
  * @param GTSTranslationOrderObject.updatePriceNonce
@@ -278,30 +277,20 @@ jQuery( document ).ready( function( $ ) {
 				if ( res.success ) {
 					Swal.close();
 					Swal.fire( {
-						position: 'top-end',
 						icon: 'success',
-						showConfirmButton: false,
-						timer: 1500,
-						title: GTSTranslationOrderObject.createOrder,
-						willClose: () => {
-							Swal.fire( {
-								icon: 'success',
-								showCancelButton: true,
-								confirmButtonText: '<i class="fa fa-thumbs-up"></i> ' + GTSTranslationOrderObject.sendOrderTextButton,
-								cancelButtonText: '<i class="fa fa-thumbs-down"></i>' + GTSTranslationOrderObject.sendCancelButton,
-								title: GTSTranslationOrderObject.sendOrderTitle,
-								text: GTSTranslationOrderObject.sendOrderTextConfirm,
-							} ).then( ( result ) => {
-								/* Read more about isConfirmed, isDenied below */
-								if ( result.isConfirmed ) {
-									window.open( GTSTranslationOrderObject.paymentLinkRedirect + res.data.order_id, '_blank' );
-								} else if ( result.isDenied ) {
-									location.href = GTSTranslationOrderObject.backToSelectRedirect
-								}
-							} )
+						showCancelButton: true,
+						confirmButtonText: '<i class="fa fa-thumbs-up"></i> ' + GTSTranslationOrderObject.sendOrderTextButton,
+						cancelButtonText: '<i class="fa fa-thumbs-down"></i>' + GTSTranslationOrderObject.sendCancelButton,
+						title: GTSTranslationOrderObject.sendOrderTitle,
+						text: GTSTranslationOrderObject.sendOrderTextConfirm,
+					} ).then( ( result ) => {
+						/* Read more about isConfirmed, isDenied below */
+						if ( result.isConfirmed ) {
+							window.open( GTSTranslationOrderObject.paymentLinkRedirect + res.data.order_id, '_blank' );
+						} else if ( result.isDenied ) {
+							location.href = GTSTranslationOrderObject.backToSelectRedirect
 						}
 					} );
-
 
 					deleteCookie( GTSTranslationOrderObject.cartCookieName );
 				} else {
