@@ -3,9 +3,17 @@
 }
 
 #filter-form {
-	padding: 10px;
+	padding: 10px 10px 0 10px;
 	background: #bbbbbb;
 	margin-top: 20px;
+}
+
+#filter-form select {
+	height: 34px;
+}
+
+#filter-form .col-auto {
+	padding: 0 10px 10px 10px;
 }
 
 #gts_to_post_type_select {
