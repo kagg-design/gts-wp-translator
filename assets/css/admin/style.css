@@ -5,15 +5,22 @@
 #filter-form {
 	padding: 10px 10px 0 10px;
 	background: #bbbbbb;
-	margin-top: 20px;
+	margin: 20px 0;
 }
 
-#filter-form select {
+#filter-form select,
+#filter-form input[type="submit"],
+#filter-form button {
 	height: 34px;
 }
 
 #filter-form .col-auto {
 	padding: 0 10px 10px 10px;
+}
+
+#gts-translation-order table thead th label,
+#gts-translation-order table tfoot th label {
+	display: none;
 }
 
 #gts_to_post_type_select {

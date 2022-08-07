@@ -184,7 +184,7 @@ jQuery( document ).ready( function( $ ) {
 	 * Select all post.
 	 */
 	let checked = false;
-	$( '#gts_to_all_page' ).change( function( e ) {
+	$( '.gts_to_all_page' ).change( function( e ) {
 
 		if ( $( this ).prop( 'checked' ) ) {
 			checked = ! checked;
@@ -193,7 +193,12 @@ jQuery( document ).ready( function( $ ) {
 		}
 
 		let item = $( '[name^=\'gts_to_translate\']' );
+
 		$.each( item, function( i, val ) {
+			$( val ).prop( 'checked', checked );
+		} );
+
+		$.each( $( '.gts_to_all_page' ), function( i, val ) {
 			$( val ).prop( 'checked', checked );
 		} );
 	} );

@@ -34,7 +34,7 @@ class PostFilter {
 	/**
 	 * Limit output posts.
 	 */
-	const OUTPUT_LIMIT = 50;
+	const OUTPUT_LIMIT = 20;
 
 	/**
 	 * Page number.
