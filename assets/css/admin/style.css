@@ -27,8 +27,19 @@
 	text-transform: capitalize;
 }
 
-.total-table {
-	margin-top: 40px;
+table.cart {
+	min-width: 328px;
+}
+
+table.cart a {
+	text-decoration: none;
+}
+
+table.cart a span {
+	line-height: 25px;
+	height: 25px;
+	width: 25px;
+	border: solid 1px;
 }
 
 .modal {

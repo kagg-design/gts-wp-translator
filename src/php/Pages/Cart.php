@@ -125,19 +125,9 @@ class Cart {
 			<div class="row">
 				<div class="col-auto">
 					<table class="table table-striped table-hover cart">
-						<thead>
-						<tr>
-							<th scope="col">
-								<?php esc_attr_e( 'Title', 'gts_translation_order' ); ?>
-							</th>
-							<th scope="col"><?php esc_attr_e( 'Type', 'gts-translation-order' ); ?></th>
-							<th scope="col"><?php esc_attr_e( 'Cost', 'gts-translation-order' ); ?></th>
-							<th scope="col"><?php esc_attr_e( 'Action', 'gts-translation-order' ); ?></th>
-						</tr>
-						</thead>
-						<tbody class="table-group-divider">
-						<?php $this->show_table(); ?>
-						</tbody>
+						<thead class="table-group-divider"><?php $this->show_column_titles(); ?></thead>
+						<tbody class="table-group-divider"><?php $this->show_table(); ?></tbody>
+						<tfoot class="table-group-divider"><?php $this->show_column_titles(); ?></tfoot>
 					</table>
 				</div>
 				<div class="col-auto">
@@ -544,8 +534,8 @@ class Cart {
 					<td>
 						<a
 								href="#" data-post_id="<?php echo esc_attr( $post->ID ); ?>"
-								class="plus remove-to-cart">
-							<i class="bi bi-dash-square"></i>
+								class="plus remove-from-cart">
+							<span class="dashicons dashicons-minus"></span>
 						</a>
 					</td>
 				</tr>
@@ -653,5 +643,21 @@ class Cart {
 		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return false !== $result;
+	}
+
+	/**
+	 * Show column titles.
+	 *
+	 * @return void
+	 */
+	private function show_column_titles() {
+		?>
+		<tr>
+			<th scope="col"><?php esc_attr_e( 'Title', 'gts_translation_order' ); ?></th>
+			<th scope="col"><?php esc_attr_e( 'Type', 'gts-translation-order' ); ?></th>
+			<th scope="col"><?php esc_attr_e( 'Cost', 'gts-translation-order' ); ?></th>
+			<th scope="col"><?php esc_attr_e( 'Action', 'gts-translation-order' ); ?></th>
+		</tr>
+		<?php
 	}
 }

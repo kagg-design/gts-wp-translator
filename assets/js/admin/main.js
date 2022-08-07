@@ -26,7 +26,7 @@
  */
 jQuery( document ).ready( function( $ ) {
 
-	removeFromCart();
+	bindRemoveFromCart();
 
 	function round( value, decimals ) {
 		return Number( Math.round( value + 'e' + decimals ) + 'e-' + decimals );
@@ -66,24 +66,6 @@ jQuery( document ).ready( function( $ ) {
 		updatePrice();
 	} );
 
-
-	/**
-	 * Change icon and text.
-	 */
-	let flag_view = false;
-	$( '#eye_btn' ).click( function( e ) {
-		if ( ! flag_view ) {
-			$( '#gts_token' ).attr( 'type', 'text' )
-			$( this ).find( 'i' ).removeClass( 'bi-eye-fill' )
-			$( this ).find( 'i' ).addClass( 'bi-eye-slash-fill' )
-		} else {
-			$( '#gts_token' ).attr( 'type', 'password' )
-			$( this ).find( 'i' ).removeClass( 'bi-eye-slash-fill' )
-			$( this ).find( 'i' ).addClass( 'bi-eye-fill' )
-		}
-
-		flag_view = ! flag_view;
-	} );
 
 	/**
 	 * Bulk add to cart ajax.
@@ -162,22 +144,23 @@ jQuery( document ).ready( function( $ ) {
 	/**
 	 * Change Icon.
 	 *
-	 * @param postID
+	 * @param {int} postID
+	 * @param {string} type
 	 */
 	function change_icon( postID, type ) {
-		let icon = $( `[data-post_id=${postID}] > i` );
+		let icon = $( `[data-post_id=${postID}] > span` );
 		let button = $( icon ).parent();
 
 		if ( 'add' === type ) {
-			icon.removeClass( 'bi-plus-square' ).addClass( 'bi-dash-square' );
-			button.removeClass( 'add-to-cart' ).addClass( 'remove-to-cart' );
+			icon.removeClass( 'dashicons-plus' ).addClass( 'dashicons-minus' );
+			button.removeClass( 'add-to-cart' ).addClass( 'remove-from-cart' );
 
-			removeFromCart();
+			bindRemoveFromCart();
 		}
 
 		if ( 'remove' === type ) {
-			icon.removeClass( 'bi-dash-square' ).addClass( 'bi-plus-square' );
-			button.removeClass( 'remove-to-cart' ).addClass( 'add-to-cart' );
+			icon.removeClass( 'dashicons-minus' ).addClass( 'dashicons-plus' );
+			button.removeClass( 'remove-from-cart' ).addClass( 'add-to-cart' );
 		}
 	}
 
@@ -185,6 +168,7 @@ jQuery( document ).ready( function( $ ) {
 	 * Select all post.
 	 */
 	let checked = false;
+
 	$( '.gts_to_all_page' ).change( function( e ) {
 
 		if ( $( this ).prop( 'checked' ) ) {
@@ -205,10 +189,10 @@ jQuery( document ).ready( function( $ ) {
 	} );
 
 	/**
-	 * Remove post from cart.
+	 * Bind remove post from cart click.
 	 */
-	function removeFromCart() {
-		$( '.remove-to-cart' ).click( function( e ) {
+	function bindRemoveFromCart() {
+		$( '.remove-from-cart' ).click( function( e ) {
 			e.preventDefault();
 
 			let data = {
