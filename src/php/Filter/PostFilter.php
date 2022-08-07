@@ -72,9 +72,20 @@ class PostFilter {
 	private $cost;
 
 	/**
+	 * Status texts to show.
+	 *
+	 * @var array
+	 */
+	private $status_texts = [];
+
+	/**
 	 * PostFilter construct.
 	 */
 	public function __construct() {
+		$this->status_texts = [
+			Main::ORDER_STATUS_SENT => __( 'Out for translation', 'gts-translation-order' ),
+		];
+
 		$this->init();
 
 		$api                 = new API();
@@ -266,7 +277,6 @@ class PostFilter {
 	 * @return void
 	 */
 	public function filter() {
-
 		if ( ! isset( $_POST['gts_filter_submit'] ) ) {
 			return;
 		}
@@ -301,7 +311,6 @@ class PostFilter {
 	 * @return void
 	 */
 	public function show_table() {
-
 		$filter_params = Cookie::get_filter_cookie();
 		$cart_post_id  = Cookie::get_cart_cookie();
 
@@ -360,6 +369,7 @@ class PostFilter {
 
 			$status       = isset( $posts_statuses[ $post->ID ] ) ? $posts_statuses[ $post->ID ] : '';
 			$status_class = $status ? 'text-bg-primary' : 'bg-secondary';
+			$status_text  = isset( $this->status_texts[ $status ] ) ? $this->status_texts[ $status ] : '';
 			$word_count   = $this->cost->get_word_count( $post->ID );
 			$tr_class     = in_array( $post->ID, $cart_post_id, true ) ? 'table-primary' : '';
 			?>
@@ -378,7 +388,7 @@ class PostFilter {
 				<td><?php echo esc_html( $post->post_type ); ?></td>
 				<td>
 					<span class="badge <?php echo esc_attr( $status_class ); ?>">
-						<?php echo esc_html( $status ?: __( 'Not translated', 'gts-translation-order' ) ); ?>
+						<?php echo esc_html( $status_text ?: __( 'Not translated', 'gts-translation-order' ) ); ?>
 					</span>
 				</td>
 				<td><?php echo esc_html( $word_count ); ?></td>
@@ -449,13 +459,11 @@ class PostFilter {
 		}
 
 		$slq_post_type = $this->prepare_in( $post_types );
-		$table_name    = Main::ORDER_TABLE_NAME;
 
 		$sql = "SELECT SQL_CALC_FOUND_ROWS po.ID, po.post_title, po.post_type 
 				FROM `$wpdb->posts` po 
 				WHERE `post_type` IN ( $slq_post_type ) 
-				AND `post_status` = 'publish' 
-				AND po.ID NOT IN (SELECT DISTINCT post_id FROM $wpdb->prefix$table_name)";
+				AND `post_status` = 'publish'";
 
 		if ( $search ) {
 			$sql .= "AND `post_title` LIKE '%" . $wpdb->esc_like( $search ) . "%'";
