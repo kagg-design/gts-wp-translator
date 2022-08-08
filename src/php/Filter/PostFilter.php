@@ -76,7 +76,7 @@ class PostFilter {
 	 *
 	 * @var array
 	 */
-	private $status_texts = [];
+	private $status_texts;
 
 	/**
 	 * PostFilter construct.
@@ -90,8 +90,7 @@ class PostFilter {
 
 		$api                 = new API();
 		$this->language_list = $api->get_language_list();
-
-		$this->cost = new Cost();
+		$this->cost          = new Cost();
 	}
 
 	/**
@@ -126,12 +125,13 @@ class PostFilter {
 	 * @return void
 	 */
 	public function show_post_types_select() {
-		$post_type_select = Cookie::get_filter_cookie();
+		$filter    = Cookie::get_filter_cookie();
+		$post_type = isset( $filter->post_type ) ? $filter->post_type : '';
 		?>
 		<select class="form-select" id="gts_to_post_type_select" aria-label="Post Type" name="gts_to_post_type_select">
 			<option value="null" selected><?php esc_html_e( 'Select post type', 'gts-translation-order' ); ?></option>
 			<?php foreach ( $this->get_post_types_array() as $type ) : ?>
-				<option value="<?php echo esc_attr( $type ); ?>" <?php echo isset( $post_type_select->post_type ) ? selected( $post_type_select->post_type, $type, false ) : ''; ?>>
+				<option value="<?php echo esc_attr( $type ); ?>" <?php echo $post_type ? selected( $post_type, $type, false ) : ''; ?>>
 					<?php echo esc_attr( $type ); ?>
 				</option>
 			<?php endforeach; ?>
@@ -145,8 +145,8 @@ class PostFilter {
 	 * @return void
 	 */
 	public function show_search_field() {
-		$cookie = Cookie::get_filter_cookie();
-		$search = isset( $cookie->search ) ? $cookie->search : '';
+		$filter = Cookie::get_filter_cookie();
+		$search = isset( $filter->search ) ? $filter->search : '';
 		?>
 		<label for="gts_to_search" class="hidden"></label>
 		<input
@@ -164,8 +164,8 @@ class PostFilter {
 	 *
 	 * @return void
 	 */
-	public function show_target_select_language() {
-		$target_select = Cookie::get_filter_cookie();
+	public function show_target_language_select() {
+		$filter = Cookie::get_filter_cookie();
 		?>
 		<label for="target-language" class="hidden"></label>
 		<input
@@ -173,20 +173,20 @@ class PostFilter {
 				class="form-control"
 				id="target-language"
 				name="target_language"
-				value="<?php echo esc_attr( implode( ', ', $target_select->target ) ); ?>"
+				value="<?php echo esc_attr( implode( ', ', $filter->target ) ); ?>"
 				placeholder="<?php esc_html_e( 'Target languages', 'gts-translation-order' ); ?>"
 				readonly>
 		<?php
 	}
 
 	/**
-	 * Show pop-up target language
+	 * Show target language popup.
 	 *
 	 * @return void
 	 */
-	public function show_pop_up_language() {
-		$target = Cookie::get_filter_cookie()->target;
-
+	public function show_target_language_popup() {
+		$filter = Cookie::get_filter_cookie();
+		$i      = 0;
 		?>
 		<div class="modal modal-lg" tabindex="-1" id="language-modal">
 			<div class="modal-dialog modal-dialog-centered">
@@ -199,7 +199,6 @@ class PostFilter {
 						<table class="table">
 							<tbody>
 							<?php
-							$i = 0;
 							echo '<tr>';
 							foreach ( $this->language_list as $language ) {
 								$i ++;
@@ -210,7 +209,7 @@ class PostFilter {
 											value="<?php echo esc_html( $language->language_name ); ?>"
 											id="<?php echo esc_html( $language->language_name ); ?>"
 											class="lang-checkbox"
-										<?php echo in_array( $language->language_name, $target, true ) ? 'checked' : ''; ?>
+										<?php echo in_array( $language->language_name, $filter->target, true ) ? 'checked' : ''; ?>
 									/>
 									<label for="<?php echo esc_html( $language->language_name ); ?>">
 										<?php echo esc_html( $language->language_name ); ?>
@@ -247,7 +246,7 @@ class PostFilter {
 	 * @return void
 	 */
 	public function show_source_language() {
-		$source_select = Cookie::get_filter_cookie();
+		$filter = Cookie::get_filter_cookie();
 		?>
 		<select
 				class="form-select"
@@ -260,7 +259,7 @@ class PostFilter {
 			foreach ( $this->language_list as $language ) {
 				if ( $language->active ) {
 					?>
-					<option value="<?php echo esc_html( $language->language_name ); ?>" <?php selected( $language->language_name, $source_select->source ); ?>>
+					<option value="<?php echo esc_html( $language->language_name ); ?>" <?php selected( $language->language_name, $filter->source ); ?>>
 						<?php echo esc_html( $language->language_name ); ?>
 					</option>
 					<?php
@@ -301,7 +300,7 @@ class PostFilter {
 			'target'    => explode( ', ', $target ),
 		];
 
-		Cookie::set( Cookie::FILTER_COOKIE_NAME, $param );
+		Cookie::set_filter_cookie( $param );
 	}
 
 
@@ -311,11 +310,11 @@ class PostFilter {
 	 * @return void
 	 */
 	public function show_table() {
-		$filter_params = Cookie::get_filter_cookie();
-		$cart_post_id  = Cookie::get_cart_cookie();
+		$filter        = Cookie::get_filter_cookie();
+		$cart_post_ids = Cookie::get_cart_cookie();
 
-		if ( ! isset( $filter_params->post_type ) ) {
-			$filter_params = (object) [
+		if ( ! isset( $filter->post_type ) ) {
+			$filter = (object) [
 				'post_type' => 'null',
 				'search'    => '',
 				'source'    => '',
@@ -325,7 +324,7 @@ class PostFilter {
 		}
 
 		$limit             = self::OUTPUT_LIMIT;
-		$post_info         = $this->get_posts_by_post_type( $filter_params->post_type, $filter_params->search, ( $this->page - 1 ) * $limit, $limit );
+		$post_info         = $this->get_posts_by_post_type( $filter->post_type, $filter->search, ( $this->page - 1 ) * $limit, $limit );
 		$curr_page_url     = isset( $_SERVER['QUERY_STRING'] ) ? 'admin.php?' . filter_var( wp_unslash( $_SERVER['QUERY_STRING'] ), FILTER_SANITIZE_STRING ) : '';
 		$this->count_posts = 0;
 		$posts             = $post_info['posts'];
@@ -363,15 +362,15 @@ class PostFilter {
 			$name  = "gts_to_translate[$post->ID]";
 			$price = 0;
 
-			if ( ! empty( $filter_params->source ) && ! empty( $filter_params->target ) ) {
-				$price = $this->cost->price_by_post( $filter_params->source, $filter_params->target, $post->ID );
+			if ( ! empty( $filter->source ) && ! empty( $filter->target ) ) {
+				$price = $this->cost->price_by_post( $filter->source, $filter->target, $post->ID );
 			}
 
 			$status       = isset( $posts_statuses[ $post->ID ] ) ? $posts_statuses[ $post->ID ] : '';
 			$status_class = $status ? 'text-bg-primary' : 'bg-secondary';
 			$status_text  = isset( $this->status_texts[ $status ] ) ? $this->status_texts[ $status ] : '';
 			$word_count   = $this->cost->get_word_count( $post->ID );
-			$tr_class     = in_array( $post->ID, $cart_post_id, true ) ? 'table-primary' : '';
+			$tr_class     = in_array( $post->ID, $cart_post_ids, true ) ? 'table-primary' : '';
 			?>
 			<tr class="<?php echo esc_attr( $tr_class ); ?>">
 				<th scope="row">

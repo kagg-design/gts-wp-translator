@@ -184,7 +184,6 @@ class API {
 	 * @return string|false The site key, or false on error.
 	 */
 	private function get_site_key() {
-
 		$auth = get_option( self::AUTH_OPTION, [] );
 
 		if ( ! empty( $auth['site_key'] ) ) {
@@ -201,7 +200,6 @@ class API {
 	 * Generate the site key.
 	 */
 	private function generate_site_key() {
-
 		if ( $this->is_max_auth_attempts_reached() ) {
 			return;
 		}
@@ -249,7 +247,6 @@ class API {
 	 * @return array
 	 */
 	public function get_language_list() {
-
 		$language_list = get_transient( self::LANGUAGE_LIST_TRANSIENT );
 
 		if ( false !== $language_list ) {
@@ -295,7 +292,7 @@ class API {
 			]
 		);
 
-		$response = $response ?: [];
+		$response = is_array( $response ) ? $response : [];
 
 		set_transient( self::PRICES_TRANSIENT, $response, DAY_IN_SECONDS );
 
@@ -340,7 +337,6 @@ class API {
 	 * @return mixed|false
 	 */
 	private function request( $url, $args ) {
-
 		$response = wp_remote_request(
 			$url,
 			$args
@@ -361,7 +357,6 @@ class API {
 	 * @return bool
 	 */
 	private function is_max_auth_attempts_reached() {
-
 		$attempts_count = get_option( self::AUTH_ATTEMPT_COUNTER_OPTION, 0 );
 
 		return $attempts_count >= self::MAX_AUTH_ATTEMPTS;
@@ -372,7 +367,6 @@ class API {
 	 * It allows us to prevent sending requests to the API server infinitely.
 	 */
 	private function update_auth_attempts_count() {
-
 		global $wpdb;
 
 		// Store actual attempt counter value to the option.
@@ -399,7 +393,6 @@ class API {
 	 * @return string
 	 */
 	private function create_not_logged_in_nonce() {
-
 		$user    = wp_get_current_user();
 		$user_id = $user ? $user->ID : 0;
 
@@ -419,7 +412,6 @@ class API {
 	 * Provide responses to endpoint requests.
 	 */
 	private function endpoints() {
-
 		// We check nonce in the endpoint_key().
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( ! isset( $_GET[ self::AUTH_KEY_ARG ] ) ) {
@@ -433,7 +425,6 @@ class API {
 	 * Process endpoint for callback on generate_site_key().
 	 */
 	private function endpoint_key() {
-
 		$nonce = sanitize_text_field(
 			wp_unslash(
 				isset( $_POST['nonce'] ) ? $_POST['nonce'] : ''
@@ -480,7 +471,6 @@ class API {
 	 * @noinspection ForgottenDebugOutputInspection
 	 */
 	private function endpoint_die( $title = '', $response = [] ) { // phpcs:ignore WPForms.PHP.HooksMethod.InvalidPlaceForAddingHooks
-
 		$this->log( $title, $response );
 
 		// We call wp_die too early, before the query is run.
@@ -504,7 +494,6 @@ class API {
 	 * @noinspection ForgottenDebugOutputInspection
 	 */
 	private function log( $title = '', $response = [] ) {
-
 		if ( ! $title ) {
 			return;
 		}

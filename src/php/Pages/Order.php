@@ -7,7 +7,6 @@
 
 namespace GTS\TranslationOrder\Pages;
 
-use GTS\TranslationOrder\Cookie;
 use GTS\TranslationOrder\Filter\PostFilter;
 use GTS\TranslationOrder\Main;
 
@@ -70,8 +69,8 @@ class Order {
 					</div>
 					<div class="col-auto">
 						<?php
-						$this->filter->show_target_select_language();
-						$this->filter->show_pop_up_language();
+						$this->filter->show_target_language_select();
+						$this->filter->show_target_language_popup();
 						?>
 					</div>
 					<div class="col-auto">

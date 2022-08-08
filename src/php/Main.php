@@ -168,8 +168,8 @@ class Main {
 
 		$min = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 
-		wp_enqueue_style( 'gts-to-admin-style', GTS_TRANSLATION_ORDER_URL . "/assets/css/admin/style{$min}.css", '', GTS_TRANSLATION_ORDER_VERSION );
-		wp_enqueue_script( 'gts-to-main', GTS_TRANSLATION_ORDER_URL . "/assets/js/admin/main{$min}.js", [ 'jquery' ], GTS_TRANSLATION_ORDER_VERSION, true );
+		wp_enqueue_style( 'gts-to-admin-style', GTS_TRANSLATION_ORDER_URL . "/assets/css/admin/style$min.css", '', GTS_TRANSLATION_ORDER_VERSION );
+		wp_enqueue_script( 'gts-to-main', GTS_TRANSLATION_ORDER_URL . "/assets/js/admin/main$min.js", [ 'jquery' ], GTS_TRANSLATION_ORDER_VERSION, true );
 
 		$site = API::GTS_SITE;
 

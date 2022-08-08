@@ -52,6 +52,28 @@ class Cookie {
 	}
 
 	/**
+	 * Set filter cookie.
+	 *
+	 * @param mixed $value Cookie value.
+	 *
+	 * @return void
+	 */
+	public static function set_filter_cookie( $value ) {
+		self::set( self::FILTER_COOKIE_NAME, $value );
+	}
+
+	/**
+	 * Set cart cookie.
+	 *
+	 * @param mixed $value Cookie value.
+	 *
+	 * @return void
+	 */
+	public static function set_cart_cookie( $value ) {
+		self::set( self::CART_COOKIE_NAME, $value );
+	}
+
+	/**
 	 * Get cookie.
 	 *
 	 * @param string $name Cookie name.
@@ -74,8 +96,7 @@ class Cookie {
 	 *
 	 * @return void
 	 */
-	public static function set( $name, $value ) {
-
+	private static function set( $name, $value ) {
 		if ( is_array( $value ) ) {
 			$value = wp_json_encode( $value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
 		}

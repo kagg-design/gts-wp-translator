@@ -13,7 +13,6 @@ use GTS\TranslationOrder\API;
 use GTS\TranslationOrder\Export;
 use GTS\TranslationOrder\Main;
 use stdClass;
-use wpdb;
 
 /**
  * TranslationCart class file.
@@ -28,27 +27,6 @@ class Cart {
 	public $language_list;
 
 	/**
-	 * Industry.
-	 */
-	const GTS_INDUSTRY_LIST = [
-		'Academic',
-		'Chemical (MSDS)',
-		'Financial',
-		'Gaming',
-		'General',
-		'Human Resources',
-		'Legal',
-		'Marketing Material',
-		'Medical',
-		'Patent',
-		'Scientific',
-		'Software/IT',
-		'Technical Manual',
-		'Technical/Engineering',
-		'Web Content',
-	];
-
-	/**
 	 * Cost calculation.
 	 *
 	 * @var Cost $cost Cost class.
@@ -56,25 +34,11 @@ class Cart {
 	private $cost;
 
 	/**
-	 * IDs of posts to process.
-	 *
-	 * @var int[]
-	 */
-	private $ids = [];
-
-	/**
 	 * Post id to query.
 	 *
 	 * @var int
 	 */
 	private $id;
-
-	/**
-	 * Filter parameters.
-	 *
-	 * @var stdClass
-	 */
-	private $filter;
 
 	/**
 	 * Api GTS Translation.
@@ -92,8 +56,6 @@ class Cart {
 		$this->api           = new API();
 		$this->language_list = $this->api->get_language_list();
 		$this->cost          = new Cost();
-		$this->ids           = Cookie::get_cart_cookie();
-		$this->filter        = Cookie::get_filter_cookie();
 	}
 
 	/**
@@ -114,7 +76,7 @@ class Cart {
 	 * @return void
 	 */
 	public function show_translation_cart() {
-		$items_count = count( $this->ids );
+		$items_count = count( Cookie::get_cart_cookie() );
 
 		?>
 		<div class="container">
@@ -172,8 +134,6 @@ class Cart {
 			</div>
 		</div>
 		<?php
-
-		$this->show_pop_up_language();
 	}
 
 	/**
@@ -182,6 +142,7 @@ class Cart {
 	 * @return void
 	 */
 	private function show_total_form() {
+		$filter     = Cookie::get_filter_cookie();
 		$user       = wp_get_current_user();
 		$user_email = ( $user && isset( $user->user_email ) ) ? $user->user_email : '';
 		?>
@@ -207,10 +168,10 @@ class Cart {
 					<input type="hidden" name="gts_target_language" id="gts_target_language">
 					<input
 							type="hidden" name="gts-source-language" id="gts-source-language"
-							value="<?php echo esc_attr( $this->filter->source ); ?>">
+							value="<?php echo esc_attr( $filter->source ); ?>">
 					<input
 							type="hidden" name="target-language" id="target-language"
-							value="<?php echo esc_attr( implode( ', ', $this->filter->target ) ); ?>">
+							value="<?php echo esc_attr( implode( ', ', $filter->target ) ); ?>">
 					<input
 							type="hidden" name="gts-industry" id="gts-industry"
 							value="General">
@@ -222,73 +183,11 @@ class Cart {
 	}
 
 	/**
-	 * Show pop-up target language
-	 *
-	 * @return void
-	 */
-	private function show_pop_up_language() {
-		?>
-		<div class="modal modal-lg" tabindex="-1" id="language-modal">
-			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="btn-close" data-bs-dismiss="modal"
-								aria-label="<?php esc_html_e( 'Close', 'gts-translation-order' ); ?>"></button>
-					</div>
-					<div class="modal-body">
-						<table class="table">
-							<tbody>
-							<?php
-							$i      = 0;
-							$target = $this->filter->target;
-							echo '<tr>';
-							foreach ( $this->language_list as $lang ) {
-								$i ++;
-								?>
-								<td class="cell">
-									<input
-											type="checkbox" name="regi_target_language[]"
-											value="<?php echo esc_html( $lang->language_name ); ?>"
-											id="<?php echo esc_html( $lang->language_name ); ?>"
-											class="lang-checkbox"
-										<?php echo in_array( $lang->language_name, $target, true ) ? 'checked' : ''; ?>
-									/>
-									<label for="<?php echo esc_html( $lang->language_name ); ?>">
-										<?php echo esc_html( $lang->language_name ); ?>
-									</label>
-								</td>
-								<?php
-								if ( 4 === $i ) {
-									echo '</tr><tr>';
-									$i = 0;
-								}
-							}
-							echo '</tr>';
-							?>
-							</tbody>
-						</table>
-					</div>
-					<div class="modal-footer">
-						<button
-								type="button"
-								class="btn btn-primary add-to-cart-bulk"
-								id="save-target-language">
-							<?php esc_attr_e( 'Save', 'gts-translation-order' ); ?>
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
-		<?php
-	}
-
-	/**
 	 * Ajax handler add to cart.
 	 *
 	 * @return void
 	 */
 	public function add_to_cart() {
-
 		$nonce = ! empty( $_POST['nonce'] ) ? filter_var( wp_unslash( $_POST['nonce'] ), FILTER_SANITIZE_STRING ) : '';
 
 		if ( ! wp_verify_nonce( $nonce, Main::ADD_TO_CART_ACTION ) ) {
@@ -303,10 +202,11 @@ class Cart {
 			wp_send_json_error( __( 'Languages not selected.', 'gts-translation-order' ) );
 		}
 
-		$this->filter->source = $source;
-		$this->filter->target = $languages;
+		$filter         = Cookie::get_filter_cookie();
+		$filter->source = $source;
+		$filter->target = $languages;
 
-		Cookie::set( Cookie::FILTER_COOKIE_NAME, (array) $this->filter );
+		Cookie::set_filter_cookie( (array) $filter );
 
 		$post_id = ! empty( $_POST['post_id'] ) ? filter_input( INPUT_POST, 'post_id', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY ) : null;
 		$result  = $this->save_post_to_cart(
@@ -347,6 +247,7 @@ class Cart {
 	 * Send cart items to translation.
 	 *
 	 * @return void
+	 * @noinspection DisconnectedForeachInstructionInspection
 	 */
 	public function send_to_translation() {
 		$nonce = ! empty( $_POST['nonce'] ) ? filter_var( wp_unslash( $_POST['nonce'] ), FILTER_SANITIZE_STRING ) : '';
@@ -363,14 +264,15 @@ class Cart {
 		$total        = (float) str_replace( ',', '', $total );
 		$export_files = [];
 		$export       = new Export();
+		$ids          = Cookie::get_cart_cookie();
 
-		add_filter( 'query', [ $this, 'add_ids_to_query' ] );
+		add_filter( 'query', [ $this, 'add_id_to_query' ] );
 
-		foreach ( $this->ids as $id ) {
+		foreach ( $ids as $id ) {
 			$this->id = $id;
 
 			ob_start();
-			$export->export_wp();
+			$export->export_wp(); // Uses $this->id via add_id_to_query filter.
 			$export_file = ob_get_clean();
 
 			$export_files[] = [
@@ -379,7 +281,7 @@ class Cart {
 			];
 		}
 
-		remove_filter( 'query', [ $this, 'add_ids_to_query' ] );
+		remove_filter( 'query', [ $this, 'add_id_to_query' ] );
 
 		$user       = wp_get_current_user();
 		$user_login = $user ? $user->user_login : '';
@@ -389,7 +291,7 @@ class Cart {
 		$last_name  = isset( $user_meta['last_name'][0] ) ? $user_meta['last_name'][0] : '';
 		$full_name  = $first_name . ' ' . $last_name;
 		$full_name  = trim( $full_name ) ? $full_name : $user_login;
-		$word_count = $this->cost->get_total_words( $this->ids );
+		$word_count = $this->cost->get_total_words( $ids );
 
 		$response = $this->api->send_order(
 			[
@@ -415,7 +317,7 @@ class Cart {
 		$result = $this->save_order(
 			[
 				'order_id'         => $response->order_id,
-				'post_id'          => $this->ids,
+				'post_id'          => $ids,
 				'status'           => Main::ORDER_STATUS_SENT,
 				'total'            => $total,
 				'date'             => gmdate( 'Y-m-d H:i:s', time() ),
@@ -452,31 +354,33 @@ class Cart {
 			wp_send_json_error( __( 'Languages not selected.', 'gts-translation-order' ) );
 		}
 
+		$ids   = Cookie::get_cart_cookie();
 		$price = [];
 
-		foreach ( $this->ids as $id ) {
+		foreach ( $ids as $id ) {
 			$price[] = [
 				'price' => round( $this->cost->price_by_post( $source, $languages, $id ), 2 ),
 				'id'    => $id,
 			];
 		}
 
-		$this->filter->source = $source;
-		$this->filter->target = $languages;
+		$filter         = Cookie::get_filter_cookie();
+		$filter->source = $source;
+		$filter->target = $languages;
 
-		Cookie::set( Cookie::FILTER_COOKIE_NAME, (array) $this->filter );
+		Cookie::set_filter_cookie( (array) $filter );
 
 		wp_send_json_success( [ 'newPrice' => $price ] );
 	}
 
 	/**
-	 * Filter db query to add post ids.
+	 * Filter db query to add post id.
 	 *
 	 * @param string $query Database query.
 	 *
 	 * @return string
 	 */
-	public function add_ids_to_query( $query ) {
+	public function add_id_to_query( $query ) {
 		global $wpdb;
 
 		if ( ! preg_match( "/SELECT ID FROM $wpdb->posts .* WHERE /", $query ) ) {
@@ -492,8 +396,7 @@ class Cart {
 	 * @return int
 	 */
 	public function get_count() {
-
-		return count( $this->ids );
+		return count( Cookie::get_cart_cookie() );
 	}
 
 	/**
@@ -502,13 +405,15 @@ class Cart {
 	 * @return float|int
 	 */
 	public function get_total() {
-		$total = 0;
+		$filter = Cookie::get_filter_cookie();
+		$ids    = Cookie::get_cart_cookie();
+		$total  = 0;
 
-		foreach ( $this->ids as $id ) {
+		foreach ( $ids as $id ) {
 			$post = get_post( $id );
 
-			if ( $post && ! empty( $this->filter->source ) && $this->filter->target ) {
-				$price = $this->cost->price_by_post( $this->filter->source, $this->filter->target, $post->ID );
+			if ( $post && ! empty( $filter->source ) && $filter->target ) {
+				$price = $this->cost->price_by_post( $filter->source, $filter->target, $post->ID );
 
 				$total += $price;
 			}
@@ -523,17 +428,18 @@ class Cart {
 	 * @param array $args Arguments.
 	 */
 	private function save_post_to_cart( array $args ) {
+		$ids    = Cookie::get_cart_cookie();
 		$result = [];
 
 		if ( 'add' === $args['type'] ) {
-			$result = array_unique( array_merge( $this->ids, $args['post_id'] ) );
+			$result = array_unique( array_merge( $ids, $args['post_id'] ) );
 		}
 
 		if ( 'remove' === $args['type'] ) {
-			$result = array_diff( $this->ids, $args['post_id'] );
+			$result = array_diff( $ids, $args['post_id'] );
 		}
 
-		Cookie::set( Cookie::CART_COOKIE_NAME, $result );
+		Cookie::set_cart_cookie( $result );
 
 		return $result;
 	}
@@ -544,7 +450,9 @@ class Cart {
 	 * @return void
 	 */
 	private function show_table() {
-		if ( 0 === count( $this->ids ) ) {
+		$ids = Cookie::get_cart_cookie();
+
+		if ( 0 === count( $ids ) ) {
 			?>
 			<tr>
 				<td colspan="6"><?php esc_html_e( 'Cart is Empty', 'gts-translation-order' ); ?></td>
@@ -554,13 +462,15 @@ class Cart {
 			return;
 		}
 
-		foreach ( $this->ids as $id ) {
+		$filter = Cookie::get_filter_cookie();
+
+		foreach ( $ids as $id ) {
 			$post  = get_post( $id );
 			$title = $post ? $post->post_title : __( '(no title)', 'gts-translation-order' );
 			$price = 0;
 
-			if ( $post && ! empty( $this->filter->source ) && $this->filter->target ) {
-				$price = $this->cost->price_by_post( $this->filter->source, $this->filter->target, $post->ID );
+			if ( $post && ! empty( $filter->source ) && $filter->target ) {
+				$price = $this->cost->price_by_post( $filter->source, $filter->target, $post->ID );
 			}
 			?>
 			<tr>
@@ -577,34 +487,6 @@ class Cart {
 			</tr>
 			<?php
 		}
-	}
-
-	/**
-	 * Changes array of items into string of items, separated by comma and sql-escaped
-	 *
-	 * @see https://coderwall.com/p/zepnaw
-	 * @global wpdb       $wpdb
-	 *
-	 * @param mixed|array $items  item(s) to be joined into string.
-	 * @param string      $format %s or %d.
-	 *
-	 * @return string Items separated by comma and sql-escaped
-	 */
-	private function prepare_in( $items, $format = '%s' ) {
-		global $wpdb;
-
-		$items    = (array) $items;
-		$how_many = count( $items );
-		if ( $how_many > 0 ) {
-			$placeholders    = array_fill( 0, $how_many, $format );
-			$prepared_format = implode( ',', $placeholders );
-			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			$prepared_in = $wpdb->prepare( $prepared_format, $items );
-		} else {
-			$prepared_in = '';
-		}
-
-		return $prepared_in;
 	}
 
 	/**
