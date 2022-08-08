@@ -7,7 +7,9 @@
 
 namespace GTS\TranslationOrder\Pages;
 
+use GTS\TranslationOrder\Cookie;
 use GTS\TranslationOrder\Filter\PostFilter;
+use GTS\TranslationOrder\Main;
 
 /**
  * Order class file.
@@ -15,20 +17,29 @@ use GTS\TranslationOrder\Filter\PostFilter;
 class Order {
 
 	/**
-	 * Post filter class.
+	 * Post filter class instance.
 	 *
 	 * @var PostFilter
 	 */
 	private $filter;
 
+	/**
+	 * Cart class instance.
+	 *
+	 * @var Cart
+	 */
+	private $cart;
+
 
 	/**
 	 * TranslationOrder class file.
 	 *
-	 * @param PostFilter $filter Post filter class.
+	 * @param PostFilter $filter Post filter class instance.
+	 * @param Cart       $cart   Cart class instance.
 	 */
-	public function __construct( PostFilter $filter ) {
+	public function __construct( PostFilter $filter, Cart $cart ) {
 		$this->filter = $filter;
+		$this->cart   = $cart;
 	}
 
 	/**
@@ -69,6 +80,9 @@ class Order {
 					</div>
 					<div class="col-auto">
 						<?php $this->show_add_to_cart_button(); ?>
+					</div>
+					<div class="col-auto">
+						<?php $this->show_mini_cart(); ?>
 					</div>
 				</div>
 			</form>
@@ -136,6 +150,23 @@ class Order {
 		<button type="button" class="btn btn-primary add-bulk-to-cart btn-sm">
 			<?php esc_attr_e( 'Add to Cart', 'gts-translation-order' ); ?>
 		</button>
+		<?php
+	}
+
+	/**
+	 * Show mini cart.
+	 *
+	 * @return void
+	 */
+	private function show_mini_cart() {
+		?>
+		<a href="<?php echo esc_url( admin_url( 'admin.php?page=' . Main::GTS_SUB_MENU_CART_SLUG ) ); ?>">
+			<button type="button" class="btn btn-secondary btn-sm">
+				<span class="dashicons dashicons-cart"></span>
+				<span><?php echo esc_html( $this->cart->get_count() ); ?></span>
+				<span>&nbsp;&nbsp;&nbsp;$<?php echo number_format( $this->cart->get_total(), 2 ); ?></span>
+			</button>
+		</a>
 		<?php
 	}
 }

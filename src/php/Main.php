@@ -124,8 +124,8 @@ class Main {
 
 		$this->api               = new API();
 		$filter                  = new PostFilter();
-		$this->translation_order = new Order( $filter );
 		$this->translation_cart  = new Cart();
+		$this->translation_order = new Order( $filter, $this->translation_cart );
 	}
 
 	/**
