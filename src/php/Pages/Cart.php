@@ -208,15 +208,18 @@ class Cart {
 
 		Cookie::set_filter_cookie( (array) $filter );
 
-		$post_id = ! empty( $_POST['post_id'] ) ? filter_input( INPUT_POST, 'post_id', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY ) : null;
-		$result  = $this->save_post_to_cart(
+		$post_ids = empty( $_POST['post_ids'] ) ?
+			[] :
+			filter_input( INPUT_POST, 'post_ids', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+
+		$this->save_posts_to_cart(
 			[
-				'type'    => 'add',
-				'post_id' => $post_id,
+				'type'     => 'add',
+				'post_ids' => $post_ids,
 			]
 		);
 
-		wp_send_json_success( [ 'posts_id' => $result ] );
+		wp_send_json_success();
 	}
 
 	/**
@@ -231,16 +234,18 @@ class Cart {
 			wp_send_json_error( __( 'Bad Nonce', 'gts-translation-order' ) );
 		}
 
-		$posts_id = ! empty( $_POST['post_id'] ) ? filter_var( wp_unslash( $_POST['post_id'] ), FILTER_SANITIZE_NUMBER_INT ) : null;
+		$post_id = empty( $_POST['post_id'] ) ?
+			[] :
+			filter_var( wp_unslash( $_POST['post_id'] ), FILTER_SANITIZE_NUMBER_INT );
 
-		$result = $this->save_post_to_cart(
+		$this->save_posts_to_cart(
 			[
-				'type'    => 'remove',
-				'post_id' => [ $posts_id ],
+				'type'     => 'remove',
+				'post_ids' => [ $post_id ],
 			]
 		);
 
-		wp_send_json_success( [ 'posts_id' => $result ] );
+		wp_send_json_success();
 	}
 
 	/**
@@ -423,25 +428,23 @@ class Cart {
 	}
 
 	/**
-	 * Save post id to cart
+	 * Save post ids to cart.
 	 *
 	 * @param array $args Arguments.
 	 */
-	private function save_post_to_cart( array $args ) {
+	private function save_posts_to_cart( array $args ) {
 		$ids    = Cookie::get_cart_cookie();
 		$result = [];
 
 		if ( 'add' === $args['type'] ) {
-			$result = array_unique( array_merge( $ids, $args['post_id'] ) );
+			$result = array_unique( array_merge( $ids, $args['post_ids'] ) );
 		}
 
 		if ( 'remove' === $args['type'] ) {
-			$result = array_diff( $ids, $args['post_id'] );
+			$result = array_diff( $ids, $args['post_ids'] );
 		}
 
 		Cookie::set_cart_cookie( $result );
-
-		return $result;
 	}
 
 	/**

@@ -369,12 +369,14 @@ class PostFilter {
 			$status       = isset( $posts_statuses[ $post->ID ] ) ? $posts_statuses[ $post->ID ] : '';
 			$status_class = $status ? 'text-bg-primary' : 'bg-secondary';
 			$status_text  = isset( $this->status_texts[ $status ] ) ? $this->status_texts[ $status ] : '';
+			$in_cart      = in_array( $post->ID, $cart_post_ids, true );
+			$has_checkbox = ! $status && ! $in_cart;
+			$tr_class     = $in_cart ? 'table-primary' : '';
 			$word_count   = $this->cost->get_word_count( $post->ID );
-			$tr_class     = in_array( $post->ID, $cart_post_ids, true ) ? 'table-primary' : '';
 			?>
 			<tr class="<?php echo esc_attr( $tr_class ); ?>">
 				<th scope="row">
-					<?php if ( ! $status ) { ?>
+					<?php if ( $has_checkbox ) { ?>
 					<label for="<?php echo esc_attr( $id ); ?>" class="hidden"></label>
 					<input
 							type="checkbox"

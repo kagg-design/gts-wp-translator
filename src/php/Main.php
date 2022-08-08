@@ -196,6 +196,7 @@ class Main {
 				'updatePriceNonce'        => wp_create_nonce( self::UPDATE_PRICE_ACTION ),
 				'emptySource'             => __( 'Please fill in the Source language field', 'gts-translation-order' ),
 				'emptyTarget'             => __( 'Please fill in the Target languages field', 'gts-translation-order' ),
+				'emptyList'               => __( 'Please select posts for adding to cart', 'gts-translation-order' ),
 				'sendOrderTitle'          => __( 'You have been successfully registered on the site', 'gts-translation-order' ),
 				'sendOrderTextConfirm'    => __( 'We have sent access information to your email.', 'gts-translation-order' ),
 				'sendOrderTextButton'     => __( 'Proceed to payment', 'gts-translation-order' ),

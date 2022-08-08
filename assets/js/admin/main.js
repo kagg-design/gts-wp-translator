@@ -16,6 +16,7 @@
  * @param GTSTranslationOrderObject.sendOrderText
  * @param GTSTranslationOrderObject.emptySource
  * @param GTSTranslationOrderObject.emptyTarget
+ * @param GTSTranslationOrderObject.emptyList
  * @param GTSTranslationOrderObject.sendOrderTitle
  * @param GTSTranslationOrderObject.sendOrderTextConfirm
  * @param GTSTranslationOrderObject.sendOrderTextButton
@@ -73,13 +74,8 @@ jQuery( document ).ready( function( $ ) {
 	$( '.add-bulk-to-cart' ).click( function( e ) {
 		e.preventDefault();
 
-		let postsID = [];
-
-		let elements = $( '[name^=\'gts_to_translate\']:checked' );
-
-		let target = $( '#target-language' ).val();
 		let source = $( '#gts_source_language option:selected' ).val();
-
+		let target = $( '#target-language' ).val();
 
 		if ( '0' === source ) {
 			Swal.fire( {
@@ -101,15 +97,29 @@ jQuery( document ).ready( function( $ ) {
 			return;
 		}
 
+		let elements = $( '[name^=\'gts_to_translate\']:checked' );
+
+		if ( elements.length === 0 ) {
+			Swal.fire( {
+				icon: 'error',
+				title: 'Error',
+				text: GTSTranslationOrderObject.emptyList,
+			} );
+
+			return;
+		}
+
+		let postIds = [];
+
 		$.each( elements, function( i, val ) {
-			postsID.push( $( val ).data( 'id' ) );
+			postIds.push( $( val ).data( 'id' ) );
 		} );
 
 		let data = {
 			action: GTSTranslationOrderObject.addToCartAction,
 			nonce: GTSTranslationOrderObject.addToCartNonce,
 			bulk: true,
-			post_id: postsID,
+			post_ids: postIds,
 			target: target,
 			source: source
 		};
@@ -230,7 +240,6 @@ jQuery( document ).ready( function( $ ) {
 				},
 				error: function( xhr ) {
 					console.log( 'error...', xhr );
-					//error logging
 				}
 			} );
 		} );
