@@ -281,7 +281,7 @@ class Cart {
 			$export_file = ob_get_clean();
 
 			$export_files[] = [
-				'file_name' => get_the_title( $id ),
+				'file_name' => get_the_title( $id ) . '.xml',
 				'file'      => $export_file,
 			];
 		}
@@ -289,11 +289,11 @@ class Cart {
 		remove_filter( 'query', [ $this, 'add_id_to_query' ] );
 
 		$user       = wp_get_current_user();
-		$user_login = $user ? $user->user_login : '';
+		$user_login = $user->user_login ?? '';
 		$user_id    = get_current_user_id();
 		$user_meta  = get_user_meta( $user_id );
-		$first_name = isset( $user_meta['first_name'][0] ) ? $user_meta['first_name'][0] : '';
-		$last_name  = isset( $user_meta['last_name'][0] ) ? $user_meta['last_name'][0] : '';
+		$first_name = $user_meta['first_name'][0] ?? '';
+		$last_name  = $user_meta['last_name'][0] ?? '';
 		$full_name  = $first_name . ' ' . $last_name;
 		$full_name  = trim( $full_name ) ? $full_name : $user_login;
 		$word_count = $this->cost->get_total_words( $ids );
