@@ -312,15 +312,15 @@ class API {
 			[
 				'method' => 'POST',
 				'body'   => [
-					'token'      => $this->token,
 					'email'      => $args['email'],
+					'files'      => $args['files'],
+					'full_name'  => $args['full_name'],
+					'industry'   => $args['industry'],
 					'source'     => $args['source'],
 					'target'     => $args['target'],
-					'industry'   => $args['industry'],
-					'file'       => $args['file'],
-					'full_name'  => $args['full_name'],
-					'word_count' => $args['word_count'],
+					'token'      => $this->token,
 					'total'      => $args['total'],
+					'word_count' => $args['word_count'],
 				],
 			]
 		);

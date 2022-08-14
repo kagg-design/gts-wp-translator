@@ -282,7 +282,7 @@ class Cart {
 
 			$export_files[] = [
 				'file_name' => get_the_title( $id ) . '.xml',
-				'file'      => $export_file,
+				'content'   => $export_file,
 			];
 		}
 
@@ -304,7 +304,7 @@ class Cart {
 				'source'     => $source,
 				'target'     => $target,
 				'industry'   => $industry,
-				'file'       => $export_files,
+				'files'      => $export_files,
 				'full_name'  => $full_name,
 				'word_count' => $word_count,
 				'total'      => $total,
