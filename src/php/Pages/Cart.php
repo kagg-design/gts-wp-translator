@@ -270,6 +270,7 @@ class Cart {
 		$export_files = [];
 		$export       = new Export();
 		$ids          = Cookie::get_cart_cookie();
+		$word_count   = 0;
 
 		add_filter( 'query', [ $this, 'add_id_to_query' ] );
 
@@ -280,10 +281,15 @@ class Cart {
 			$export->export_wp(); // Uses $this->id via add_id_to_query filter.
 			$export_file = ob_get_clean();
 
-			$export_files[] = [
-				'file_name' => get_the_title( $id ) . '.xml',
-				'content'   => $export_file,
+			$file_word_count = $this->cost->get_word_count( $id );
+			$export_files[]  = [
+				'content'    => $export_file,
+				'file_name'  => get_the_title( $id ) . '.xml',
+				'id'         => $id,
+				'word_count' => $file_word_count,
 			];
+
+			$word_count += $file_word_count;
 		}
 
 		remove_filter( 'query', [ $this, 'add_id_to_query' ] );
@@ -296,18 +302,17 @@ class Cart {
 		$last_name  = $user_meta['last_name'][0] ?? '';
 		$full_name  = $first_name . ' ' . $last_name;
 		$full_name  = trim( $full_name ) ? $full_name : $user_login;
-		$word_count = $this->cost->get_total_words( $ids );
 
 		$response = $this->api->send_order(
 			[
 				'email'      => $email,
-				'source'     => $source,
-				'target'     => $target,
-				'industry'   => $industry,
 				'files'      => $export_files,
 				'full_name'  => $full_name,
-				'word_count' => $word_count,
+				'industry'   => $industry,
+				'source'     => $source,
+				'target'     => $target,
 				'total'      => $total,
+				'word_count' => $word_count,
 			]
 		);
 

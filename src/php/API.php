@@ -308,21 +308,13 @@ class API {
 	 * @return object|false
 	 */
 	public function send_order( $args ) {
+		$args['token'] = $this->token;
+
 		$response = $this->request(
 			$this->server_url . 'create-order',
 			[
 				'method' => 'POST',
-				'body'   => [
-					'email'      => $args['email'],
-					'files'      => $args['files'],
-					'full_name'  => $args['full_name'],
-					'industry'   => $args['industry'],
-					'source'     => $args['source'],
-					'target'     => $args['target'],
-					'token'      => $this->token,
-					'total'      => $args['total'],
-					'word_count' => $args['word_count'],
-				],
+				'body'   => $args,
 			]
 		);
 
