@@ -212,13 +212,14 @@ class API {
 
 		$admin_email = get_option( 'admin_email' );
 		$admin       = get_user_by( 'email', $admin_email );
-		$data        = [
-			'domain'      => home_url(),
+
+		$data = [
 			'admin_email' => $admin_email,
+			'callback'    => add_query_arg( [ self::AUTH_KEY_ARG => '' ], trailingslashit( home_url() ) ),
+			'domain'      => home_url(),
 			'first_name'  => ! empty( $admin->first_name ) ? $admin->first_name : '',
 			'last_name'   => ! empty( $admin->last_name ) ? $admin->last_name : '',
 			'nonce'       => $this->create_not_logged_in_nonce(),
-			'callback'    => add_query_arg( [ self::AUTH_KEY_ARG => '' ], trailingslashit( home_url() ) ),
 		];
 
 		$response = $this->request(
