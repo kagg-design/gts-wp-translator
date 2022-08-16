@@ -12,7 +12,6 @@ use GTS\TranslationOrder\Cost;
 use GTS\TranslationOrder\API;
 use GTS\TranslationOrder\Export;
 use GTS\TranslationOrder\Main;
-use stdClass;
 
 /**
  * TranslationCart class file.
@@ -299,11 +298,11 @@ class Cart {
 		remove_filter( 'query', [ $this, 'add_id_to_query' ] );
 
 		$user       = wp_get_current_user();
-		$user_login = $user->user_login ?? '';
+		$user_login = isset( $user, $user->user_login ) ? $user->user_login : '';
 		$user_id    = get_current_user_id();
 		$user_meta  = get_user_meta( $user_id );
-		$first_name = $user_meta['first_name'][0] ?? '';
-		$last_name  = $user_meta['last_name'][0] ?? '';
+		$first_name = isset( $user_meta['first_name'][0] ) ? $user_meta['first_name'][0] : '';
+		$last_name  = isset( $user_meta['last_name'][0] ) ? $user_meta['last_name'][0] : '';
 		$full_name  = $first_name . ' ' . $last_name;
 		$full_name  = trim( $full_name ) ? $full_name : $user_login;
 
