@@ -82,15 +82,15 @@ class PostFilter {
 	 * PostFilter construct.
 	 */
 	public function __construct() {
+		$api = new API();
+
+		$this->languages    = $api->get_languages();
+		$this->cost         = new Cost();
 		$this->status_texts = [
 			Main::ORDER_STATUS_SENT => __( 'Out for translation', 'gts-translation-order' ),
 		];
 
 		$this->init();
-
-		$api             = new API();
-		$this->languages = $api->get_languages();
-		$this->cost      = new Cost();
 	}
 
 	/**
@@ -363,7 +363,7 @@ class PostFilter {
 			$price = 0;
 
 			if ( ! empty( $filter->source ) && ! empty( $filter->target ) ) {
-				$price = $this->cost->price_by_post( $filter->source, $filter->target, $post->ID );
+				$price = $this->cost->price_for_post( $filter->source, $filter->target, $post->ID );
 			}
 
 			$status       = isset( $posts_statuses[ $post->ID ] ) ? $posts_statuses[ $post->ID ] : '';

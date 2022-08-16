@@ -12,16 +12,32 @@ namespace GTS\TranslationOrder;
  */
 class Cost {
 	/**
-	 * Default rate per word = $0.19.
-	 */
-	const DEFAULT_RATE_PER_WORD = 0.19;
-
-	/**
 	 * Translation prices.
 	 *
 	 * @var array
 	 */
-	private $translation_prices;
+	private $prices;
+
+	/**
+	 * Currency rates.
+	 *
+	 * @var array
+	 */
+	private $rates;
+
+	/**
+	 * Min order value.
+	 *
+	 * @var float
+	 */
+	private $min_order;
+
+	/**
+	 * Default rate per word.
+	 *
+	 * @var float
+	 */
+	private $default_rate_per_word;
 
 	/**
 	 * Cost construct.
@@ -29,7 +45,19 @@ class Cost {
 	public function __construct() {
 		$api = new API();
 
-		$this->translation_prices = $api->get_prices();
+		$this->prices                = $api->get_prices();
+		$this->rates                 = $api->get_rates();
+		$this->min_order             = $api->get_min_order();
+		$this->default_rate_per_word = $api->get_default_rate_per_word();
+	}
+
+	/**
+	 * Get min order.
+	 *
+	 * @return float
+	 */
+	public function get_min_order() {
+		return $this->min_order;
 	}
 
 	/**
@@ -48,11 +76,11 @@ class Cost {
 	/**
 	 * Get total word count.
 	 *
-	 * @param array $post_ids Post ID.
+	 * @param array $post_ids Post IDs.
 	 *
 	 * @return int
 	 */
-	public function get_total_words( $post_ids ) {
+	public function get_total_word_count( $post_ids ) {
 		$total = 0;
 
 		foreach ( $post_ids as $id ) {
@@ -77,7 +105,7 @@ class Cost {
 	}
 
 	/**
-	 * Total price by translated to post.
+	 * Translation price for post.
 	 *
 	 * @param string     $source_language  Source language.
 	 * @param array      $target_languages Target languages.
@@ -85,7 +113,7 @@ class Cost {
 	 *
 	 * @return float|int
 	 */
-	public function price_by_post( $source_language, array $target_languages, $post_id ) {
+	public function price_for_post( $source_language, array $target_languages, $post_id ) {
 		$total = 0;
 
 		foreach ( $target_languages as $target_language ) {
@@ -97,7 +125,7 @@ class Cost {
 				$unit_count = $this->get_word_count( $post_id );
 			}
 
-			$rate = isset( $price->rate_per_word ) ? $price->rate_per_word : self::DEFAULT_RATE_PER_WORD;
+			$rate = isset( $price->rate_per_word ) ? $price->rate_per_word : $this->default_rate_per_word;
 
 			$total += ( $unit_count * $rate );
 		}
@@ -114,15 +142,94 @@ class Cost {
 	 * @return object
 	 */
 	private function get_language_pair_price( $source_language, $target_language ) {
-		foreach ( $this->translation_prices as $translation_price ) {
+		foreach ( $this->prices as $price ) {
 			if (
-				$source_language === $translation_price->source_language &&
-				$target_language === $translation_price->target_language
+				$source_language === $price->source_language &&
+				$target_language === $price->target_language
 			) {
-				return $translation_price;
+				return $price;
 			}
 		}
 
 		return (object) null;
+	}
+
+	/**
+	 * Get currency exchange rate.
+	 *
+	 * @param string $currency Currency.
+	 *
+	 * @return float
+	 */
+	private function get_rate( $currency ) {
+		return isset( $this->rates[ $currency ] ) ? $this->rates[ $currency ] : 1.000;
+	}
+
+	/**
+	 * Get translation rate per unit (word or char).
+	 *
+	 * @param string $source_language Source language.
+	 * @param string $target_language Target language.
+	 *
+	 * @return float
+	 */
+	public function get_rate_per_word( $source_language, $target_language ) {
+		foreach ( $this->prices as $price ) {
+			if ( $price->source_language === $source_language && $price->target_language === $target_language ) {
+				return $price->rate_per_word;
+			}
+		}
+
+		return $this->default_rate_per_word;
+	}
+
+	/**
+	 * Return whether language translation rate is per word or char.
+	 *
+	 * @param string $source_language Source language.
+	 * @param string $target_language Target language.
+	 *
+	 * @return bool True when rate per word. False when per char.
+	 */
+	public function is_rate_per_word( $source_language, $target_language ) {
+		foreach ( $this->prices as $price ) {
+			if ( $price->source_language === $source_language && $price->target_language === $target_language ) {
+				return (bool) $price->is_rate_per_char;
+			}
+		}
+
+		return $this->default_rate_per_word;
+	}
+
+	/**
+	 * Get amount for each language.
+	 *
+	 * @param string $source_language  Source language.
+	 * @param array  $target_languages Target languages.
+	 * @param int    $word_count       Word count.
+	 * @param string $currency         Currency.
+	 *
+	 * @return array
+	 */
+	public function get_amount_each_language( $source_language, $target_languages, $word_count, $currency = 'USD' ) {
+
+		$word_count = $word_count ?: 0;
+
+		if ( ! $word_count ) {
+			return array_pad( [], count( $target_languages ), 0 );
+		}
+
+		$target_languages     = array_map( 'trim', $target_languages );
+		$rate                 = $this->get_rate( $currency );
+		$min_order            = $this->min_order;
+		$amount_each_language = [];
+
+		foreach ( $target_languages as $target_language ) {
+			$rate_per_word          = $this->get_rate_per_word( $source_language, $target_language );
+			$amount_lang            = max( $min_order, $word_count * $rate_per_word ) * $rate;
+			$amount_each_language[] = round( $amount_lang, 2 );
+		}
+
+		return $amount_each_language;
 	}
 }

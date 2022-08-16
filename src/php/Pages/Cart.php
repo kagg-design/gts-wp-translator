@@ -94,6 +94,18 @@ class Cart {
 							<td><span id="item_count"><?php echo esc_html( $items_count ); ?></span></td>
 						</tr>
 						<tr>
+							<td><?php esc_html_e( 'Total Words:', 'gts-translation-order' ); ?></td>
+							<td><?php echo esc_html( $this->get_total_word_count() ); ?></td>
+						</tr>
+						<tr>
+							<td><?php esc_html_e( 'Min Order:', 'gts-translation-order' ); ?></td>
+							<td>
+								$<?php echo esc_html( $this->cost->get_min_order() ); ?>
+								<?php esc_html_e( 'per language', 'gts-translation-order' ); ?>
+							</td>
+						</tr>
+						<?php $this->show_cost_per_language(); ?>
+						<tr>
 							<td><?php esc_html_e( 'Total Cost:', 'gts-translation-order' ); ?></td>
 							<td>$<span id="total"><?php echo number_format( $this->get_total(), 2 ); ?></span></td>
 						</tr>
@@ -364,7 +376,7 @@ class Cart {
 
 		foreach ( $ids as $id ) {
 			$price[] = [
-				'price' => round( $this->cost->price_by_post( $source, $languages, $id ), 2 ),
+				'price' => round( $this->cost->price_for_post( $source, $languages, $id ), 2 ),
 				'id'    => $id,
 			];
 		}
@@ -405,26 +417,27 @@ class Cart {
 	}
 
 	/**
+	 * Get total word count.
+	 *
+	 * @return int
+	 */
+	private function get_total_word_count() {
+		$ids = Cookie::get_cart_cookie();
+
+		return $this->cost->get_total_word_count( $ids );
+	}
+
+	/**
 	 * Get cart total.
 	 *
 	 * @return float|int
 	 */
 	public function get_total() {
 		$filter = Cookie::get_filter_cookie();
-		$ids    = Cookie::get_cart_cookie();
-		$total  = 0;
 
-		foreach ( $ids as $id ) {
-			$post = get_post( $id );
-
-			if ( $post && ! empty( $filter->source ) && $filter->target ) {
-				$price = $this->cost->price_by_post( $filter->source, $filter->target, $post->ID );
-
-				$total += $price;
-			}
-		}
-
-		return $total;
+		return array_sum(
+			$this->cost->get_amount_each_language( $filter->source, $filter->target, $this->get_total_word_count() )
+		);
 	}
 
 	/**
@@ -473,7 +486,7 @@ class Cart {
 			$price = 0;
 
 			if ( $post && ! empty( $filter->source ) && $filter->target ) {
-				$price = $this->cost->price_by_post( $filter->source, $filter->target, $post->ID );
+				$price = $this->cost->price_for_post( $filter->source, $filter->target, $post->ID );
 			}
 			?>
 			<tr>
@@ -573,5 +586,35 @@ class Cart {
 			<th scope="col"><?php esc_attr_e( 'Action', 'gts-translation-order' ); ?></th>
 		</tr>
 		<?php
+	}
+
+	/**
+	 * Show cost per language.
+	 *
+	 * @return void
+	 */
+	private function show_cost_per_language() {
+		$filter               = Cookie::get_filter_cookie();
+		$amount_each_language = $this->cost->get_amount_each_language(
+			$filter->source,
+			$filter->target,
+			$this->get_total_word_count()
+		);
+
+		foreach ( $filter->target as $index => $target_language ) {
+			$unit = $this->cost->is_rate_per_word( $filter->source, $target_language ) ?
+				__( 'per word', 'gts-translation-order' ) :
+				__( 'per char', 'gts-translation-order' );
+			?>
+			<tr>
+				<td><?php echo esc_html( $target_language ); ?>:</td>
+				<td>
+					$<?php echo number_format( $amount_each_language[ $index ], 2 ); ?>
+					($<?php echo number_format( $this->cost->get_rate_per_word( $filter->source, $target_language ), 2 ); ?>
+					<?php echo esc_html( $unit ); ?>)
+				</td>
+			</tr>
+			<?php
+		}
 	}
 }

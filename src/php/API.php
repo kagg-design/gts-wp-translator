@@ -63,19 +63,9 @@ class API {
 	const AUTH_OPTION = 'gts-translation-order-auth';
 
 	/**
-	 * Languages transient.
-	 */
-	const LANGUAGES_TRANSIENT = 'gts-translation-order-languages';
-
-	/**
-	 * Prices transient name.
-	 */
-	const PRICES_TRANSIENT = 'gts-translation-order-prices';
-
-	/**
 	 * Rates transient name.
 	 */
-	const RATES_TRANSIENT = 'gts-translation-order-rates';
+	const COST_INFO_TRANSIENT = 'gts-translation-order-cost-info';
 
 	/**
 	 * Access token.
@@ -120,8 +110,6 @@ class API {
 
 		delete_transient( self::SITE_KEY_LOCK );
 		delete_transient( self::ACCESS_TOKEN_LOCK );
-		delete_transient( self::LANGUAGES_TRANSIENT );
-		delete_transient( self::PRICES_TRANSIENT );
 	}
 
 	/**
@@ -173,12 +161,14 @@ class API {
 
 		$this->update_auth_attempts_count();
 
-		if ( false !== $token ) {
-			$auth          = get_option( self::AUTH_OPTION );
-			$auth['token'] = $token;
-			update_option( self::AUTH_OPTION, $auth );
-			$this->delete_transients();
+		if ( false === $token ) {
+			return false;
 		}
+
+		$auth          = get_option( self::AUTH_OPTION );
+		$auth['token'] = $token;
+		update_option( self::AUTH_OPTION, $auth );
+		$this->delete_transients();
 
 		return $token;
 	}
@@ -253,27 +243,7 @@ class API {
 	 * @return array
 	 */
 	public function get_languages() {
-		$language_list = get_transient( self::LANGUAGES_TRANSIENT );
-
-		if ( false !== $language_list ) {
-			return $language_list;
-		}
-
-		$response = $this->request(
-			$this->server_url . 'languages',
-			[
-				'method' => 'GET',
-				'body'   => [
-					'token' => $this->token,
-				],
-			]
-		);
-
-		$response = $response ?: [];
-
-		set_transient( self::LANGUAGES_TRANSIENT, $response, DAY_IN_SECONDS );
-
-		return $response;
+		return (array) $this->get( 'languages' );
 	}
 
 	/**
@@ -282,27 +252,7 @@ class API {
 	 * @return array
 	 */
 	public function get_prices() {
-		$prices = get_transient( self::PRICES_TRANSIENT );
-
-		if ( false !== $prices ) {
-			return $prices;
-		}
-
-		$response = $this->request(
-			$this->server_url . 'prices',
-			[
-				'method' => 'GET',
-				'body'   => [
-					'token' => $this->token,
-				],
-			]
-		);
-
-		$response = is_array( $response ) ? $response : [];
-
-		set_transient( self::PRICES_TRANSIENT, $response, DAY_IN_SECONDS );
-
-		return $response;
+		return (array) $this->get( 'prices' );
 	}
 
 	/**
@@ -311,14 +261,44 @@ class API {
 	 * @return array
 	 */
 	public function get_rates() {
-		$rates = get_transient( self::RATES_TRANSIENT );
+		return array_map(
+			'floatval',
+			(array) $this->get( 'rates' )
+		);
+	}
 
-		if ( false !== $rates ) {
-			return $rates;
+	/**
+	 * Get min order.
+	 *
+	 * @return float
+	 */
+	public function get_min_order() {
+		return (float) $this->get( 'min_order' );
+	}
+
+	/**
+	 * Get default rate per word.
+	 *
+	 * @return float
+	 */
+	public function get_default_rate_per_word() {
+		return (float) $this->get( 'default_rate_per_word' );
+	}
+
+	/**
+	 * Get all cost info.
+	 *
+	 * @return array
+	 */
+	public function get_cost_info() {
+		$cost_info = get_transient( self::COST_INFO_TRANSIENT );
+
+		if ( false !== $cost_info ) {
+			return $cost_info;
 		}
 
 		$response = $this->request(
-			$this->server_url . 'rates',
+			$this->server_url . 'cost-info',
 			[
 				'method' => 'GET',
 				'body'   => [
@@ -327,9 +307,9 @@ class API {
 			]
 		);
 
-		$response = is_array( $response ) ? $response : [];
+		$response = $response ? (array) $response : [];
 
-		set_transient( self::RATES_TRANSIENT, $response, DAY_IN_SECONDS );
+		set_transient( self::COST_INFO_TRANSIENT, $response, DAY_IN_SECONDS );
 
 		return $response;
 	}
@@ -353,6 +333,19 @@ class API {
 		);
 
 		return isset( $response->success ) ? $response : false;
+	}
+
+	/**
+	 * Get cost info item.
+	 *
+	 * @param string $key Cost info key.
+	 *
+	 * @return mixed|null
+	 */
+	private function get( $key ) {
+		$cost_info = $this->get_cost_info();
+
+		return isset( $cost_info[ $key ] ) ? $cost_info[ $key ] : null;
 	}
 
 	/**
