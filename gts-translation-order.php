@@ -10,7 +10,7 @@
  * Plugin Name: GTS Translation Order
  * Plugin URI: https://www.gts-translation.com/
  * Description: Make a Translation Order to the GTS site.
- * Version: 1.1.0
+ * Version: 1.2.0
  * Author: ALex Lavyhin, KAGG Design
  * Author URI: https://kagg.eu/
  * License: GPL2
@@ -32,7 +32,7 @@ if ( defined( 'GTS_TRANSLATION_ORDER_VERSION' ) ) {
 }
 
 // Main constants.
-const GTS_TRANSLATION_ORDER_VERSION = '1.1.0'; // Plugin version.
+const GTS_TRANSLATION_ORDER_VERSION = '1.2.0'; // Plugin version.
 const GTS_TRANSLATION_ORDER_PATH    = __DIR__; // Plugin path.
 const GTS_TRANSLATION_ORDER_FILE    = __FILE__; // Plugin main file.
 define( 'GTS_TRANSLATION_ORDER_URL', untrailingslashit( plugin_dir_url( GTS_TRANSLATION_ORDER_FILE ) ) ); // Plugin url.
