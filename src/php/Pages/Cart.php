@@ -303,8 +303,9 @@ class Cart {
 		$full_name  = $first_name . ' ' . $last_name;
 		$full_name  = trim( $full_name ) ? $full_name : $user_login;
 
-		$response = $this->api->send_order(
+		$response = $this->api->create_order(
 			[
+				'domain'     => home_url(),
 				'email'      => $email,
 				'files'      => $export_files,
 				'full_name'  => $full_name,
@@ -312,6 +313,7 @@ class Cart {
 				'source'     => $source,
 				'target'     => $target,
 				'total'      => $total,
+				'version'    => GTS_TRANSLATION_ORDER_VERSION,
 				'word_count' => $word_count,
 			]
 		);
@@ -324,6 +326,7 @@ class Cart {
 			wp_send_json_error( [ 'message' => $response->error ] );
 		}
 
+		// @todo: Save $ids as meta.
 		$result = $this->save_order(
 			[
 				'order_id'         => $response->order_id,

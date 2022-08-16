@@ -283,9 +283,8 @@ jQuery( document ).ready( function( $ ) {
 						title: GTSTranslationOrderObject.sendOrderTitle,
 						text: GTSTranslationOrderObject.sendOrderTextConfirm,
 					} ).then( ( result ) => {
-						/* Read more about isConfirmed, isDenied below */
 						if ( result.isConfirmed ) {
-							window.open( GTSTranslationOrderObject.paymentLink + res.data.order_id, '_blank' );
+							window.open( GTSTranslationOrderObject.paymentLink + res.data.fqid, '_blank' );
 						} else if ( result.isDenied ) {
 							location.href = GTSTranslationOrderObject.selectPostsLink;
 						}
@@ -298,8 +297,8 @@ jQuery( document ).ready( function( $ ) {
 				}
 			},
 			error: function( xhr ) {
-				console.log( 'error...', xhr );
 				//error logging
+				console.log( 'error...', xhr );
 			}
 		} );
 	} );

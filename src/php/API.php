@@ -301,13 +301,13 @@ class API {
 	}
 
 	/**
-	 * Send Order.
+	 * Create Order.
 	 *
 	 * @param array $args Arguments.
 	 *
 	 * @return object|false
 	 */
-	public function send_order( $args ) {
+	public function create_order( $args ) {
 		$args['token'] = $this->token;
 
 		$response = $this->request(
