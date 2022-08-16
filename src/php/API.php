@@ -63,14 +63,19 @@ class API {
 	const AUTH_OPTION = 'gts-translation-order-auth';
 
 	/**
-	 * Language list transient.
+	 * Languages transient.
 	 */
-	const LANGUAGE_LIST_TRANSIENT = 'gts-translation-order-language-list';
+	const LANGUAGES_TRANSIENT = 'gts-translation-order-languages';
 
 	/**
-	 * Price list.
+	 * Prices transient name.
 	 */
-	const PRICES_TRANSIENT = 'get_price_languages_list';
+	const PRICES_TRANSIENT = 'gts-translation-order-prices';
+
+	/**
+	 * Rates transient name.
+	 */
+	const RATES_TRANSIENT = 'gts-translation-order-rates';
 
 	/**
 	 * Access token.
@@ -115,7 +120,7 @@ class API {
 
 		delete_transient( self::SITE_KEY_LOCK );
 		delete_transient( self::ACCESS_TOKEN_LOCK );
-		delete_transient( self::LANGUAGE_LIST_TRANSIENT );
+		delete_transient( self::LANGUAGES_TRANSIENT );
 		delete_transient( self::PRICES_TRANSIENT );
 	}
 
@@ -247,8 +252,8 @@ class API {
 	 *
 	 * @return array
 	 */
-	public function get_language_list() {
-		$language_list = get_transient( self::LANGUAGE_LIST_TRANSIENT );
+	public function get_languages() {
+		$language_list = get_transient( self::LANGUAGES_TRANSIENT );
 
 		if ( false !== $language_list ) {
 			return $language_list;
@@ -266,7 +271,7 @@ class API {
 
 		$response = $response ?: [];
 
-		set_transient( self::LANGUAGE_LIST_TRANSIENT, $response, DAY_IN_SECONDS );
+		set_transient( self::LANGUAGES_TRANSIENT, $response, DAY_IN_SECONDS );
 
 		return $response;
 	}
@@ -296,6 +301,35 @@ class API {
 		$response = is_array( $response ) ? $response : [];
 
 		set_transient( self::PRICES_TRANSIENT, $response, DAY_IN_SECONDS );
+
+		return $response;
+	}
+
+	/**
+	 * Get currency rates.
+	 *
+	 * @return array
+	 */
+	public function get_rates() {
+		$rates = get_transient( self::RATES_TRANSIENT );
+
+		if ( false !== $rates ) {
+			return $rates;
+		}
+
+		$response = $this->request(
+			$this->server_url . 'rates',
+			[
+				'method' => 'GET',
+				'body'   => [
+					'token' => $this->token,
+				],
+			]
+		);
+
+		$response = is_array( $response ) ? $response : [];
+
+		set_transient( self::RATES_TRANSIENT, $response, DAY_IN_SECONDS );
 
 		return $response;
 	}

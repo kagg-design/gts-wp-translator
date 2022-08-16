@@ -20,13 +20,6 @@ use stdClass;
 class Cart {
 
 	/**
-	 * Languages list.
-	 *
-	 * @var object|stdClass|null
-	 */
-	public $language_list;
-
-	/**
 	 * Cost calculation.
 	 *
 	 * @var Cost $cost Cost class.
@@ -51,11 +44,10 @@ class Cart {
 	 * TranslationOrder class file.
 	 */
 	public function __construct() {
-		$this->init();
+		$this->api  = new API();
+		$this->cost = new Cost();
 
-		$this->api           = new API();
-		$this->language_list = $this->api->get_language_list();
-		$this->cost          = new Cost();
+		$this->init();
 	}
 
 	/**

@@ -58,11 +58,11 @@ class PostFilter {
 	public $count_posts;
 
 	/**
-	 * Language list.
+	 * Languages.
 	 *
 	 * @var array
 	 */
-	private $language_list;
+	private $languages;
 
 	/**
 	 * Cost calculation.
@@ -88,9 +88,9 @@ class PostFilter {
 
 		$this->init();
 
-		$api                 = new API();
-		$this->language_list = $api->get_language_list();
-		$this->cost          = new Cost();
+		$api             = new API();
+		$this->languages = $api->get_languages();
+		$this->cost      = new Cost();
 	}
 
 	/**
@@ -200,7 +200,7 @@ class PostFilter {
 							<tbody>
 							<?php
 							echo '<tr>';
-							foreach ( $this->language_list as $language ) {
+							foreach ( $this->languages as $language ) {
 								$i ++;
 								?>
 								<td class="cell">
@@ -256,7 +256,7 @@ class PostFilter {
 			<option value="0"
 					selected><?php esc_html_e( 'Source language', 'gts-translation-order' ); ?></option>
 			<?php
-			foreach ( $this->language_list as $language ) {
+			foreach ( $this->languages as $language ) {
 				if ( $language->active ) {
 					?>
 					<option value="<?php echo esc_html( $language->language_name ); ?>" <?php selected( $language->language_name, $filter->source ); ?>>
