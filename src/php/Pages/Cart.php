@@ -100,7 +100,7 @@ class Cart {
 						<tr>
 							<td><?php esc_html_e( 'Min Order:', 'gts-translation-order' ); ?></td>
 							<td>
-								$<?php echo esc_html( $this->cost->get_min_order() ); ?>
+								$<?php echo number_format( $this->cost->get_min_order(), 2 ); ?>
 								<?php esc_html_e( 'per language', 'gts-translation-order' ); ?>
 							</td>
 						</tr>
