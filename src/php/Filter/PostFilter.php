@@ -9,11 +9,7 @@ namespace GTS\TranslationOrder\Filter;
 
 use GTS\TranslationOrder\Admin\AdminNotice;
 use GTS\TranslationOrder\Cookie;
-use GTS\TranslationOrder\Cost;
 use GTS\TranslationOrder\API;
-use GTS\TranslationOrder\Main;
-use GTS\TranslationOrder\Pagination;
-use wpdb;
 
 /**
  * PostFilter class file.
@@ -32,32 +28,6 @@ class PostFilter {
 	];
 
 	/**
-	 * Limit output posts.
-	 */
-	const OUTPUT_LIMIT = 20;
-
-	/**
-	 * Page number.
-	 *
-	 * @var int $page Page number.
-	 */
-	private $page;
-
-	/**
-	 * Pagination Class.
-	 *
-	 * @var Pagination $pagintion pagination.
-	 */
-	public $pagination;
-
-	/**
-	 * Count posts.
-	 *
-	 * @var int $count_posts count post
-	 */
-	public $count_posts;
-
-	/**
 	 * Languages.
 	 *
 	 * @var array
@@ -65,30 +35,10 @@ class PostFilter {
 	private $languages;
 
 	/**
-	 * Cost calculation.
-	 *
-	 * @var Cost $cost Cost class.
-	 */
-	private $cost;
-
-	/**
-	 * Status texts to show.
-	 *
-	 * @var array
-	 */
-	private $status_texts;
-
-	/**
 	 * PostFilter construct.
 	 */
 	public function __construct() {
-		$api = new API();
-
-		$this->languages    = $api->get_languages();
-		$this->cost         = new Cost();
-		$this->status_texts = [
-			Main::ORDER_STATUS_SENT => __( 'Out for translation', 'gts-translation-order' ),
-		];
+		$this->languages = ( new API() )->get_languages();
 
 		$this->init();
 	}
@@ -100,23 +50,49 @@ class PostFilter {
 	 */
 	private function init() {
 		add_action( 'init', [ $this, 'filter' ] );
-
-		$this->page = 1;
-
-		$paging = filter_input( INPUT_GET, 'paging', FILTER_VALIDATE_INT );
-
-		if ( $paging >= 1 ) {
-			$this->page = $paging;
-		}
 	}
 
 	/**
-	 * Get all post types name.
+	 * Filter form.
 	 *
-	 * @return array
+	 * @return void
 	 */
-	private function get_post_types_array() {
-		return array_diff( get_post_types( [ 'public' => true ] ), self::EXCLUDE_POST_TYPES );
+	public function filter() {
+		if ( ! isset( $_POST['gts_filter_submit'] ) ) {
+			return;
+		}
+
+		$nonce = isset( $_POST['gts_post_type_filter_nonce'] ) ?
+			filter_var( wp_unslash( $_POST['gts_post_type_filter_nonce'] ), FILTER_SANITIZE_STRING ) :
+			null;
+
+		if ( ! wp_verify_nonce( $nonce, 'gts_post_type_filter' ) ) {
+			add_action( 'admin_notices', [ AdminNotice::class, 'bad_nonce' ] );
+
+			return;
+		}
+
+		$post_type = ! empty( $_POST['gts_to_post_type_select'] ) ?
+			filter_var( wp_unslash( $_POST['gts_to_post_type_select'] ), FILTER_SANITIZE_STRING ) :
+			'';
+		$search    = ! empty( $_POST['gts_to_search'] ) ?
+			filter_var( wp_unslash( $_POST['gts_to_search'] ), FILTER_SANITIZE_STRING ) :
+			'';
+		$source    = ! empty( $_POST['gts_source_language'] ) ?
+			filter_var( wp_unslash( $_POST['gts_source_language'] ), FILTER_SANITIZE_STRING ) :
+			'';
+		$target    = ! empty( $_POST['target_language'] ) ?
+			filter_var( wp_unslash( $_POST['target_language'] ), FILTER_SANITIZE_STRING ) :
+			'';
+
+		$param = [
+			'post_type' => $post_type,
+			'search'    => $search,
+			'source'    => $source,
+			'target'    => explode( ', ', $target ),
+		];
+
+		Cookie::set_filter_cookie( $param );
 	}
 
 	/**
@@ -130,7 +106,7 @@ class PostFilter {
 		?>
 		<select class="form-select" id="gts_to_post_type_select" aria-label="Post Type" name="gts_to_post_type_select">
 			<option value="null" selected><?php esc_html_e( 'Select post type', 'gts-translation-order' ); ?></option>
-			<?php foreach ( $this->get_post_types_array() as $type ) : ?>
+			<?php foreach ( $this->get_post_types() as $type ) : ?>
 				<option value="<?php echo esc_attr( $type ); ?>" <?php echo $post_type ? selected( $post_type, $type, false ) : ''; ?>>
 					<?php echo esc_attr( $type ); ?>
 				</option>
@@ -241,6 +217,15 @@ class PostFilter {
 	}
 
 	/**
+	 * Get all post types name.
+	 *
+	 * @return array
+	 */
+	public function get_post_types() {
+		return array_diff( get_post_types( [ 'public' => true ] ), self::EXCLUDE_POST_TYPES );
+	}
+
+	/**
 	 * Show source languages select.
 	 *
 	 * @return void
@@ -268,261 +253,5 @@ class PostFilter {
 			?>
 		</select>
 		<?php
-	}
-
-	/**
-	 * Filter form.
-	 *
-	 * @return void
-	 */
-	public function filter() {
-		if ( ! isset( $_POST['gts_filter_submit'] ) ) {
-			return;
-		}
-
-		$nonce = isset( $_POST['gts_post_type_filter_nonce'] ) ? filter_var( wp_unslash( $_POST['gts_post_type_filter_nonce'] ), FILTER_SANITIZE_STRING ) : null;
-
-		if ( ! wp_verify_nonce( $nonce, 'gts_post_type_filter' ) ) {
-			add_action( 'admin_notices', [ AdminNotice::class, 'bad_nonce' ] );
-
-			return;
-		}
-
-		$post_type = ! empty( $_POST['gts_to_post_type_select'] ) ? filter_var( wp_unslash( $_POST['gts_to_post_type_select'] ), FILTER_SANITIZE_STRING ) : '';
-		$search    = ! empty( $_POST['gts_to_search'] ) ? filter_var( wp_unslash( $_POST['gts_to_search'] ), FILTER_SANITIZE_STRING ) : '';
-		$source    = ! empty( $_POST['gts_source_language'] ) ? filter_var( wp_unslash( $_POST['gts_source_language'] ), FILTER_SANITIZE_STRING ) : '';
-		$target    = ! empty( $_POST['target_language'] ) ? filter_var( wp_unslash( $_POST['target_language'] ), FILTER_SANITIZE_STRING ) : '';
-
-		$param = [
-			'post_type' => $post_type,
-			'search'    => $search,
-			'source'    => $source,
-			'target'    => explode( ', ', $target ),
-		];
-
-		Cookie::set_filter_cookie( $param );
-	}
-
-
-	/**
-	 * Show post table to translate.
-	 *
-	 * @return void
-	 */
-	public function show_table() {
-		$filter        = Cookie::get_filter_cookie();
-		$cart_post_ids = Cookie::get_cart_cookie();
-
-		if ( ! isset( $filter->post_type ) ) {
-			$filter = (object) [
-				'post_type' => 'null',
-				'search'    => '',
-				'source'    => '',
-				'target'    => [],
-
-			];
-		}
-
-		$limit             = self::OUTPUT_LIMIT;
-		$post_info         = $this->get_posts_by_post_type( $filter->post_type, $filter->search, ( $this->page - 1 ) * $limit, $limit );
-		$curr_page_url     = isset( $_SERVER['QUERY_STRING'] ) ? 'admin.php?' . filter_var( wp_unslash( $_SERVER['QUERY_STRING'] ), FILTER_SANITIZE_STRING ) : '';
-		$this->count_posts = 0;
-		$posts             = $post_info['posts'];
-		$count             = $post_info['rows_found'];
-		$post_ids          = wp_list_pluck( $posts, 'ID' );
-		$post_ids          = array_map( 'intval', $post_ids );
-		$posts_statuses    = $this->get_post_statuses( $post_ids );
-
-		if ( $count > 0 ) {
-			$p = new Pagination();
-			$p->items( $count );
-			$p->limit( $limit ); // Limit entries per page.
-			$p->target( $curr_page_url );
-			$p->currentPage( $this->page ); // Gets and validates the current page.
-			$p->parameterName( 'paging' );
-			$p->adjacents( 1 ); // No. of page away from the current page.
-			$p->calculate(); // Calculates what to show.
-
-			$this->pagination  = $p;
-			$this->count_posts = $count;
-		} else {
-			?>
-			<tr>
-				<td colspan="6">
-					<?php esc_html_e( 'No posts found.', 'gts-translation-order' ); ?>
-				</td>
-			</tr>
-			<?php
-		}
-
-		foreach ( $posts as $post ) {
-			$title = $post->post_title;
-			$title = $title ?: __( '(no title)', 'gts-translation-order' );
-			$id    = "gts_to_translate-$post->ID";
-			$name  = "gts_to_translate[$post->ID]";
-			$price = 0;
-
-			if ( ! empty( $filter->source ) && ! empty( $filter->target ) ) {
-				$price = $this->cost->price_for_post( $filter->source, $filter->target, $post->ID );
-			}
-
-			$status       = isset( $posts_statuses[ $post->ID ] ) ? $posts_statuses[ $post->ID ] : '';
-			$status_class = $status ? 'text-bg-primary' : 'bg-secondary';
-			$status_text  = isset( $this->status_texts[ $status ] ) ? $this->status_texts[ $status ] : '';
-			$in_cart      = in_array( $post->ID, $cart_post_ids, true );
-			$has_checkbox = ! $status && ! $in_cart;
-			$tr_class     = $in_cart ? 'table-primary' : '';
-			$word_count   = $this->cost->get_word_count( $post->ID );
-			?>
-			<tr class="<?php echo esc_attr( $tr_class ); ?>">
-				<th scope="row">
-					<?php if ( $has_checkbox ) { ?>
-					<label for="<?php echo esc_attr( $id ); ?>" class="hidden"></label>
-					<input
-							type="checkbox"
-							data-id="<?php echo esc_attr( $post->ID ); ?>"
-							id="<?php echo esc_attr( $id ); ?>"
-							name="<?php echo esc_attr( $name ); ?>">
-				</th>
-				<?php } ?>
-				<td><?php echo esc_html( $title ); ?></td>
-				<td><?php echo esc_html( $post->post_type ); ?></td>
-				<td>
-					<span class="badge <?php echo esc_attr( $status_class ); ?>">
-						<?php echo esc_html( $status_text ?: __( 'Not translated', 'gts-translation-order' ) ); ?>
-					</span>
-				</td>
-				<td><?php echo esc_html( $word_count ); ?></td>
-				<td>$<?php echo esc_html( $price ); ?> </td>
-			</tr>
-			<?php
-		}
-	}
-
-	/**
-	 * Get all post ids in orders.
-	 *
-	 * @param int[] $post_ids Post ids.
-	 *
-	 * @return array
-	 */
-	private function get_post_statuses( $post_ids ) {
-		global $wpdb;
-
-		if ( ! $post_ids ) {
-			return [];
-		}
-
-		$table_name = Main::ORDER_TABLE_NAME;
-		$in         = $this->prepare_in( $post_ids, '%d' );
-
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$results = $wpdb->get_results(
-			"SELECT post_id, status FROM $wpdb->prefix$table_name
-					WHERE id IN(
-					    SELECT MAX(id) FROM $wpdb->prefix$table_name
-					    WHERE post_id IN ( $in )
-					    GROUP BY post_id
-					    )"
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-
-		if ( ! $results ) {
-			return [];
-		}
-
-		$statuses = [];
-
-		foreach ( $results as $result ) {
-			$statuses[ $result->post_id ] = $result->status;
-		}
-
-		return $statuses;
-	}
-
-	/**
-	 * Get posts by post type.
-	 *
-	 * @param string|null $post_type Post type.
-	 * @param string|null $search    Search string.
-	 * @param int         $offset    Offset.
-	 * @param int         $limit     Limit.
-	 *
-	 * @return array
-	 */
-	private function get_posts_by_post_type( $post_type = null, $search = null, $offset = 0, $limit = 20 ) {
-		global $wpdb;
-
-		$post_types = [ $post_type ];
-
-		if ( null === $post_type || 'null' === $post_type ) {
-			$post_types = $this->get_post_types_array();
-		}
-
-		$slq_post_type = $this->prepare_in( $post_types );
-
-		$sql = "SELECT SQL_CALC_FOUND_ROWS po.ID, po.post_title, po.post_type 
-				FROM `$wpdb->posts` po 
-				WHERE `post_type` IN ( $slq_post_type ) 
-				AND `post_status` = 'publish'";
-
-		if ( $search ) {
-			$sql .= "AND `post_title` LIKE '%" . $wpdb->esc_like( $search ) . "%'";
-		}
-
-		$sql .= 'LIMIT %d, %d';
-
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
-		$result = $wpdb->get_results(
-			$wpdb->prepare(
-				$sql,
-				esc_sql( $offset ),
-				esc_sql( $limit )
-			)
-		);
-
-		$rows_found = $wpdb->get_results( 'SELECT FOUND_ROWS();', ARRAY_N );
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
-
-		if ( ! $result ) {
-			return [
-				'posts'      => [],
-				'rows_found' => 0,
-			];
-		}
-
-		return [
-			'posts'      => $result,
-			'rows_found' => $rows_found[0][0],
-		];
-	}
-
-	/**
-	 * Changes array of items into string of items, separated by comma and sql-escaped.
-	 *
-	 * @see https://coderwall.com/p/zepnaw
-	 * @global wpdb       $wpdb
-	 *
-	 * @param mixed|array $items  item(s) to be joined into string.
-	 * @param string      $format %s or %d.
-	 *
-	 * @return string Items separated by comma and sql-escaped
-	 */
-	private function prepare_in( $items, $format = '%s' ) {
-		global $wpdb;
-
-		$items    = (array) $items;
-		$how_many = count( $items );
-
-		if ( $how_many > 0 ) {
-			$placeholders    = array_fill( 0, $how_many, $format );
-			$prepared_format = implode( ',', $placeholders );
-			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			$prepared_in = $wpdb->prepare( $prepared_format, $items );
-		} else {
-			$prepared_in = '';
-		}
-
-		return $prepared_in;
 	}
 }
