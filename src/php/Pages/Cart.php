@@ -440,6 +440,36 @@ class Cart {
 	}
 
 	/**
+	 * Show add to cart button.
+	 *
+	 * @return void
+	 */
+	public function show_add_to_cart_button() {
+		?>
+		<button type="button" class="btn btn-primary add-bulk-to-cart btn-sm">
+			<?php esc_attr_e( 'Add to Cart', 'gts-translation-order' ); ?>
+		</button>
+		<?php
+	}
+
+	/**
+	 * Show mini cart.
+	 *
+	 * @return void
+	 */
+	public function show_mini_cart() {
+		?>
+		<a href="<?php echo esc_url( admin_url( 'admin.php?page=' . Main::GTS_SUB_MENU_CART_SLUG ) ); ?>">
+			<button type="button" class="btn btn-secondary btn-sm">
+				<span class="dashicons dashicons-cart"></span>
+				<span><?php echo esc_html( $this->get_count() ); ?></span>
+				<span>&nbsp;&nbsp;&nbsp;$<?php echo number_format( $this->get_total(), 2 ); ?></span>
+			</button>
+		</a>
+		<?php
+	}
+
+	/**
 	 * Save post ids to cart.
 	 *
 	 * @param array $args Arguments.

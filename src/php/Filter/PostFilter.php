@@ -10,6 +10,7 @@ namespace GTS\TranslationOrder\Filter;
 use GTS\TranslationOrder\Admin\AdminNotice;
 use GTS\TranslationOrder\Cookie;
 use GTS\TranslationOrder\API;
+use GTS\TranslationOrder\Pages\Cart;
 
 /**
  * PostFilter class file.
@@ -28,6 +29,13 @@ class PostFilter {
 	];
 
 	/**
+	 * Cart class instance.
+	 *
+	 * @var Cart
+	 */
+	private $cart;
+
+	/**
 	 * Languages.
 	 *
 	 * @var array
@@ -36,8 +44,11 @@ class PostFilter {
 
 	/**
 	 * PostFilter construct.
+	 *
+	 * @param Cart $cart Cart class instance.
 	 */
-	public function __construct() {
+	public function __construct( $cart ) {
+		$this->cart      = $cart;
 		$this->languages = ( new API() )->get_languages();
 
 		$this->init();
@@ -49,15 +60,15 @@ class PostFilter {
 	 * @return void
 	 */
 	private function init() {
-		add_action( 'init', [ $this, 'filter' ] );
+		add_action( 'init', [ $this, 'update_filter' ] );
 	}
 
 	/**
-	 * Filter form.
+	 * Update pasts filter.
 	 *
 	 * @return void
 	 */
-	public function filter() {
+	public function update_filter() {
 		if ( ! isset( $_POST['gts_filter_submit'] ) ) {
 			return;
 		}
@@ -93,6 +104,42 @@ class PostFilter {
 		];
 
 		Cookie::set_filter_cookie( $param );
+	}
+
+	/**
+	 * Show filter form.
+	 *
+	 * @return void
+	 */
+	public function show_form() {
+		?>
+		<form action="" id="filter-form" method="post">
+			<div class="row">
+				<div class="col-auto">
+					<?php $this->show_post_types_select(); ?>
+				</div>
+				<div class="col-auto">
+					<?php $this->show_search_field(); ?>
+				</div>
+				<div class="col-auto">
+					<?php $this->show_source_language(); ?>
+				</div>
+				<div class="col-auto">
+					<?php $this->show_target_language_select(); ?>
+				</div>
+				<div class="col-auto">
+					<input type="submit" name="gts_filter_submit" class="btn-sm btn btn-primary" value="Filter">
+					<?php wp_nonce_field( 'gts_post_type_filter', 'gts_post_type_filter_nonce', false ); ?>
+				</div>
+				<div class="col-auto">
+					<?php $this->cart->show_add_to_cart_button(); ?>
+				</div>
+				<div class="col-auto">
+					<?php $this->cart->show_mini_cart(); ?>
+				</div>
+			</div>
+		</form>
+		<?php
 	}
 
 	/**

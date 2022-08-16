@@ -108,39 +108,14 @@ class Order {
 					</div>
 				</div>
 			</div>
-			<form action="" id="filter-form" method="post">
-				<div class="row">
-					<div class="col-auto">
-						<?php $this->filter->show_post_types_select(); ?>
-					</div>
-					<div class="col-auto">
-						<?php $this->filter->show_search_field(); ?>
-					</div>
-					<div class="col-auto">
-						<?php $this->filter->show_source_language(); ?>
-					</div>
-					<div class="col-auto">
-						<?php $this->filter->show_target_language_select(); ?>
-					</div>
-					<div class="col-auto">
-						<input type="submit" name="gts_filter_submit" class="btn-sm btn btn-primary" value="Filter">
-						<?php wp_nonce_field( 'gts_post_type_filter', 'gts_post_type_filter_nonce', false ); ?>
-					</div>
-					<div class="col-auto">
-						<?php $this->show_add_to_cart_button(); ?>
-					</div>
-					<div class="col-auto">
-						<?php $this->show_mini_cart(); ?>
-					</div>
-				</div>
-			</form>
+			<?php $this->filter->show_form(); ?>
 			<div class="row">
 				<div class="col">
 					<table class="table table-striped table-hover">
 						<thead class="table-group-divider"><?php $this->show_column_titles(); ?></thead>
 						<tbody class="table-group-divider"><?php $this->show_table(); ?></tbody>
 						<tfoot class="table-group-divider"><?php $this->show_column_titles(); ?></tfoot>
-						<caption class="table-group-divider"><?php $this->show_add_to_cart_button(); ?></caption>
+						<caption class="table-group-divider"><?php $this->cart->show_add_to_cart_button(); ?></caption>
 					</table>
 					<?php
 					if ( $this->post_count > self::OUTPUT_LIMIT ) {
@@ -218,10 +193,12 @@ class Order {
 				$price = $this->cost->price_for_post( $filter->source, $filter->target, $post->ID );
 			}
 
-			$status       = isset( $posts_statuses[ $post->ID ] ) ? $posts_statuses[ $post->ID ] : '';
-			$status_class = $status ? 'text-bg-primary' : 'bg-secondary';
-			$status_text  = isset( $this->status_texts[ $status ] ) ? $this->status_texts[ $status ] : '';
 			$in_cart      = in_array( $post->ID, $cart_post_ids, true );
+			$status       = isset( $posts_statuses[ $post->ID ] ) ? $posts_statuses[ $post->ID ] : '';
+			$status_class = ( $status || $in_cart ) ? 'text-bg-primary' : 'bg-secondary';
+			$status_text  = isset( $this->status_texts[ $status ] )
+				? $this->status_texts[ $status ] : __( 'Not translated', 'gts-translation-order' );
+			$status_text  = $in_cart ? __( 'In cart', 'gts-translation-order' ) : $status_text;
 			$has_checkbox = ! $status && ! $in_cart;
 			$tr_class     = $in_cart ? 'table-primary' : '';
 			$word_count   = $this->cost->get_word_count( $post->ID );
@@ -241,7 +218,7 @@ class Order {
 				<td><?php echo esc_html( $post->post_type ); ?></td>
 				<td>
 					<span class="badge <?php echo esc_attr( $status_class ); ?>">
-						<?php echo esc_html( $status_text ?: __( 'Not translated', 'gts-translation-order' ) ); ?>
+						<?php echo esc_html( $status_text ); ?>
 					</span>
 				</td>
 				<td><?php echo esc_html( $word_count ); ?></td>
@@ -411,35 +388,5 @@ class Order {
 		<?php
 
 		$count ++;
-	}
-
-	/**
-	 * Show add to cart button.
-	 *
-	 * @return void
-	 */
-	private function show_add_to_cart_button() {
-		?>
-		<button type="button" class="btn btn-primary add-bulk-to-cart btn-sm">
-			<?php esc_attr_e( 'Add to Cart', 'gts-translation-order' ); ?>
-		</button>
-		<?php
-	}
-
-	/**
-	 * Show mini cart.
-	 *
-	 * @return void
-	 */
-	private function show_mini_cart() {
-		?>
-		<a href="<?php echo esc_url( admin_url( 'admin.php?page=' . Main::GTS_SUB_MENU_CART_SLUG ) ); ?>">
-			<button type="button" class="btn btn-secondary btn-sm">
-				<span class="dashicons dashicons-cart"></span>
-				<span><?php echo esc_html( $this->cart->get_count() ); ?></span>
-				<span>&nbsp;&nbsp;&nbsp;$<?php echo number_format( $this->cart->get_total(), 2 ); ?></span>
-			</button>
-		</a>
-		<?php
 	}
 }
