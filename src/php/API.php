@@ -1,6 +1,6 @@
 <?php
 /**
- * GTS Translation Api.
+ * API class file.
  *
  * @package gts/translation-order
  */
@@ -8,7 +8,7 @@
 namespace GTS\TranslationOrder;
 
 /**
- * Api class file.
+ * GTS Translation API.
  */
 class API {
 

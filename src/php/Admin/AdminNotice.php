@@ -1,6 +1,6 @@
 <?php
 /**
- * Admin Notification.
+ * AdminNotice Class file.
  *
  * @package gts/translation-order
  */
@@ -8,7 +8,7 @@
 namespace GTS\TranslationOrder\Admin;
 
 /**
- * AdminNotice Class file.
+ * Admin Notification.
  */
 class AdminNotice {
 

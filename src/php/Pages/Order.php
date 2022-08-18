@@ -1,6 +1,6 @@
 <?php
 /**
- * Translation Order page.
+ * Order class file.
  *
  * @package gts/translation-order
  */
@@ -15,7 +15,7 @@ use GTS\TranslationOrder\Pagination;
 use wpdb;
 
 /**
- * Order class file.
+ * Translation Order page.
  */
 class Order {
 

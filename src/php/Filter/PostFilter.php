@@ -1,6 +1,6 @@
 <?php
 /**
- * PostFilter class form filter in admin panel.
+ * PostFilter class file.
  *
  * @package gts/translation-order
  */
@@ -13,7 +13,7 @@ use GTS\TranslationOrder\API;
 use GTS\TranslationOrder\Pages\Cart;
 
 /**
- * PostFilter class file.
+ * PostFilter class form filter in admin panel.
  */
 class PostFilter {
 

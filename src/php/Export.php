@@ -1,6 +1,6 @@
 <?php
 /**
- * Export class.
+ * Export class file.
  *
  * @package gts/translation-order
  */
@@ -18,7 +18,7 @@ use wpdb;
 // phpcs:disable WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
 
 /**
- * Export class file.
+ * Export class.
  *
  * Copy of the wp-admin/includes/export.php file without nested functions,
  * what allows to call the wp_export() several times.

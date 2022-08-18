@@ -1,6 +1,6 @@
 <?php
 /**
- * Translation cart page.
+ * TranslationCart class file.
  *
  * @package gts/translation-order
  */
@@ -14,7 +14,7 @@ use GTS\TranslationOrder\Export;
 use GTS\TranslationOrder\Main;
 
 /**
- * TranslationCart class file.
+ * Translation cart page.
  */
 class Cart {
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * Translation price calculation
+ * Cost class file.
  *
  * @package gts/translation-order
  */
@@ -8,7 +8,7 @@
 namespace GTS\TranslationOrder;
 
 /**
- * Cost class file.
+ * Translation price calculations.
  */
 class Cost {
 	/**

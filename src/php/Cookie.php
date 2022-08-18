@@ -1,6 +1,6 @@
 <?php
 /**
- * Cookie helpers.
+ * Cookie class file.
  *
  * @package gts/translation-order
  */
@@ -8,7 +8,7 @@
 namespace GTS\TranslationOrder;
 
 /**
- * Cookie class file.
+ * Cookie helpers.
  */
 class Cookie {
 
