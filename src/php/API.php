@@ -360,8 +360,14 @@ class API {
 			$args
 		);
 
-		if ( is_wp_error( $response ) || 200 !== $response['response']['code'] ) {
+		if ( is_wp_error( $response ) ) {
 			Logger::log( 'API error:', $response );
+
+			return false;
+		}
+
+		if ( isset( $response['response']['code'] ) && 200 !== $response['response']['code'] ) {
+			Logger::log( 'API error code:', $response['response']['code'] );
 
 			return false;
 		}

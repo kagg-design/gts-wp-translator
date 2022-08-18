@@ -25,7 +25,7 @@ class Logger {
 	public static function log( $message, $item = null ) {
 		if ( null !== $item ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-			$message .= ' ' . print_R( $item, true );
+			$message .= ' ' . print_r( $item, true );
 		}
 
 		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
