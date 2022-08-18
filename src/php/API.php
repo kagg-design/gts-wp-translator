@@ -319,20 +319,18 @@ class API {
 	 *
 	 * @param array $args Arguments.
 	 *
-	 * @return object|false
+	 * @return false|mixed
 	 */
 	public function create_order( $args ) {
 		$args['token'] = $this->token;
 
-		$response = $this->request(
+		return $this->request(
 			$this->server_url . 'create-order',
 			[
 				'method' => 'POST',
 				'body'   => $args,
 			]
 		);
-
-		return isset( $response->success ) ? $response : false;
 	}
 
 	/**
@@ -363,6 +361,8 @@ class API {
 		);
 
 		if ( is_wp_error( $response ) || 200 !== $response['response']['code'] ) {
+			Logger::log( 'API error:', $response );
+
 			return false;
 		}
 
