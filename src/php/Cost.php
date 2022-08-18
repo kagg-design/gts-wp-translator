@@ -184,21 +184,21 @@ class Cost {
 	}
 
 	/**
-	 * Return whether language translation rate is per word or char.
+	 * Return whether language translation rate is per char.
 	 *
 	 * @param string $source_language Source language.
 	 * @param string $target_language Target language.
 	 *
-	 * @return bool True when rate per word. False when per char.
+	 * @return bool True when rate is per char. False when per word.
 	 */
-	public function is_rate_per_word( $source_language, $target_language ) {
+	public function is_rate_per_char( $source_language, $target_language ) {
 		foreach ( $this->prices as $price ) {
 			if ( $price->source_language === $source_language && $price->target_language === $target_language ) {
-				return (bool) $price->is_rate_per_char;
+				return $price->is_rate_per_char;
 			}
 		}
 
-		return $this->default_rate_per_word;
+		return false;
 	}
 
 	/**

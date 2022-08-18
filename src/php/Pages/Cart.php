@@ -631,9 +631,9 @@ class Cart {
 		);
 
 		foreach ( $filter->target as $index => $target_language ) {
-			$unit = $this->cost->is_rate_per_word( $filter->source, $target_language ) ?
-				__( 'per word', 'gts-translation-order' ) :
-				__( 'per char', 'gts-translation-order' );
+			$unit = $this->cost->is_rate_per_char( $filter->source, $target_language ) ?
+				__( 'per char', 'gts-translation-order' ) :
+				__( 'per word', 'gts-translation-order' );
 			?>
 			<tr>
 				<td><?php echo esc_html( $target_language ); ?>:</td>
