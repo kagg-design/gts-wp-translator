@@ -36,12 +36,22 @@ jobs:
         env:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Deploy the code
+      - name: Deploy the code to the GTS site
         uses: burnett01/rsync-deployments@5.2
         with:
           switches: -cvzr --delete --exclude-from=.distignore --chmod=D775,F664
           path: ${{ env.GITHUB_WORKSPACE }}
           remote_path: /var/www/gts/wp-content/plugins/gts-translation-order/
+          remote_host: 34.228.113.92
+          remote_user: igor
+          remote_key: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Deploy the code to the Blog site
+        uses: burnett01/rsync-deployments@5.2
+        with:
+          switches: -cvzr --delete --exclude-from=.distignore --chmod=D775,F664
+          path: ${{ env.GITHUB_WORKSPACE }}
+          remote_path: /var/www/blog/wp-content/plugins/gts-translation-order/
           remote_host: 34.228.113.92
           remote_user: igor
           remote_key: ${{ secrets.DEPLOY_KEY }}
