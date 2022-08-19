@@ -8,6 +8,12 @@
 	margin: 20px 0;
 }
 
+#filter-form p {
+	font-size: 14px;
+	line-height: 34px;
+	margin: 0;
+}
+
 #filter-form select,
 #filter-form input[type="submit"],
 #filter-form button {

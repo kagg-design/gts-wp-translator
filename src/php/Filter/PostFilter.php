@@ -121,12 +121,7 @@ class PostFilter {
 				<div class="col-auto">
 					<?php $this->show_search_field(); ?>
 				</div>
-				<div class="col-auto">
-					<?php $this->show_source_language(); ?>
-				</div>
-				<div class="col-auto">
-					<?php $this->show_target_language_select(); ?>
-				</div>
+				<?php $this->show_language_selects(); ?>
 				<div class="col-auto">
 					<input type="submit" name="gts_filter_submit" class="btn-sm btn btn-primary" value="Filter">
 					<?php wp_nonce_field( 'gts_post_type_filter', 'gts_post_type_filter_nonce', false ); ?>
@@ -183,11 +178,39 @@ class PostFilter {
 	}
 
 	/**
+	 * Show language selects.
+	 *
+	 * @return void
+	 */
+	private function show_language_selects() {
+		if ( ! $this->languages ) {
+			$attempt_counter = get_option( API::AUTH_ATTEMPT_COUNTER_OPTION );
+			$message         = $attempt_counter < API::MAX_AUTH_ATTEMPTS ?
+				__( 'Please reload page to establish connection with the server.', 'gts-translation-order' ) :
+				__( 'Cannot connect with the server. Please reach GTS support.', 'gts-translation-order' );
+			?>
+			<div class="col-auto">
+				<p><?php echo esc_html( $message ); ?></p>
+			</div>
+			<?php
+			return;
+		}
+		?>
+		<div class="col-auto">
+			<?php $this->show_source_language(); ?>
+		</div>
+		<div class="col-auto">
+			<?php $this->show_target_language_select(); ?>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Show select current target language.
 	 *
 	 * @return void
 	 */
-	public function show_target_language_select() {
+	private function show_target_language_select() {
 		$filter = Cookie::get_filter_cookie();
 		?>
 		<label for="target-language" class="hidden"></label>
@@ -277,7 +300,7 @@ class PostFilter {
 	 *
 	 * @return void
 	 */
-	public function show_source_language() {
+	private function show_source_language() {
 		$filter = Cookie::get_filter_cookie();
 		?>
 		<select
