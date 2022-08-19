@@ -53,9 +53,14 @@ class API {
 	const ACCESS_TOKEN_LOCK = 'gts-translation-order-access-token-lock';
 
 	/**
-	 * The $_GET argument to trigger the auth key endpoint.
+	 * The $_GET argument to trigger the 'auth key' endpoint.
 	 */
 	const AUTH_KEY_ARG = 'gts-translation-order-auth-key';
+
+	/**
+	 * The $_GET argument to trigger the 'delete auth' endpoint.
+	 */
+	const DELETE_AUTH_ARG = 'gts-translation-order-delete-auth';
 
 	/**
 	 * Option name.
@@ -110,6 +115,7 @@ class API {
 
 		delete_transient( self::SITE_KEY_LOCK );
 		delete_transient( self::ACCESS_TOKEN_LOCK );
+		delete_transient( self::COST_INFO_TRANSIENT );
 	}
 
 	/**
@@ -369,6 +375,10 @@ class API {
 		if ( isset( $response['response']['code'] ) && 200 !== $response['response']['code'] ) {
 			Logger::log( 'API error code:', $response['response']['code'] );
 
+			if ( isset( $response['response']['message'] ) ) {
+				Logger::log( 'API error message:', $response['response']['message'] );
+			}
+
 			return false;
 		}
 
@@ -440,17 +450,20 @@ class API {
 	private function endpoints() {
 		// We check nonce in the endpoint_key().
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( ! isset( $_GET[ self::AUTH_KEY_ARG ] ) ) {
-			return;
+		if ( isset( $_GET[ self::AUTH_KEY_ARG ] ) ) {
+			$this->endpoint_auth_key();
 		}
 
-		$this->endpoint_key();
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( isset( $_GET[ self::DELETE_AUTH_ARG ] ) ) {
+			$this->endpoint_delete_auth();
+		}
 	}
 
 	/**
 	 * Process endpoint for callback on generate_site_key().
 	 */
-	private function endpoint_key() {
+	private function endpoint_auth_key() {
 		$nonce = sanitize_text_field(
 			wp_unslash(
 				isset( $_POST['nonce'] ) ? $_POST['nonce'] : ''
@@ -484,6 +497,22 @@ class API {
 
 		update_option( self::AUTH_OPTION, $auth );
 		$this->delete_transients();
+
+		exit();
+	}
+
+	/**
+	 * Delete auth endpoint.
+	 */
+	private function endpoint_delete_auth() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		delete_option( self::AUTH_OPTION );
+		$this->delete_transients();
+
+		wp_safe_redirect( home_url( remove_query_arg( self::DELETE_AUTH_ARG ) ) );
 
 		exit();
 	}
