@@ -160,6 +160,7 @@ class API {
 			$this->server_url . 'token',
 			[
 				'body' => [
+					'method'   => 'GET',
 					'site_key' => $site_key,
 				],
 			]
