@@ -23,6 +23,10 @@ class Logger {
 	 * @noinspection ForgottenDebugOutputInspection
 	 */
 	public static function log( $message, $item = null ) {
+		if ( ! ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ) {
+			return;
+		}
+
 		if ( null !== $item ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 			$message .= ' ' . print_r( $item, true );
