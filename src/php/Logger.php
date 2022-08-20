@@ -29,6 +29,6 @@ class Logger {
 		}
 
 		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-		error_log( current_time( 'mysql' ) . "\t" . $message );
+		error_log( 'GTS Translation Order:  ' . $message );
 	}
 }
