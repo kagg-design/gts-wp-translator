@@ -375,9 +375,7 @@ class API {
 
 		if ( isset( $response['response']['code'] ) && 200 !== $response['response']['code'] ) {
 			$code    = $response['response']['code'];
-			$message = isset( $response['response']['message'] ) ?
-				'API error message:' . $response['response']['message'] :
-				'';
+			$message = isset( $response['response']['message'] ) ? $response['response']['message'] : '';
 
 			Logger::log( 'API error:', $code . ' ' . $message );
 
