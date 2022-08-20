@@ -374,18 +374,25 @@ class API {
 		}
 
 		if ( isset( $response['response']['code'] ) && 200 !== $response['response']['code'] ) {
-			Logger::log( 'API error code:', $response['response']['code'] );
+			$code    = $response['response']['code'];
+			$message = isset( $response['response']['message'] ) ?
+				'API error message:' . $response['response']['message'] :
+				'';
 
-			if ( isset( $response['response']['message'] ) ) {
-				Logger::log( 'API error message:', $response['response']['message'] );
-			}
+			Logger::log( 'API error:', $code . ' ' . $message );
 
 			return false;
 		}
 
 		$result = json_decode( $response['body'] );
 
-		return $result ?: false;
+		if ( ! $result ) {
+			Logger::log( 'API error - cannot decode body. Response:', $response );
+
+			return false;
+		}
+
+		return $result;
 	}
 
 	/**
