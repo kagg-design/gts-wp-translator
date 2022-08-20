@@ -8,7 +8,7 @@
 namespace GTS\TranslationOrder;
 
 /**
- * Logger .
+ * Logger class.
  */
 class Logger {
 
