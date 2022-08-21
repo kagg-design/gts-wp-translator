@@ -2,10 +2,10 @@
 /**
  * Logger class file.
  *
- * @package gts/translation-order
+ * @package gts/wp-translator
  */
 
-namespace GTS\TranslationOrder;
+namespace GTS\WPTranslator;
 
 /**
  * Logger class.
@@ -33,6 +33,6 @@ class Logger {
 		}
 
 		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-		error_log( 'GTS Translation Order:  ' . $message );
+		error_log( 'GTS WP Translator:  ' . $message );
 	}
 }

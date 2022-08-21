@@ -2,10 +2,10 @@
 /**
  * Cost class file.
  *
- * @package gts/translation-order
+ * @package gts/wp-translator
  */
 
-namespace GTS\TranslationOrder;
+namespace GTS\WPTranslator;
 
 /**
  * Translation price calculations.

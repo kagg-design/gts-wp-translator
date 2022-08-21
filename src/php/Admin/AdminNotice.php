@@ -2,10 +2,10 @@
 /**
  * AdminNotice Class file.
  *
- * @package gts/translation-order
+ * @package gts/wp-translator
  */
 
-namespace GTS\TranslationOrder\Admin;
+namespace GTS\WPTranslator\Admin;
 
 /**
  * Admin Notification.
@@ -27,17 +27,7 @@ class AdminNotice {
 	public static function bad_nonce() {
 		printf(
 			'<div id="pcs-php-nope" class="notice notice-error is-dismissible"><p>%s</p></div>',
-			esc_html__( 'Bad nonce!', 'gts-translation-order' )
-		);
-	}
-
-	/**
-	 * Unknown error.
-	 */
-	public static function error() {
-		printf(
-			'<div id="pcs-woocommerce-nope" class="notice notice-error is-dismissible"><p>%s</p></div>',
-			esc_html__( 'Unknown error. Please contact the plugin developer.', 'gts-translation-order' )
+			esc_html__( 'Bad nonce!', 'gts-wp-translator' )
 		);
 	}
 }

@@ -2,10 +2,10 @@
 /**
  * API class file.
  *
- * @package gts/translation-order
+ * @package gts/wp-translator
  */
 
-namespace GTS\TranslationOrder;
+namespace GTS\WPTranslator;
 
 /**
  * GTS Translation API.
@@ -35,42 +35,42 @@ class API {
 	/**
 	 * Auth attempt counter.
 	 */
-	const AUTH_ATTEMPT_COUNTER_OPTION = 'gts-translation-order-auth-attempt-counter';
+	const AUTH_ATTEMPT_COUNTER_OPTION = 'gts-wp-translator-auth-attempt-counter';
 
 	/**
 	 * The create_not_logged_in_nonce() action.
 	 */
-	const KEY_ACTION = 'gts-translation-order-key-action';
+	const KEY_ACTION = 'gts-wp-translator-key-action';
 
 	/**
 	 * The generate_site_key() lock transient name.
 	 */
-	const SITE_KEY_LOCK = 'gts-translation-order-site-key-lock';
+	const SITE_KEY_LOCK = 'gts-wp-translator-site-key-lock';
 
 	/**
 	 * The generate_token() lock transient name.
 	 */
-	const ACCESS_TOKEN_LOCK = 'gts-translation-order-access-token-lock';
+	const ACCESS_TOKEN_LOCK = 'gts-wp-translator-access-token-lock';
 
 	/**
 	 * The $_GET argument to trigger the 'auth key' endpoint.
 	 */
-	const AUTH_KEY_ARG = 'gts-translation-order-auth-key';
+	const AUTH_KEY_ARG = 'gts-wp-translator-auth-key';
 
 	/**
 	 * The $_GET argument to trigger the 'delete auth' endpoint.
 	 */
-	const DELETE_AUTH_ARG = 'gts-translation-order-delete-auth';
+	const DELETE_AUTH_ARG = 'gts-wp-translator-delete-auth';
 
 	/**
 	 * Option name.
 	 */
-	const AUTH_OPTION = 'gts-translation-order-auth';
+	const AUTH_OPTION = 'gts-wp-translator-auth';
 
 	/**
 	 * Rates transient name.
 	 */
-	const COST_INFO_TRANSIENT = 'gts-translation-order-cost-info';
+	const COST_INFO_TRANSIENT = 'gts-wp-translator-cost-info';
 
 	/**
 	 * Access token.
@@ -92,8 +92,8 @@ class API {
 	public function __construct() {
 		$site = self::GTS_SITE;
 
-		if ( defined( 'GTS_TRANSLATION_ORDER_DEBUG_SITE' ) && GTS_TRANSLATION_ORDER_DEBUG_SITE ) {
-			$site = GTS_TRANSLATION_ORDER_DEBUG_SITE;
+		if ( defined( 'GTS_WP_TRANSLATOR_DEBUG_SITE' ) && GTS_WP_TRANSLATOR_DEBUG_SITE ) {
+			$site = GTS_WP_TRANSLATOR_DEBUG_SITE;
 		}
 
 		$this->server_url = $site . '/' . self::REST_URL_PREFIX . '/' . self::REST_NAMESPACE . '/';
@@ -540,8 +540,8 @@ class API {
 		remove_filter( 'wp_robots', 'wp_robots_noindex_search' );
 
 		wp_die(
-			esc_html__( 'This is the GTS Translation Order endpoint page.', 'gts-translation-order' ),
-			'GTS Translation Order endpoint',
+			esc_html__( 'This is the GTS WP Translator endpoint page.', 'gts-wp-translator' ),
+			'GTS WP Translator endpoint',
 			400
 		);
 	}

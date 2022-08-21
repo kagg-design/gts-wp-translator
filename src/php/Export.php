@@ -2,10 +2,10 @@
 /**
  * Export class file.
  *
- * @package gts/translation-order
+ * @package gts/wp-translator
  */
 
-namespace GTS\TranslationOrder;
+namespace GTS\WPTranslator;
 
 use WP_Post;
 use WP_Query;

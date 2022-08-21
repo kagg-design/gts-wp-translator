@@ -2,15 +2,15 @@
 /**
  * PostFilter class file.
  *
- * @package gts/translation-order
+ * @package gts/wp-translator
  */
 
-namespace GTS\TranslationOrder\Filter;
+namespace GTS\WPTranslator\Filter;
 
-use GTS\TranslationOrder\Admin\AdminNotice;
-use GTS\TranslationOrder\Cookie;
-use GTS\TranslationOrder\API;
-use GTS\TranslationOrder\Pages\Cart;
+use GTS\WPTranslator\Admin\AdminNotice;
+use GTS\WPTranslator\Cookie;
+use GTS\WPTranslator\API;
+use GTS\WPTranslator\Pages\Cart;
 
 /**
  * PostFilter class form filter in admin panel.
@@ -147,7 +147,7 @@ class PostFilter {
 		$post_type = isset( $filter->post_type ) ? $filter->post_type : '';
 		?>
 		<select class="form-select" id="gts_to_post_type_select" aria-label="Post Type" name="gts_to_post_type_select">
-			<option value="null" selected><?php esc_html_e( 'Select post type', 'gts-translation-order' ); ?></option>
+			<option value="null" selected><?php esc_html_e( 'Select post type', 'gts-wp-translator' ); ?></option>
 			<?php foreach ( $this->get_post_types() as $type ) : ?>
 				<option value="<?php echo esc_attr( $type ); ?>" <?php echo $post_type ? selected( $post_type, $type, false ) : ''; ?>>
 					<?php echo esc_attr( $type ); ?>
@@ -173,7 +173,7 @@ class PostFilter {
 				id="gts_to_search"
 				name="gts_to_search"
 				value="<?php echo esc_html( $search ); ?>"
-				placeholder="<?php esc_html_e( 'Search by title', 'gts-translation-order' ); ?>">
+				placeholder="<?php esc_html_e( 'Search by title', 'gts-wp-translator' ); ?>">
 		<?php
 	}
 
@@ -186,8 +186,8 @@ class PostFilter {
 		if ( ! $this->languages ) {
 			$attempt_counter = get_option( API::AUTH_ATTEMPT_COUNTER_OPTION );
 			$message         = $attempt_counter < API::MAX_AUTH_ATTEMPTS ?
-				__( 'Please reload the page to establish a connection with the server.', 'gts-translation-order' ) :
-				__( 'Cannot connect to the server. Please reach GTS support.', 'gts-translation-order' );
+				__( 'Please reload the page to establish a connection with the server.', 'gts-wp-translator' ) :
+				__( 'Cannot connect to the server. Please reach GTS support.', 'gts-wp-translator' );
 			?>
 			<div class="col-auto">
 				<p><?php echo esc_html( $message ); ?></p>
@@ -220,7 +220,7 @@ class PostFilter {
 				id="target-language"
 				name="target_language"
 				value="<?php echo esc_attr( implode( ', ', $filter->target ) ); ?>"
-				placeholder="<?php esc_html_e( 'Target languages', 'gts-translation-order' ); ?>"
+				placeholder="<?php esc_html_e( 'Target languages', 'gts-wp-translator' ); ?>"
 				readonly>
 		<?php
 	}
@@ -239,7 +239,7 @@ class PostFilter {
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="btn-close" data-bs-dismiss="modal"
-								aria-label="<?php esc_html_e( 'Close', 'gts-translation-order' ); ?>"></button>
+								aria-label="<?php esc_html_e( 'Close', 'gts-wp-translator' ); ?>"></button>
 					</div>
 					<div class="modal-body">
 						<table class="table">
@@ -277,7 +277,7 @@ class PostFilter {
 								type="button"
 								class="btn btn-primary"
 								id="save-target-language">
-							<?php esc_attr_e( 'Save', 'gts-translation-order' ); ?>
+							<?php esc_attr_e( 'Save', 'gts-wp-translator' ); ?>
 						</button>
 					</div>
 				</div>
@@ -307,9 +307,9 @@ class PostFilter {
 				class="form-select"
 				name="gts_source_language"
 				id="gts_source_language"
-				aria-label="<?php esc_html_e( 'Source language', 'gts-translation-order' ); ?>">
+				aria-label="<?php esc_html_e( 'Source language', 'gts-wp-translator' ); ?>">
 			<option value="0"
-					selected><?php esc_html_e( 'Source language', 'gts-translation-order' ); ?></option>
+					selected><?php esc_html_e( 'Source language', 'gts-wp-translator' ); ?></option>
 			<?php
 			foreach ( $this->languages as $language ) {
 				if ( $language->active ) {

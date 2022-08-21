@@ -12,7 +12,7 @@
  * @package GTS\Quote
  */
 
-namespace GTS\TranslationOrder;
+namespace GTS\WPTranslator;
 
 // phpcs:disable WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 // phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
@@ -364,7 +364,7 @@ class Pagination {
 
 		$counter = 0;
 		// Wrapper.
-		$this->pagination .= '<nav aria-label="' . __( 'Post pagination', 'gts-translation-order' ) . '"><ul class="pagination">';
+		$this->pagination .= '<nav aria-label="' . __( 'Post pagination', 'gts-wp-translator' ) . '"><ul class="pagination">';
 
 		// Previous button.
 		if ( $this->page ) {

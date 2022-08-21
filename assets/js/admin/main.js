@@ -1,29 +1,29 @@
-/* global GTSTranslationOrderObject, Swal */
+/* global GTSWPTranslatorObject, Swal */
 
 /**
- * @param GTSTranslationOrderObject.url
- * @param GTSTranslationOrderObject.addToCartAction
- * @param GTSTranslationOrderObject.addToCartNonce
- * @param GTSTranslationOrderObject.deleteFromCartAction
- * @param GTSTranslationOrderObject.deleteFromCartNonce
- * @param GTSTranslationOrderObject.sendToTranslationAction
- * @param GTSTranslationOrderObject.sendToTranslationNonce
- * @param GTSTranslationOrderObject.addToCartText
- * @param GTSTranslationOrderObject.deleteFromCartText
- * @param GTSTranslationOrderObject.cartCookieName
- * @param GTSTranslationOrderObject.updatePrice
- * @param GTSTranslationOrderObject.updatePriceNonce
- * @param GTSTranslationOrderObject.sendOrderText
- * @param GTSTranslationOrderObject.emptySource
- * @param GTSTranslationOrderObject.emptyTarget
- * @param GTSTranslationOrderObject.emptyList
- * @param GTSTranslationOrderObject.sendOrderTitle
- * @param GTSTranslationOrderObject.sendOrderTextConfirm
- * @param GTSTranslationOrderObject.sendOrderTextButton
- * @param GTSTranslationOrderObject.sendCancelButton
- * @param GTSTranslationOrderObject.paymentLink
- * @param GTSTranslationOrderObject.selectPostsLink
- * @param GTSTranslationOrderObject.cartLink
+ * @param GTSWPTranslatorObject.url
+ * @param GTSWPTranslatorObject.addToCartAction
+ * @param GTSWPTranslatorObject.addToCartNonce
+ * @param GTSWPTranslatorObject.deleteFromCartAction
+ * @param GTSWPTranslatorObject.deleteFromCartNonce
+ * @param GTSWPTranslatorObject.sendToTranslationAction
+ * @param GTSWPTranslatorObject.sendToTranslationNonce
+ * @param GTSWPTranslatorObject.addToCartText
+ * @param GTSWPTranslatorObject.deleteFromCartText
+ * @param GTSWPTranslatorObject.cartCookieName
+ * @param GTSWPTranslatorObject.updatePrice
+ * @param GTSWPTranslatorObject.updatePriceNonce
+ * @param GTSWPTranslatorObject.sendOrderText
+ * @param GTSWPTranslatorObject.emptySource
+ * @param GTSWPTranslatorObject.emptyTarget
+ * @param GTSWPTranslatorObject.emptyList
+ * @param GTSWPTranslatorObject.sendOrderTitle
+ * @param GTSWPTranslatorObject.sendOrderTextConfirm
+ * @param GTSWPTranslatorObject.sendOrderTextButton
+ * @param GTSWPTranslatorObject.sendCancelButton
+ * @param GTSWPTranslatorObject.paymentLink
+ * @param GTSWPTranslatorObject.selectPostsLink
+ * @param GTSWPTranslatorObject.cartLink
  */
 jQuery( document ).ready( function( $ ) {
 
@@ -81,7 +81,7 @@ jQuery( document ).ready( function( $ ) {
 			Swal.fire( {
 				icon: 'error',
 				title: 'Error',
-				text: GTSTranslationOrderObject.emptySource,
+				text: GTSWPTranslatorObject.emptySource,
 			} );
 
 			return;
@@ -91,7 +91,7 @@ jQuery( document ).ready( function( $ ) {
 			Swal.fire( {
 				icon: 'error',
 				title: 'Error',
-				text: GTSTranslationOrderObject.emptyTarget,
+				text: GTSWPTranslatorObject.emptyTarget,
 			} );
 
 			return;
@@ -103,7 +103,7 @@ jQuery( document ).ready( function( $ ) {
 			Swal.fire( {
 				icon: 'error',
 				title: 'Error',
-				text: GTSTranslationOrderObject.emptyList,
+				text: GTSWPTranslatorObject.emptyList,
 			} );
 
 			return;
@@ -116,8 +116,8 @@ jQuery( document ).ready( function( $ ) {
 		} );
 
 		let data = {
-			action: GTSTranslationOrderObject.addToCartAction,
-			nonce: GTSTranslationOrderObject.addToCartNonce,
+			action: GTSWPTranslatorObject.addToCartAction,
+			nonce: GTSWPTranslatorObject.addToCartNonce,
 			bulk: true,
 			post_ids: postIds,
 			target: target,
@@ -126,11 +126,11 @@ jQuery( document ).ready( function( $ ) {
 
 		$.ajax( {
 			type: 'POST',
-			url: GTSTranslationOrderObject.url,
+			url: GTSWPTranslatorObject.url,
 			data: data,
 			beforeSend: function() {
 				Swal.fire( {
-					title: GTSTranslationOrderObject.addToCartText,
+					title: GTSWPTranslatorObject.addToCartText,
 					didOpen: () => {
 						Swal.showLoading();
 					},
@@ -206,8 +206,8 @@ jQuery( document ).ready( function( $ ) {
 			e.preventDefault();
 
 			let data = {
-				action: GTSTranslationOrderObject.deleteFromCartAction,
-				nonce: GTSTranslationOrderObject.deleteFromCartNonce,
+				action: GTSWPTranslatorObject.deleteFromCartAction,
+				nonce: GTSWPTranslatorObject.deleteFromCartNonce,
 				post_id: $( this ).data( 'post_id' )
 			};
 
@@ -215,11 +215,11 @@ jQuery( document ).ready( function( $ ) {
 
 			$.ajax( {
 				type: 'POST',
-				url: GTSTranslationOrderObject.url,
+				url: GTSWPTranslatorObject.url,
 				data: data,
 				beforeSend: function() {
 					Swal.fire( {
-						title: GTSTranslationOrderObject.deleteFromCartText,
+						title: GTSWPTranslatorObject.deleteFromCartText,
 						didOpen: () => {
 							Swal.showLoading();
 						},
@@ -248,12 +248,12 @@ jQuery( document ).ready( function( $ ) {
 	/**
 	 * Send posts to translation.
 	 */
-	$( '#gts-to-send-to-translation' ).click( function( e ) {
+	$( '#gts-wp-translator-send-to-translation' ).click( function( e ) {
 		e.preventDefault();
 
 		let data = {
-			action: GTSTranslationOrderObject.sendToTranslationAction,
-			nonce: GTSTranslationOrderObject.sendToTranslationNonce,
+			action: GTSWPTranslatorObject.sendToTranslationAction,
+			nonce: GTSWPTranslatorObject.sendToTranslationNonce,
 			email: $( '#gts-client-email' ).val(),
 			source: $( '#gts-source-language' ).val(),
 			target: $( '#target-language' ).val(),
@@ -262,11 +262,11 @@ jQuery( document ).ready( function( $ ) {
 		};
 
 		$.post( {
-			url: GTSTranslationOrderObject.url,
+			url: GTSWPTranslatorObject.url,
 			data: data,
 			beforeSend: function() {
 				Swal.fire( {
-					title: GTSTranslationOrderObject.sendOrderText,
+					title: GTSWPTranslatorObject.sendOrderText,
 					didOpen: () => {
 						Swal.showLoading();
 					},
@@ -278,20 +278,20 @@ jQuery( document ).ready( function( $ ) {
 					Swal.fire( {
 						icon: 'success',
 						showCancelButton: true,
-						confirmButtonText: GTSTranslationOrderObject.sendOrderTextButton,
-						cancelButtonText: GTSTranslationOrderObject.sendCancelButton,
-						title: GTSTranslationOrderObject.sendOrderTitle,
-						text: GTSTranslationOrderObject.sendOrderTextConfirm,
+						confirmButtonText: GTSWPTranslatorObject.sendOrderTextButton,
+						cancelButtonText: GTSWPTranslatorObject.sendCancelButton,
+						title: GTSWPTranslatorObject.sendOrderTitle,
+						text: GTSWPTranslatorObject.sendOrderTextConfirm,
 					} ).then( ( result ) => {
 						if ( result.isConfirmed ) {
-							window.open( GTSTranslationOrderObject.paymentLink + res.data.fqid, '_blank' );
+							window.open( GTSWPTranslatorObject.paymentLink + res.data.fqid, '_blank' );
 						} else if ( result.isDenied ) {
-							location.href = GTSTranslationOrderObject.selectPostsLink;
+							location.href = GTSWPTranslatorObject.selectPostsLink;
 						}
-						location.href = GTSTranslationOrderObject.cartLink;
+						location.href = GTSWPTranslatorObject.cartLink;
 					} );
 
-					deleteCookie( GTSTranslationOrderObject.cartCookieName );
+					deleteCookie( GTSWPTranslatorObject.cartCookieName );
 				} else {
 					error_message( res.data.message )
 				}
@@ -317,15 +317,15 @@ jQuery( document ).ready( function( $ ) {
 	 */
 	function updatePrice() {
 		let data = {
-			action: GTSTranslationOrderObject.updatePrice,
-			nonce: GTSTranslationOrderObject.updatePriceNonce,
+			action: GTSWPTranslatorObject.updatePrice,
+			nonce: GTSWPTranslatorObject.updatePriceNonce,
 			target: $( '#target-language' ).val(),
 			source: $( '#gts-source-language' ).val()
 		}
 
 		$.ajax( {
 			type: 'POST',
-			url: GTSTranslationOrderObject.url,
+			url: GTSWPTranslatorObject.url,
 			data: data,
 			success: function( res ) {
 				if ( res.success ) {

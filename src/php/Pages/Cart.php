@@ -2,16 +2,16 @@
 /**
  * TranslationCart class file.
  *
- * @package gts/translation-order
+ * @package gts/wp-translator
  */
 
-namespace GTS\TranslationOrder\Pages;
+namespace GTS\WPTranslator\Pages;
 
-use GTS\TranslationOrder\Cookie;
-use GTS\TranslationOrder\Cost;
-use GTS\TranslationOrder\API;
-use GTS\TranslationOrder\Export;
-use GTS\TranslationOrder\Main;
+use GTS\WPTranslator\Cookie;
+use GTS\WPTranslator\Cost;
+use GTS\WPTranslator\API;
+use GTS\WPTranslator\Export;
+use GTS\WPTranslator\Main;
 
 /**
  * Translation cart page.
@@ -40,7 +40,7 @@ class Cart {
 	private $api;
 
 	/**
-	 * TranslationOrder class file.
+	 * Cart class constructor.
 	 */
 	public function __construct() {
 		$this->api  = new API();
@@ -74,7 +74,7 @@ class Cart {
 			<div class="row">
 				<div class="col-auto">
 					<div class="wrap">
-						<h1 class="wp-heading-inline"><?php esc_attr_e( 'Translation Cart', 'gts-translation-order' ); ?></h1>
+						<h1 class="wp-heading-inline"><?php esc_attr_e( 'Translation Cart', 'gts-wp-translator' ); ?></h1>
 					</div>
 				</div>
 			</div>
@@ -89,23 +89,23 @@ class Cart {
 				<div class="col-auto">
 					<table class="table table-dark total-table">
 						<tr>
-							<td><?php esc_html_e( 'Items:', 'gts-translation-order' ); ?></td>
+							<td><?php esc_html_e( 'Items:', 'gts-wp-translator' ); ?></td>
 							<td><span id="item_count"><?php echo esc_html( $items_count ); ?></span></td>
 						</tr>
 						<tr>
-							<td><?php esc_html_e( 'Total Words:', 'gts-translation-order' ); ?></td>
+							<td><?php esc_html_e( 'Total Words:', 'gts-wp-translator' ); ?></td>
 							<td><?php echo esc_html( $this->get_total_word_count() ); ?></td>
 						</tr>
 						<tr>
-							<td><?php esc_html_e( 'Min Order:', 'gts-translation-order' ); ?></td>
+							<td><?php esc_html_e( 'Min Order:', 'gts-wp-translator' ); ?></td>
 							<td>
 								$<?php echo number_format( $this->cost->get_min_order(), 2 ); ?>
-								<?php esc_html_e( 'per language', 'gts-translation-order' ); ?>
+								<?php esc_html_e( 'per language', 'gts-wp-translator' ); ?>
 							</td>
 						</tr>
 						<?php $this->show_cost_per_language(); ?>
 						<tr>
-							<td><?php esc_html_e( 'Total Cost:', 'gts-translation-order' ); ?></td>
+							<td><?php esc_html_e( 'Total Cost:', 'gts-wp-translator' ); ?></td>
 							<td>$<span id="total"><?php echo number_format( $this->get_total(), 2 ); ?></span></td>
 						</tr>
 						<?php $this->show_total_form(); ?>
@@ -116,8 +116,8 @@ class Cart {
 								?>
 								<a
 										href="<?php echo esc_url( $url ); ?>"
-										id="gts-to-back-to-translation" class="btn btn-primary">
-									<?php esc_html_e( 'Back to selection', 'gts-translation-order' ); ?>
+										id="gts-wp-translator-back-to-translation" class="btn btn-primary">
+									<?php esc_html_e( 'Back to selection', 'gts-wp-translator' ); ?>
 								</a>
 							</td>
 						</tr>
@@ -126,9 +126,9 @@ class Cart {
 								<?php
 								$disable_class = $items_count ? '' : 'disabled';
 								?>
-								<button type="button" id="gts-to-send-to-translation"
+								<button type="button" id="gts-wp-translator-send-to-translation"
 										class="btn btn-primary <?php echo esc_attr( $disable_class ); ?>">
-									<?php esc_html_e( 'Send to translation', 'gts-translation-order' ); ?>
+									<?php esc_html_e( 'Send to translation', 'gts-wp-translator' ); ?>
 								</button>
 							</td>
 						</tr>
@@ -152,7 +152,7 @@ class Cart {
 		<tr>
 			<td>
 				<label for="gts-client-email">
-					<?php esc_html_e( 'Email:', 'gts-translation-order' ); ?>
+					<?php esc_html_e( 'Email:', 'gts-wp-translator' ); ?>
 				</label>
 			</td>
 			<td>
@@ -178,7 +178,7 @@ class Cart {
 					<input
 							type="hidden" name="gts-industry" id="gts-industry"
 							value="General">
-					<?php wp_nonce_field( 'gts_translation_cart', 'gts_translation_cart_nonce', false ); ?>
+					<?php wp_nonce_field( 'gts_wp_translation_cart', 'gts_wp_translation_cart_nonce', false ); ?>
 				</form>
 			</td>
 		</tr>
@@ -194,7 +194,7 @@ class Cart {
 		$nonce = ! empty( $_POST['nonce'] ) ? filter_var( wp_unslash( $_POST['nonce'] ), FILTER_SANITIZE_STRING ) : '';
 
 		if ( ! wp_verify_nonce( $nonce, Main::ADD_TO_CART_ACTION ) ) {
-			wp_send_json_error( __( 'Bad Nonce', 'gts-translation-order' ) );
+			wp_send_json_error( __( 'Bad Nonce', 'gts-wp-translator' ) );
 		}
 
 		$source    = ! empty( $_POST['source'] ) ? filter_var( wp_unslash( $_POST['source'] ), FILTER_SANITIZE_STRING ) : '';
@@ -202,7 +202,7 @@ class Cart {
 		$languages = explode( ', ', $target );
 
 		if ( ! $source || ! $languages ) {
-			wp_send_json_error( __( 'Languages not selected.', 'gts-translation-order' ) );
+			wp_send_json_error( __( 'Languages not selected.', 'gts-wp-translator' ) );
 		}
 
 		$filter         = Cookie::get_filter_cookie();
@@ -234,7 +234,7 @@ class Cart {
 		$nonce = ! empty( $_POST['nonce'] ) ? filter_var( wp_unslash( $_POST['nonce'] ), FILTER_SANITIZE_STRING ) : '';
 
 		if ( ! wp_verify_nonce( $nonce, Main::DELETE_FROM_CART_ACTION ) ) {
-			wp_send_json_error( __( 'Bad Nonce', 'gts-translation-order' ) );
+			wp_send_json_error( __( 'Bad Nonce', 'gts-wp-translator' ) );
 		}
 
 		$post_id = empty( $_POST['post_id'] ) ?
@@ -261,7 +261,7 @@ class Cart {
 		$nonce = ! empty( $_POST['nonce'] ) ? filter_var( wp_unslash( $_POST['nonce'] ), FILTER_SANITIZE_STRING ) : '';
 
 		if ( ! wp_verify_nonce( $nonce, Main::SEND_TO_TRANSLATION_ACTION ) ) {
-			wp_send_json_error( __( 'Bad Nonce', 'gts-translation-order' ) );
+			wp_send_json_error( __( 'Bad Nonce', 'gts-wp-translator' ) );
 		}
 
 		$email        = ! empty( $_POST['email'] ) ? filter_var( wp_unslash( $_POST['email'] ), FILTER_SANITIZE_EMAIL ) : '';
@@ -316,13 +316,13 @@ class Cart {
 				'source'     => $source,
 				'target'     => $target,
 				'total'      => $total,
-				'version'    => GTS_TRANSLATION_ORDER_VERSION,
+				'version'    => GTS_WP_TRANSLATOR_VERSION,
 				'word_count' => $word_count,
 			]
 		);
 
 		if ( false === $response || ( empty( $response->success ) && empty( $response->error ) ) ) {
-			wp_send_json_error( [ 'message' => __( 'Unknown communication error.', 'gts-translation-order' ) ] );
+			wp_send_json_error( [ 'message' => __( 'Unknown communication error.', 'gts-wp-translator' ) ] );
 		}
 
 		if ( empty( $response->success ) ) {
@@ -344,7 +344,7 @@ class Cart {
 		);
 
 		if ( ! $result ) {
-			wp_send_json_error( [ 'message' => __( 'Cannot save order.', 'gts-translation-order' ) ] );
+			wp_send_json_error( [ 'message' => __( 'Cannot save order.', 'gts-wp-translator' ) ] );
 		}
 
 		wp_send_json_success( $response );
@@ -359,7 +359,7 @@ class Cart {
 		$nonce = ! empty( $_POST['nonce'] ) ? filter_var( wp_unslash( $_POST['nonce'] ), FILTER_SANITIZE_STRING ) : '';
 
 		if ( ! wp_verify_nonce( $nonce, Main::UPDATE_PRICE_ACTION ) ) {
-			wp_send_json_error( __( 'Bad Nonce.', 'gts-translation-order' ) );
+			wp_send_json_error( __( 'Bad Nonce.', 'gts-wp-translator' ) );
 		}
 
 		$language  = ! empty( $_POST['target'] ) ? filter_var( wp_unslash( $_POST['target'] ), FILTER_SANITIZE_STRING ) : '';
@@ -367,7 +367,7 @@ class Cart {
 		$languages = explode( ', ', $language );
 
 		if ( ! $source || ! $languages ) {
-			wp_send_json_error( __( 'Languages not selected.', 'gts-translation-order' ) );
+			wp_send_json_error( __( 'Languages not selected.', 'gts-wp-translator' ) );
 		}
 
 		$ids   = Cookie::get_cart_cookie();
@@ -447,7 +447,7 @@ class Cart {
 	public function show_add_to_cart_button() {
 		?>
 		<button type="button" class="btn btn-primary add-bulk-to-cart btn-sm">
-			<?php esc_attr_e( 'Add to Cart', 'gts-translation-order' ); ?>
+			<?php esc_attr_e( 'Add to Cart', 'gts-wp-translator' ); ?>
 		</button>
 		<?php
 	}
@@ -500,7 +500,7 @@ class Cart {
 		if ( 0 === count( $ids ) ) {
 			?>
 			<tr>
-				<td colspan="6"><?php esc_html_e( 'Cart is Empty', 'gts-translation-order' ); ?></td>
+				<td colspan="6"><?php esc_html_e( 'Cart is Empty', 'gts-wp-translator' ); ?></td>
 			</tr>
 			<?php
 
@@ -511,7 +511,7 @@ class Cart {
 
 		foreach ( $ids as $id ) {
 			$post  = get_post( $id );
-			$title = $post ? $post->post_title : __( '(no title)', 'gts-translation-order' );
+			$title = $post ? $post->post_title : __( '(no title)', 'gts-wp-translator' );
 			$price = 0;
 
 			if ( $post && ! empty( $filter->source ) && $filter->target ) {
@@ -609,10 +609,10 @@ class Cart {
 	private function show_column_titles() {
 		?>
 		<tr>
-			<th scope="col"><?php esc_attr_e( 'Title', 'gts_translation_order' ); ?></th>
-			<th scope="col"><?php esc_attr_e( 'Type', 'gts-translation-order' ); ?></th>
-			<th scope="col"><?php esc_attr_e( 'Cost', 'gts-translation-order' ); ?></th>
-			<th scope="col"><?php esc_attr_e( 'Action', 'gts-translation-order' ); ?></th>
+			<th scope="col"><?php esc_attr_e( 'Title', 'gts-wp-translator' ); ?></th>
+			<th scope="col"><?php esc_attr_e( 'Type', 'gts-wp-translator' ); ?></th>
+			<th scope="col"><?php esc_attr_e( 'Cost', 'gts-wp-translator' ); ?></th>
+			<th scope="col"><?php esc_attr_e( 'Action', 'gts-wp-translator' ); ?></th>
 		</tr>
 		<?php
 	}
@@ -632,8 +632,8 @@ class Cart {
 
 		foreach ( $filter->target as $index => $target_language ) {
 			$unit = $this->cost->is_rate_per_char( $filter->source, $target_language ) ?
-				__( 'per char', 'gts-translation-order' ) :
-				__( 'per word', 'gts-translation-order' );
+				__( 'per char', 'gts-wp-translator' ) :
+				__( 'per word', 'gts-wp-translator' );
 			?>
 			<tr>
 				<td><?php echo esc_html( $target_language ); ?>:</td>

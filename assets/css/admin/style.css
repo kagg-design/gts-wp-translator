@@ -24,8 +24,8 @@
 	padding: 0 10px 10px 10px;
 }
 
-#gts-translation-order table thead th label,
-#gts-translation-order table tfoot th label {
+#gts-wp-translator table thead th label,
+#gts-wp-translator table tfoot th label {
 	display: none;
 }
 
@@ -74,6 +74,6 @@ table.cart a span {
 	padding-right: 30px;
 }
 
-#gts-to-send-to-translation, #gts-to-back-to-translation {
+#gts-wp-translator-send-to-translation, #gts-wp-translator-back-to-translation {
 	width: 100%;
 }

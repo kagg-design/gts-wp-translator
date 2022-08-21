@@ -2,16 +2,16 @@
 /**
  * Order class file.
  *
- * @package gts/translation-order
+ * @package gts/wp-translator
  */
 
-namespace GTS\TranslationOrder\Pages;
+namespace GTS\WPTranslator\Pages;
 
-use GTS\TranslationOrder\Cookie;
-use GTS\TranslationOrder\Cost;
-use GTS\TranslationOrder\Filter\PostFilter;
-use GTS\TranslationOrder\Main;
-use GTS\TranslationOrder\Pagination;
+use GTS\WPTranslator\Cookie;
+use GTS\WPTranslator\Cost;
+use GTS\WPTranslator\Filter\PostFilter;
+use GTS\WPTranslator\Main;
+use GTS\WPTranslator\Pagination;
 use wpdb;
 
 /**
@@ -74,7 +74,7 @@ class Order {
 	private $post_count;
 
 	/**
-	 * TranslationOrder class file.
+	 * Order class constructor.
 	 *
 	 * @param PostFilter $filter Post filter class instance.
 	 * @param Cart       $cart   Cart class instance.
@@ -85,7 +85,7 @@ class Order {
 		$this->cost   = new Cost();
 
 		$this->status_texts = [
-			Main::ORDER_STATUS_SENT => __( 'Out for translation', 'gts-translation-order' ),
+			Main::ORDER_STATUS_SENT => __( 'Out for translation', 'gts-wp-translator' ),
 		];
 
 		$paging = filter_input( INPUT_GET, 'paging', FILTER_VALIDATE_INT );
@@ -100,11 +100,11 @@ class Order {
 	 */
 	public function show_translation_page() {
 		?>
-		<div class="container" id="gts-translation-order">
+		<div class="container" id="gts-wp-translator">
 			<div class="row">
 				<div class="col">
 					<div class="wrap">
-						<h1 class="wp-heading-inline"><?php esc_attr_e( 'Select Posts for Translation', 'gts-translation-order' ); ?></h1>
+						<h1 class="wp-heading-inline"><?php esc_attr_e( 'Select Posts for Translation', 'gts-wp-translator' ); ?></h1>
 					</div>
 				</div>
 			</div>
@@ -176,7 +176,7 @@ class Order {
 			?>
 			<tr>
 				<td colspan="6">
-					<?php esc_html_e( 'No posts found.', 'gts-translation-order' ); ?>
+					<?php esc_html_e( 'No posts found.', 'gts-wp-translator' ); ?>
 				</td>
 			</tr>
 			<?php
@@ -184,7 +184,7 @@ class Order {
 
 		foreach ( $posts as $post ) {
 			$title = $post->post_title;
-			$title = $title ?: __( '(no title)', 'gts-translation-order' );
+			$title = $title ?: __( '(no title)', 'gts-wp-translator' );
 			$id    = "gts_to_translate-$post->ID";
 			$name  = "gts_to_translate[$post->ID]";
 			$price = 0;
@@ -197,8 +197,8 @@ class Order {
 			$status       = isset( $posts_statuses[ $post->ID ] ) ? $posts_statuses[ $post->ID ] : '';
 			$status_class = ( $status || $in_cart ) ? 'text-bg-primary' : 'bg-secondary';
 			$status_text  = isset( $this->status_texts[ $status ] )
-				? $this->status_texts[ $status ] : __( 'Not translated', 'gts-translation-order' );
-			$status_text  = $in_cart ? __( 'In cart', 'gts-translation-order' ) : $status_text;
+				? $this->status_texts[ $status ] : __( 'Not translated', 'gts-wp-translator' );
+			$status_text  = $in_cart ? __( 'In cart', 'gts-wp-translator' ) : $status_text;
 			$has_checkbox = ! $status && ! $in_cart;
 			$tr_class     = $in_cart ? 'table-primary' : '';
 			$word_count   = $this->cost->get_word_count( $post->ID );
@@ -378,12 +378,12 @@ class Order {
 				<input type="checkbox" name="gts_to_all_page" class="gts_to_all_page" id="<?php echo esc_attr( $id ); ?>">
 			</th>
 			<th scope="col">
-				<?php esc_attr_e( 'Title', 'gts-translation-order' ); ?>
+				<?php esc_attr_e( 'Title', 'gts-wp-translator' ); ?>
 			</th>
-			<th scope="col"><?php esc_attr_e( 'Type', 'gts-translation-order' ); ?></th>
-			<th scope="col"><?php esc_attr_e( 'Status', 'gts-translation-order' ); ?></th>
-			<th scope="col"><?php esc_attr_e( 'Word count', 'gts-translation-order' ); ?></th>
-			<th scope="col"><?php esc_attr_e( 'Cost', 'gts-translation-order' ); ?></th>
+			<th scope="col"><?php esc_attr_e( 'Type', 'gts-wp-translator' ); ?></th>
+			<th scope="col"><?php esc_attr_e( 'Status', 'gts-wp-translator' ); ?></th>
+			<th scope="col"><?php esc_attr_e( 'Word count', 'gts-wp-translator' ); ?></th>
+			<th scope="col"><?php esc_attr_e( 'Cost', 'gts-wp-translator' ); ?></th>
 		</tr>
 		<?php
 

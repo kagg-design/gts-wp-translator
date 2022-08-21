@@ -1,10 +1,9 @@
 {
-  "name": "gts/gts-translation-order",
-  "description": "GTS Translation Order",
+  "name": "gts/gts-wp--translator",
+  "description": "GTS WP Translator",
   "license": "GPL-2.0-only",
   "keywords": [
     "translation",
-    "order",
     "GTS"
   ],
   "homepage": "https://www.gts-translation.com/",
@@ -36,7 +35,7 @@
   },
   "autoload": {
     "psr-4": {
-      "GTS\\TranslationOrder\\": "src/php"
+      "GTS\\WPTranslator\\": "src/php"
     }
   }
 }

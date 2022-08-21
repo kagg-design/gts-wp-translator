@@ -2,25 +2,25 @@
 /**
  * Cookie class file.
  *
- * @package gts/translation-order
+ * @package gts/wp-translator
  */
 
-namespace GTS\TranslationOrder;
+namespace GTS\WPTranslator;
 
 /**
- * Cookie helpers.
+ * Cookie class.
  */
 class Cookie {
 
 	/**
 	 * Filter cookie name.
 	 */
-	const FILTER_COOKIE_NAME = 'gts-translation-order-post-filter';
+	const FILTER_COOKIE_NAME = 'gts-wp-translator-post-filter';
 
 	/**
 	 * Cart cookie name.
 	 */
-	const CART_COOKIE_NAME = 'gts-translation-order-cart-data';
+	const CART_COOKIE_NAME = 'gts-wp-translator-cart-data';
 
 	/**
 	 * Get filter cookie.
