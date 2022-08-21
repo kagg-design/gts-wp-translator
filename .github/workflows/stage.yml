@@ -46,7 +46,7 @@ jobs:
           remote_user: igor
           remote_key: ${{ secrets.DEPLOY_KEY }}
 
-      - name: Deploy the code to the Blog site
+      - name: Deploy the code to the blog site
         uses: burnett01/rsync-deployments@5.2
         with:
           switches: -cvzr --delete --exclude-from=.distignore --chmod=D775,F664
@@ -55,3 +55,23 @@ jobs:
           remote_host: 34.228.113.92
           remote_user: igor
           remote_key: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Deploy the code to the eallanh site
+        uses: burnett01/rsync-deployments@5.2
+        with:
+          switches: -cvzr --delete --exclude-from=.distignore --chmod=D775,F664
+          path: ${{ env.GITHUB_WORKSPACE }}
+          remote_path: /var/www/eallanh/wp-content/plugins/gts-translation-order/
+          remote_host: 34.228.113.92
+          remote_user: igor
+          remote_key: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Deploy the code to the test.kagg.eu site
+        uses: burnett01/rsync-deployments@5.2
+        with:
+          switches: -cvzr --delete --exclude-from=.distignore --chmod=D775,F664
+          path: ${{ env.GITHUB_WORKSPACE }}
+          remote_path: /var/www/test/wp-content/plugins/gts-translation-order/
+          remote_host: 139.59.153.194
+          remote_user: igor
+          remote_key: ${{ secrets.DEPLOY_KAGG_KEY }}
