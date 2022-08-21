@@ -526,13 +526,13 @@ class API {
 	/**
 	 * Finish the endpoint execution with wp_die().
 	 *
-	 * @param string $title    Log message title.
+	 * @param string $message  Log message title.
 	 * @param array  $response Response.
 	 *
 	 * @noinspection ForgottenDebugOutputInspection
 	 */
-	private function endpoint_die( $title = '', $response = [] ) { // phpcs:ignore WPForms.PHP.HooksMethod.InvalidPlaceForAddingHooks
-		$this->log( $title, $response );
+	private function endpoint_die( $message = '', $response = [] ) { // phpcs:ignore WPForms.PHP.HooksMethod.InvalidPlaceForAddingHooks
+		Logger::log( $message, $response );
 
 		// We call wp_die too early, before the query is run.
 		// So, we should remove some filters to avoid having PHP notices in error log.
@@ -543,27 +543,6 @@ class API {
 			esc_html__( 'This is the GTS Translation Order endpoint page.', 'gts-translation-order' ),
 			'GTS Translation Order endpoint',
 			400
-		);
-	}
-
-	/**
-	 * Log message.
-	 *
-	 * @param string $title    Log message title.
-	 * @param array  $response Response.
-	 *
-	 * @noinspection ForgottenDebugOutputInspection
-	 */
-	private function log( $title = '', $response = [] ) {
-		if ( ! $title ) {
-			return;
-		}
-
-		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-		error_log(
-			$title . "\n" .
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-			print_r( [ 'response' => $response ], true )
 		);
 	}
 }

@@ -186,8 +186,8 @@ class PostFilter {
 		if ( ! $this->languages ) {
 			$attempt_counter = get_option( API::AUTH_ATTEMPT_COUNTER_OPTION );
 			$message         = $attempt_counter < API::MAX_AUTH_ATTEMPTS ?
-				__( 'Please reload page to establish connection with the server.', 'gts-translation-order' ) :
-				__( 'Cannot connect with the server. Please reach GTS support.', 'gts-translation-order' );
+				__( 'Please reload the page to establish a connection with the server.', 'gts-translation-order' ) :
+				__( 'Cannot connect to the server. Please reach GTS support.', 'gts-translation-order' );
 			?>
 			<div class="col-auto">
 				<p><?php echo esc_html( $message ); ?></p>
