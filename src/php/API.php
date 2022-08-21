@@ -526,7 +526,7 @@ class API {
 	/**
 	 * Finish the endpoint execution with wp_die().
 	 *
-	 * @param string $message  Log message title.
+	 * @param string $message  Log message.
 	 * @param array  $response Response.
 	 *
 	 * @noinspection ForgottenDebugOutputInspection
@@ -534,7 +534,7 @@ class API {
 	private function endpoint_die( $message = '', $response = [] ) { // phpcs:ignore WPForms.PHP.HooksMethod.InvalidPlaceForAddingHooks
 		Logger::log( $message, $response );
 
-		// We call wp_die too early, before the query is run.
+		// We call wp_die too early - before the query is run.
 		// So, we should remove some filters to avoid having PHP notices in error log.
 		remove_filter( 'wp_robots', 'wp_robots_noindex_embeds' );
 		remove_filter( 'wp_robots', 'wp_robots_noindex_search' );
