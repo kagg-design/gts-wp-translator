@@ -387,6 +387,6 @@ class Order {
 		</tr>
 		<?php
 
-		$count ++;
+		++$count;
 	}
 }

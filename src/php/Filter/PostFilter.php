@@ -247,7 +247,7 @@ class PostFilter {
 							<?php
 							echo '<tr>';
 							foreach ( $this->languages as $language ) {
-								$i ++;
+								++$i;
 								?>
 								<td class="cell">
 									<input

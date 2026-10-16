@@ -378,7 +378,7 @@ class Pagination {
 		// Pages.
 		if ( $last_page < 7 + ( $this->adjacents * 2 ) ) {
 			// Not enough pages to bother breaking it up.
-			for ( $counter = 1; $counter <= $last_page; $counter ++ ) {
+			for ( $counter = 1; $counter <= $last_page; $counter++ ) {
 				if ( $counter === $this->page ) {
 					$this->pagination .= "<li class=\"page-item\"><a class=\"page-link active\" href='#'>$counter</a></li>";
 				} else {
@@ -389,7 +389,7 @@ class Pagination {
 			// Enough pages to hide some.
 			if ( $this->page < 1 + ( $this->adjacents * 2 ) ) {
 				// Close to beginning; only hide later pages.
-				for ( $counter = 1; $counter < 4 + ( $this->adjacents * 2 ); $counter ++ ) {
+				for ( $counter = 1; $counter < 4 + ( $this->adjacents * 2 ); $counter++ ) {
 					if ( $counter === $this->page ) {
 						$this->pagination .= "<li class=\"page-item\"><a class=\"page-link active\" href='#'>$counter</a></li>";
 					} else {
@@ -404,7 +404,7 @@ class Pagination {
 				$this->pagination .= '<li class=\"page-item\"><a class="page-link" href=\"' . $this->get_page_number_link( 1 ) . '">1</a></li>';
 				$this->pagination .= '<li class=\"page-item\"><a class="page-link" href=\"' . $this->get_page_number_link( 2 ) . '">2</a></li>';
 				$this->pagination .= '<li class=\"page-item\"><a class="page-link" href="#">...</a></li>';
-				for ( $counter = $this->page - $this->adjacents; $counter <= $this->page + $this->adjacents; $counter ++ ) {
+				for ( $counter = $this->page - $this->adjacents; $counter <= $this->page + $this->adjacents; $counter++ ) {
 					if ( $counter === $this->page ) {
 						$this->pagination .= "<li class=\"page-item\"><a class=\"page-link active\" href='#'>$counter</a></li>";
 					} else {
@@ -419,7 +419,7 @@ class Pagination {
 				$this->pagination .= '<li class="page-item"><a class="page-link" href=\"' . $this->get_page_number_link( 1 ) . '">1</a></li>';
 				$this->pagination .= '<li class="page-item"><a class="page-link" href=\"' . $this->get_page_number_link( 2 ) . '">2</a></li>';
 				$this->pagination .= '...';
-				for ( $counter = $last_page - ( 2 + ( $this->adjacents * 2 ) ); $counter <= $last_page; $counter ++ ) {
+				for ( $counter = $last_page - ( 2 + ( $this->adjacents * 2 ) ); $counter <= $last_page; $counter++ ) {
 					if ( $counter === $this->page ) {
 						$this->pagination .= "<li class=\"page-item\"><a class=\"page-link active\" href='#'>$counter</a></li>";
 					} else {
