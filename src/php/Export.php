@@ -170,6 +170,7 @@ class Export {
 			);
 
 			// Put categories in order with no child going before its parent.
+			// phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition -- Consume one category per iteration.
 			while ( $cat = array_shift( $categories ) ) {
 				if ( ! $cat->parent || isset( $cats[ $cat->parent ] ) ) {
 					$cats[ $cat->term_id ] = $cat;
@@ -179,6 +180,7 @@ class Export {
 			}
 
 			// Put terms in order with no child going before its parent.
+			// phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition -- Consume one term per iteration.
 			while ( $t = array_shift( $custom_terms ) ) {
 				if ( ! $t->parent || isset( $terms[ $t->parent ] ) ) {
 					$terms[ $t->term_id ] = $t;
@@ -293,6 +295,7 @@ class Export {
 					$wp_query->in_the_loop = true;
 
 					// Fetch 20 posts at a time rather than loading the entire table into memory.
+					// phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition -- Fetch and process each batch.
 					while ( $next_posts = array_splice( $post_ids, 0, 20 ) ) {
 						$where = 'WHERE ID IN (' . implode( ',', $next_posts ) . ')';
 						$posts = $wpdb->get_results( "SELECT * FROM {$wpdb->posts} $where" );
@@ -446,8 +449,8 @@ class Export {
 	 * @return string
 	 */
 	private function wxr_cdata( $str ) {
-		if ( ! seems_utf8( $str ) ) {
-			$str = utf8_encode( $str );
+		if ( ! wp_is_valid_utf8( $str ) ) {
+			$str = iconv( 'ISO-8859-1', 'UTF-8', $str );
 		}
 
 		return '<![CDATA[' . str_replace( ']]>', ']]]]><![CDATA[>', $str ) . ']]>';
