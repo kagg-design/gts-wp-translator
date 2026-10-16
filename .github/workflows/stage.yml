@@ -72,6 +72,6 @@ jobs:
           switches: -cvzr --delete --exclude-from=.distignore --chmod=D775,F664
           path: ${{ env.GITHUB_WORKSPACE }}
           remote_path: /var/www/test/wp-content/plugins/gts-wp-translator/
-          remote_host: 139.59.153.194
+          remote_host: 161.35.198.188
           remote_user: igor
           remote_key: ${{ secrets.DEPLOY_KAGG_KEY }}
