@@ -97,9 +97,9 @@ class Export {
 		// We do not set headers.
 
 		if ( 'all' !== $args['content'] && post_type_exists( $args['content'] ) ) {
-			$ptype = get_post_type_object( $args['content'] );
+			$post_type_obj = get_post_type_object( $args['content'] );
 
-			if ( ! $ptype || ! $ptype->can_export ) {
+			if ( ! $post_type_obj || ! $post_type_obj->can_export ) {
 				$args['content'] = 'post';
 			}
 
@@ -365,8 +365,7 @@ class Export {
 									/**
 									 * Filters whether to selectively skip post meta used for WXR exports.
 									 *
-									 * Returning a truthy value from the filter will skip the current meta
-									 * object from being exported.
+									 * Returning a truthy value from the filter will skip the current metaobject from being exported.
 									 *
 									 * @since 3.3.0
 									 *
@@ -408,8 +407,7 @@ class Export {
 											/**
 											 * Filters whether to selectively skip comment meta used for WXR exports.
 											 *
-											 * Returning a truthy value from the filter will skip the current meta
-											 * object from being exported.
+											 * Returning a truthy value from the filter will skip the current metaobject from being exported.
 											 *
 											 * @since 4.0.0
 											 *
@@ -579,8 +577,7 @@ class Export {
 			/**
 			 * Filters whether to selectively skip term meta used for WXR exports.
 			 *
-			 * Returning a truthy value from the filter will skip the current meta
-			 * object from being exported.
+			 * Returning a truthy value from the filter will skip the current metaobject from being exported.
 			 *
 			 * @since 4.6.0
 			 *
@@ -603,7 +600,7 @@ class Export {
 	 *
 	 * @param int[] $post_ids Optional. Array of post IDs to filter the query by.
 	 */
-	private function wxr_authors_list( array $post_ids = null ) {
+	private function wxr_authors_list( ?array $post_ids = null ) {
 		global $wpdb;
 
 		if ( ! empty( $post_ids ) ) {
