@@ -42,7 +42,7 @@ jobs:
           switches: -cvzr --delete --exclude-from=.distignore --chmod=D775,F664
           path: ${{ env.GITHUB_WORKSPACE }}
           remote_path: /var/www/gts/wp-content/plugins/gts-wp-translator/
-          remote_host: 34.228.113.92
+          remote_host: 54.234.8.0
           remote_user: igor
           remote_key: ${{ secrets.DEPLOY_KEY }}
 
@@ -52,7 +52,7 @@ jobs:
           switches: -cvzr --delete --exclude-from=.distignore --chmod=D775,F664
           path: ${{ env.GITHUB_WORKSPACE }}
           remote_path: /var/www/blog/wp-content/plugins/gts-wp-translator/
-          remote_host: 34.228.113.92
+          remote_host: 54.234.8.0
           remote_user: igor
           remote_key: ${{ secrets.DEPLOY_KEY }}
 
@@ -62,7 +62,7 @@ jobs:
           switches: -cvzr --delete --exclude-from=.distignore --chmod=D775,F664
           path: ${{ env.GITHUB_WORKSPACE }}
           remote_path: /var/www/eallanh/wp-content/plugins/gts-wp-translator/
-          remote_host: 34.228.113.92
+          remote_host: 54.234.8.0
           remote_user: igor
           remote_key: ${{ secrets.DEPLOY_KEY }}
 
